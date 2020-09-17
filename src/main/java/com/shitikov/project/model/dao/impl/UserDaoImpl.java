@@ -5,9 +5,11 @@ import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.PoolException;
 import com.shitikov.project.model.pool.ConnectionPool;
-import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,26 +34,24 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean checkLogin(String login, String password) throws DaoException {
+    public String checkLogin(String login, String password) throws DaoException {
         if (login == null || password == null) {
             throw new DaoException("Login or password is null.");
         }
-
-        boolean isLoginCorrect = false;
+        String hashedPassword = "";
         try (Connection connection = ConnectionPool.getInstance().getConnection();
             PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_LOGIN)){
 
             statement.setString(1, login);
             try (ResultSet resultSet = statement.executeQuery()){
                 if (resultSet.next()) {
-                    String hashedPassword = resultSet.getString(ColumnName.PASSWORD);
-                    isLoginCorrect = BCrypt.checkpw(password, hashedPassword);
+                    hashedPassword = resultSet.getString(ColumnName.PASSWORD);
                 }
             }
         } catch (PoolException | SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return isLoginCorrect;
+        return hashedPassword;
     }
 
     @Override

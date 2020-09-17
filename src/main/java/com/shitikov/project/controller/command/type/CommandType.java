@@ -6,6 +6,7 @@ import com.shitikov.project.controller.command.impl.*;
 public enum CommandType {
     LOGIN(new LoginCommand()),
     REGISTRATION(new RegistrationCommand()),
+    REGISTRATION_PAGE(new RegistrationPageCommand()),
     OPEN_PAGE(new OpenPageCommand()),
     EMPTY_COMMAND(new EmptyCommand());
 
