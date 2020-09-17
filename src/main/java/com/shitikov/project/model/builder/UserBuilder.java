@@ -5,7 +5,6 @@ import com.shitikov.project.model.entity.User;
 
 public class UserBuilder {
     private String login;
-    private String password;
     private RoleType roleType;
 
     public String getLogin() {
@@ -14,15 +13,6 @@ public class UserBuilder {
 
     public UserBuilder buildLogin(String login) {
         this.login = login;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public UserBuilder buildPassword(String password) {
-        this.password = password;
         return this;
     }
 

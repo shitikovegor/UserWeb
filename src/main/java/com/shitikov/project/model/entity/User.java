@@ -4,18 +4,15 @@ import com.shitikov.project.model.builder.UserBuilder;
 
 public class User extends Entity {
     private String login;
-    private String password;
     private RoleType roleType;
 
     public User(String login, String password, RoleType roleType) {
         this.login = login;
-        this.password = password;
         this.roleType = roleType;
     }
 
     public User(UserBuilder builder) {
         this.login = builder.getLogin();
-        this.password = builder.getPassword();
         this.roleType = builder.getRoleType();
     }
 
@@ -25,15 +22,6 @@ public class User extends Entity {
 
     public User setLogin(String login) {
         this.login = login;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public User setPassword(String password) {
-        this.password = password;
         return this;
     }
 
@@ -57,15 +45,12 @@ public class User extends Entity {
 
         if (login != null ? !login.equals(other.login) : other.login != null)
             return false;
-        if (password != null ? !password.equals(other.password) : other.password != null)
-            return false;
         return roleType == other.roleType;
     }
 
     @Override
     public int hashCode() {
         int result = login != null ? login.hashCode() : 0;
-        result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (roleType != null ? roleType.hashCode() : 0);
         return result;
     }
@@ -74,7 +59,6 @@ public class User extends Entity {
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");
         sb.append("login='").append(login).append('\'');
-        sb.append(", password='").append(password).append('\'');
         sb.append(", roleType=").append(roleType);
         sb.append('}');
         return sb.toString();

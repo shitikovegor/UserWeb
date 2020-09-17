@@ -51,11 +51,10 @@ public class UserServiceImpl implements UserService {
             String hashedPassword = hashPassword(password);
             User user = new UserBuilder()
                     .buildLogin(login)
-                    .buildPassword(hashedPassword)
                     .buildRoleType(roleType)
                     .buildUser();
             try {
-                isUserAdded = userDao.add(user);
+                isUserAdded = userDao.add(user, hashedPassword);
             } catch (DaoException e) {
                 throw new ServiceException("Program error of adding user. ", e);
             }

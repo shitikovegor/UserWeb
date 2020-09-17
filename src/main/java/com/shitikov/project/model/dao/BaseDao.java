@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface BaseDao<K, T extends Entity> {
 
-    boolean add(T t) throws DaoException;
+    boolean add(T t, String password) throws DaoException;
 
     boolean remove(T t) throws DaoException;
 

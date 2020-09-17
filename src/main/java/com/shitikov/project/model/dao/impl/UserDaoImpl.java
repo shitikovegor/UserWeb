@@ -60,7 +60,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean add(User user) throws DaoException {
+    public boolean add(User user, String password) throws DaoException {
         boolean isUserAdded = false;
         if (user == null) {
             throw new DaoException("Book is null.");
@@ -70,7 +70,7 @@ public class UserDaoImpl implements UserDao {
             if (!isUserInDataBase(connection, user)) {
                 try(PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
                     statement.setString(1, user.getLogin());
-                    statement.setString(2, user.getPassword());
+                    statement.setString(2, password);
                     statement.setString(3, user.getRoleType().getRoleName());
                     int result = statement.executeUpdate();
                     isUserAdded = result != 0;
