@@ -34,7 +34,9 @@ public class UserServiceImpl implements UserService {
         if (UserValidator.getInstance().checkLoginPassword(login, password)) {
             try {
                 String hashedPassword = userDao.checkLogin(login, password);
-                isLoginCorrect = BCrypt.checkpw(password, hashedPassword);
+                if (!hashedPassword.isEmpty()) {
+                    isLoginCorrect = BCrypt.checkpw(password, hashedPassword);
+                }
             } catch (DaoException e) {
                 throw new ServiceException("Program exception. ", e);
             }
