@@ -97,18 +97,4 @@ public class ConnectionPool {
             }
         });
     }
-
-//    private Properties convertResourceBundleToProperties(ResourceBundle resourceBundle) {
-//        Properties properties = new Properties();
-//        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("properties.database");
-//        properties.load(inputStream);
-//
-//        Enumeration<String> keys = resourceBundle.getKeys();
-//
-//        while (keys.hasMoreElements()) {
-//            String key = keys.nextElement();
-//            properties.put(key, resourceBundle.getString(key));
-//        }
-//        return properties;
-//    }
 }

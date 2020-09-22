@@ -12,9 +12,10 @@
                 <li class="nav-item" role="presentation"><a class="nav-link"
                     href="controller?command=requests-page"><fmt:message key="header.requests"/></a></li>
                 <li class="nav-item" role="presentation"><a class="nav-link"
-                    href="controller?command=login-page"><fmt:message key="header.login"/></a></li>
+                    href="controller?command=open-page&page=path.page.login"><fmt:message key="header.login"/></a></li>
                 <li class="nav-item" role="presentation"><a class="nav-link"
-                    href="controller?command=registration-page"><fmt:message key="header.register"/></a></li>
+                    href="controller?command=open-page&page=path.page.registration"><fmt:message
+                        key="header.register"/></a></li>
                 <li class="nav-item" role="presentation"><a class="nav-link"
                     href="controller?command=account-page"><fmt:message key="header.account"/></a></li>
                 <li class="nav-item" role="presentation"><a class="nav-link"
