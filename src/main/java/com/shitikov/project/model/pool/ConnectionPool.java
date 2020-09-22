@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.logging.Level;
 
 public class ConnectionPool {
     private static final int POOL_SIZE = 32;
@@ -21,7 +20,7 @@ public class ConnectionPool {
         freeConnections = new LinkedBlockingDeque<>(POOL_SIZE);
         givenAwayConnections = new ArrayDeque<>();
 
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("property.database");
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("properties.database");
         Properties properties = convertResourceBundleToProperties(resourceBundle);
 
         try {

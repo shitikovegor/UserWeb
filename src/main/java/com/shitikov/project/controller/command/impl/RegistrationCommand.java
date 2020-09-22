@@ -1,10 +1,10 @@
 package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.command.Command;
-import com.shitikov.project.controller.command.PagePath;
 import com.shitikov.project.model.entity.RoleType;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.UserServiceImpl;
+import com.shitikov.project.util.ConfigurationManager;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,14 +25,14 @@ public class RegistrationCommand implements Command {
         try {
             if (UserServiceImpl.getInstance().add(login, password, RoleType.USER)) {
                 request.setAttribute("userAddedMessage", USER_ADDED_MESSAGE);
-                page = PagePath.LOGIN;
+                page = ConfigurationManager.getProperty("path.page.login");
             } else {
                 request.setAttribute("errorLoginPassMessage", ERROR_MESSAGE);
-                page = PagePath.REGISTRATION;
+                page = ConfigurationManager.getProperty("path.page.registration");
             }
         } catch (ServiceException e) {
             // TODO: 01.09.2020 log + error message
-            page = PagePath.ERROR;
+            page = ConfigurationManager.getProperty("path.page.error");
         }
         return page;
     }

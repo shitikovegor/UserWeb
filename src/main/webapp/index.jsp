@@ -2,10 +2,7 @@
 <!DOCTYPE html>
 <html>
 <meta charset="UTF-8">
-<head>
-    <title>Shapes</title>
-</head>
 <body>
-<jsp:forward page="/jsp/login.jsp"/>
+<jsp:forward page="/jsp/home.jsp"/>
 </body>
 </html>

@@ -1,9 +1,9 @@
 package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.command.Command;
-import com.shitikov.project.controller.command.PagePath;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.UserServiceImpl;
+import com.shitikov.project.util.ConfigurationManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,14 +25,14 @@ public class LoginCommand implements Command {
         try {
             if (UserServiceImpl.getInstance().checkLogin(login, password)) {
                 request.setAttribute("user", login);
-                page = PagePath.HELLO;
+                page = ConfigurationManager.getProperty("path.page.home");
             } else {
                 request.setAttribute("errorLoginPassMessage", ERROR_MESSAGE);
-                page = PagePath.LOGIN;
+                page = ConfigurationManager.getProperty("path.page.login");
             }
         } catch (ServiceException e) {
             // TODO: 01.09.2020 log + error message
-            page = PagePath.ERROR;
+            page = ConfigurationManager.getProperty("path.page.error");
         }
         return page;
     }
