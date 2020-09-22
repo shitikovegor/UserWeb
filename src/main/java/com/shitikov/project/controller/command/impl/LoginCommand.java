@@ -4,6 +4,7 @@ import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.UserServiceImpl;
 import com.shitikov.project.util.ConfigurationManager;
+import com.shitikov.project.util.MessageManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +14,6 @@ import java.io.IOException;
 public class LoginCommand implements Command {
     private static final String PARAM_NAME_LOGIN = "login";
     private static final String PARAM_NAME_PASSWORD = "password";
-    private static final String ERROR_MESSAGE = "Login or password is incorrect.";
 
     @Override
     public String execute(HttpServletRequest request) throws IOException, ServletException {
@@ -27,7 +27,7 @@ public class LoginCommand implements Command {
                 request.setAttribute("user", login);
                 page = ConfigurationManager.getProperty("path.page.home");
             } else {
-                request.setAttribute("errorLoginPassMessage", ERROR_MESSAGE);
+                request.setAttribute("errorLoginPassMessage", MessageManager.getProperty("command.login.error"));
                 page = ConfigurationManager.getProperty("path.page.login");
             }
         } catch (ServiceException e) {

@@ -1,8 +1,8 @@
 package com.shitikov.project.controller;
 
 import com.shitikov.project.controller.command.Command;
-import com.shitikov.project.controller.command.PagePath;
 import com.shitikov.project.controller.command.provider.CommandProvider;
+import com.shitikov.project.util.ConfigurationManager;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -32,7 +32,7 @@ public class Controller extends HttpServlet {
             dispatcher.forward(request, response);
         } else {
             request.getSession().setAttribute("nullPage", "Page is null");
-            response.sendRedirect(request.getContextPath() + PagePath.INDEX);
+            response.sendRedirect(request.getContextPath() + ConfigurationManager.getProperty("path.page.home"));
         }
     }
 }
