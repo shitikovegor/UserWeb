@@ -2,6 +2,8 @@ package com.shitikov.project.model.pool;
 
 import com.shitikov.project.model.exception.PoolException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -20,18 +22,23 @@ public class ConnectionPool {
         freeConnections = new LinkedBlockingDeque<>(POOL_SIZE);
         givenAwayConnections = new ArrayDeque<>();
 
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("properties.database");
-        Properties properties = convertResourceBundleToProperties(resourceBundle);
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("properties.database");
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            throw new PoolException("Reading properties error. ", e);
+        }
 
         try {
-            Class.forName(resourceBundle.getString("driver"));
+            Class.forName(properties.getProperty("driver"));
         } catch (ClassNotFoundException e) {
             // TODO: 01.09.2020 log
         }
         try {
             for (int i = 0; i < POOL_SIZE; i++) {
                 freeConnections.offer(new ProxyConnection(DriverManager.getConnection(
-                        resourceBundle.getString("url"), properties)));
+                        properties.getProperty("url"), properties)));
             }
         } catch (SQLException e) {
             throw new PoolException("Connection creating error", e);
@@ -91,14 +98,17 @@ public class ConnectionPool {
         });
     }
 
-    private Properties convertResourceBundleToProperties(ResourceBundle resourceBundle) {
-        Properties properties = new Properties();
-        Enumeration<String> keys = resourceBundle.getKeys();
-
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            properties.put(key, resourceBundle.getString(key));
-        }
-        return properties;
-    }
+//    private Properties convertResourceBundleToProperties(ResourceBundle resourceBundle) {
+//        Properties properties = new Properties();
+//        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("properties.database");
+//        properties.load(inputStream);
+//
+//        Enumeration<String> keys = resourceBundle.getKeys();
+//
+//        while (keys.hasMoreElements()) {
+//            String key = keys.nextElement();
+//            properties.put(key, resourceBundle.getString(key));
+//        }
+//        return properties;
+//    }
 }
