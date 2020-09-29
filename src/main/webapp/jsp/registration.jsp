@@ -1,7 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
+<fmt:setBundle basename="properties.pagecontent"/>
+
 <c:import url="baseLayout.jsp">
-    <c:param name="title" value="Registration - HelpBYCar"/>
+    <c:param name="title">
+        <fmt:message key="title.registration"/>
+    </c:param>
     <c:param name="page" value="registration"/>
 </c:import>

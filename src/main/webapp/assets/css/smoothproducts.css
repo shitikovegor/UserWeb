@@ -24,6 +24,7 @@ html, body {
   margin: 0 25px 15px 0;
   float: left;
   max-width: 300px;
+  min-height: 100%;
 }
 
 .sp-thumbs {
@@ -171,5 +172,47 @@ html, body {
     margin-top: 0;
     bottom: 25px;
   }
+}
+
+.page-footer.dark {
+  padding: 0;
+  clear: both;
+}
+
+.page-footer.dark .footer-copyright {
+  padding: 0;
+  margin-top: 0;
+}
+
+.clean-block.clean-form.dark {
+}
+
+#footer {
+  height: 50px;
+  width: 100%;
+}
+
+.dropup.d-inline-flex.float-right {
+  margin: 0px;
+  margin-right: 20px;
+  margin-top: 6px;
+}
+
+.dropdown-menu.dropdown-menu-right.show.text-lowercase.text-left {
+  min-width: 138px;
+}
+
+.page-footer.dark a {
+  color: rgb(84,91,98);
+}
+
+.page-footer.dark a:focus, .page-footer.dark a:hover {
+  color: #545b62;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #d1d3d6;
 }
 

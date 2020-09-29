@@ -1,8 +1,10 @@
-package com.shitikov.project.model.entity;
+package com.shitikov.project.model.entity.type;
 
 public enum RoleType {
     ADMINISTRATOR("administrator"),
-    USER("user");
+    DRIVER("driver"),
+    CLIENT("client"),
+    GUEST("guest");
 
     private String roleName;
 

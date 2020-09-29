@@ -2,7 +2,6 @@ package com.shitikov.project.controller;
 
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.provider.CommandProvider;
-import com.shitikov.project.util.ConfigurationManager;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 @WebServlet(urlPatterns = "/controller")
 public class Controller extends HttpServlet {
@@ -32,7 +32,8 @@ public class Controller extends HttpServlet {
             dispatcher.forward(request, response);
         } else {
             request.getSession().setAttribute("nullPage", "Page is null");
-            response.sendRedirect(request.getContextPath() + ConfigurationManager.getProperty("path.page.home"));
+            response.sendRedirect(request.getContextPath()
+                    + ResourceBundle.getBundle("properties.config").getString("path.page.home"));
         }
     }
 }

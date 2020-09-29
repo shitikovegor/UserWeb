@@ -2,6 +2,7 @@ package com.shitikov.project.model.dao.impl;
 
 import com.shitikov.project.model.dao.UserDao;
 import com.shitikov.project.model.entity.User;
+import com.shitikov.project.model.entity.type.RoleType;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.PoolException;
 import com.shitikov.project.model.pool.ConnectionPool;
@@ -10,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,13 +36,61 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public String checkLogin(String login, String password) throws DaoException {
+    public boolean checkLogin(String login) throws DaoException {
+        if (login == null) {
+            throw new DaoException("Login is null.");
+        }
+        boolean loginExists = false;
+
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_LOGIN)){
+
+            statement.setString(1, login);
+            try (ResultSet resultSet = statement.executeQuery()){
+                if (resultSet.next()) {
+                    loginExists = true;
+                }
+            }
+        } catch (PoolException | SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+        return loginExists;
+    }
+
+    @Override
+    public RoleType getRole(String login) throws DaoException {
+        if (login == null) {
+            throw new DaoException("Login is null.");
+        }
+        RoleType role = RoleType.GUEST;
+
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_LOGIN)){
+
+            statement.setString(1, login);
+            try (ResultSet resultSet = statement.executeQuery()){
+                if (resultSet.next()) {
+                    String roleName = resultSet.getString(ColumnName.ROLE);
+                    role = Arrays.stream(RoleType.values())
+                            .filter(roleType -> roleType.toString()
+                                    .equalsIgnoreCase(roleName.toUpperCase()))
+                            .findFirst().get();
+                }
+            }
+        } catch (PoolException | SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+        return role;
+    }
+
+    @Override
+    public String getPassword(String login, String password) throws DaoException {
         if (login == null || password == null) {
             throw new DaoException("Login or password is null.");
         }
         String hashedPassword = "";
         try (Connection connection = ConnectionPool.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_LOGIN)){
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_LOGIN)){
 
             statement.setString(1, login);
             try (ResultSet resultSet = statement.executeQuery()){

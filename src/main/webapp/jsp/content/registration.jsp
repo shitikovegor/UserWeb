@@ -5,39 +5,51 @@
     <section class="clean-block clean-form dark">
         <div class="container">
             <div class="block-heading">
-                <h2 class="text-info"><fmt:message key="page.registration.pageName"/> </h2>
+                <h2 class="text-info"><fmt:message key="page.registration.pageName"/></h2>
                 <p><fmt:message key="page.registration.description"/></p>
             </div>
             <form action="controller" method="post">
-                <div class="form-group"><label for="login"><fmt:message key="page.registration.login"/></label><input
-                        class="form-control item" type="text" id="login" pattern="^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]+" minlength="6" maxlength="20" name="login" title="Your login must be 6-20 characters long,  can contain latin letters, numbers or -, _, ."
-                                                                               required=""></div>
-                <div class="form-group"><label for="password"><fmt:message key="page.registration.password"/></label><input
-                        class="form-control item" type="password" id="password" required="Your password must be 6-20 characters long, contain upper and lower letters and numbers, and can contain special characters"
-                                                                                     pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]$" minlength="6" maxlength="20" name="password" title="Your password must be 8-20 characters long, contain upper and lower letters and numbers, and can contain special characters"></div>
+                <div class="form-group"><label for="login"><fmt:message key="common.login"/></label><input
+                        class="form-control item" type="text" id="login"
+                        required="<fmt:message key="page.registration.required.login"/>"
+                        pattern="^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]+" minlength="4" maxlength="20"
+                        name="login"
+                        title="<fmt:message key="page.registration.required.login"/>"></div>
+                <div class="form-group"><label for="password"><fmt:message key="common.password"/></label>
+                    <input class="form-control item" type="password" id="password"
+                        required="<fmt:message key="page.registration.required.password"/>"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]+" minlength="6" maxlength="20"
+                        name="password"
+                        title="<fmt:message key="page.registration.required.password"/>">
+                </div>
                 <div
                         class="form-group"><label for="email"><fmt:message key="page.registration.email"/></label><input
                         class="form-control item" type="email" id="email" required="" name="email"></div>
                 <div class="form-group"><input type="radio" name="subject" value="individual" required="">
-                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;"><fmt:message
-                            key="page.registration.individual"/></p>
+                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;">
+                        <fmt:message key="page.registration.individual"/></p>
                     <input type="radio" name="subject" value="organization" required="">
-                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;"><fmt:message
-                            key="page.registration.organization"/></p>
+                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;">
+                        <fmt:message key="page.registration.organization"/></p>
                 </div>
-                <div class="form-group"><label for="name"><fmt:message key="page.registration.name"/></label><input
-                        class="form-control item" type="text" id="name" required="" name="name"></div>
-                <div class="form-group"><label for="surname"><fmt:message key="page.registration.surname"/></label><input
-                        class="form-control item" type="text" id="surname" name="surname"></div>
-                <div class="form-group"><label for="phone"><fmt:message key="page.registration.phone"/></label><input
-                        class="form-control item" type="tel" id="phone" required="" name="phone"></div>
+                <div class="form-group"><label for="name"><fmt:message key="page.registration.name"/></label>
+                    <input class="form-control item" type="text" id="name" required="" name="name"></div>
+                <div class="form-group"><label for="surname"><fmt:message key="page.registration.surname"/></label>
+                    <input class="form-control item" type="text" id="surname" name="surname"></div>
+                <div class="form-group"><label for="phone"><fmt:message key="page.registration.phone"/></label>
+                    <input class="form-control item" type="tel" id="phone"
+                           required="<fmt:message key="page.registration.required.phone"/>"
+                           pattern="^\\+?\\d{12}" minlength="12" maxlength="13"
+                           name="phone"
+                           title="<fmt:message key="page.registration.required.phone"/>"></div>
                 <div class="form-group text-left"><input type="radio" name="role" value="driver" required="">
-                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;"><fmt:message
-                            key="page.registration.driver"/></p><input type="radio" name="role" value="client" required="">
-                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;"><fmt:message
-                            key="page.registration.client"/></p>
-                </div><button class="btn btn-primary btn-block" type="submit"><fmt:message
-                    key="page.registration.signup"/></button></form>
+                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;"><fmt:message key="page.registration.driver"/></p>
+                    <input type="radio" name="role" value="client" required="">
+                    <p class="d-inline" style="margin-right: 30px;margin-top: 0px;margin-left: 5px;"><fmt:message key="page.registration.client"/></p>
+                </div>
+                <button class="btn btn-primary btn-block"
+                        type="submit"><fmt:message key="page.registration.signup"/></button>
+            </form>
         </div>
     </section>
 </main>

@@ -1,13 +1,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<fmt:setLocale value="ru_RU" scope="session"/>
 <fmt:setBundle basename="properties.pagecontent"/>
+<c:set var="language" value="${sessionScope.locale == null ? \"en_US\" : sessionScope.locale }"/>
+<fmt:setLocale value="${language}" scope="session"/>
+
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title><${param.title}></title>
+    <title>${param.title}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
     <link rel="stylesheet" href="${pageContext.request.contextPath}assets/fonts/simple-line-icons.min.css">

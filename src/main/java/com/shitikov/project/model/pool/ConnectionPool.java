@@ -1,18 +1,25 @@
 package com.shitikov.project.model.pool;
 
 import com.shitikov.project.model.exception.PoolException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Properties;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class ConnectionPool {
-    private static final int POOL_SIZE = 32;
+    private static final int POOL_SIZE = 10;
+    private static Logger logger = LogManager.getLogger();
     private static ConnectionPool instance;
     private static boolean isInstanceCreated;
     private BlockingQueue<ProxyConnection> freeConnections;
@@ -33,15 +40,19 @@ public class ConnectionPool {
         try {
             Class.forName(properties.getProperty("driver"));
         } catch (ClassNotFoundException e) {
-            // TODO: 01.09.2020 log
+            logger.log(Level.FATAL, "Driver not found error.", e);
+            throw new RuntimeException("Driver not found error.", e);
         }
-        try {
-            for (int i = 0; i < POOL_SIZE; i++) {
+
+        for (int i = 0; i < POOL_SIZE; i++) {
+            try {
                 freeConnections.offer(new ProxyConnection(DriverManager.getConnection(
                         properties.getProperty("url"), properties)));
+            } catch (SQLException e) {
+                logger.log(Level.ERROR, "Connection creating error.", e);
+//                throw new RuntimeException("Connection creating error", e); 
+// TODO: 23.09.2020  is need to throw exception?!
             }
-        } catch (SQLException e) {
-            throw new PoolException("Connection creating error", e);
         }
     }
 
@@ -63,14 +74,13 @@ public class ConnectionPool {
             connection = freeConnections.take();
             givenAwayConnections.offer((ProxyConnection) connection);
         } catch (InterruptedException e) {
-            // TODO: 01.09.2020 log
+            logger.log(Level.ERROR, "Getting connection error. ", e);
         }
         return connection;
     }
 
     public void releaseConnection(Connection connection) throws PoolException {
-        if (connection.getClass().getSimpleName().equals("ProxyConnection")) {
-            givenAwayConnections.remove(connection);
+        if (connection instanceof ProxyConnection && givenAwayConnections.remove(connection)) {
             freeConnections.offer((ProxyConnection) connection);
         } else {
             throw new PoolException("Closing connection is incorrect.");
@@ -88,13 +98,14 @@ public class ConnectionPool {
         deregisterDrivers();
     }
 
-    private void deregisterDrivers() {
-        DriverManager.getDrivers().asIterator().forEachRemaining(driver -> {
-            try {
+    private void deregisterDrivers() throws PoolException {
+        try {
+            while (DriverManager.getDrivers().hasMoreElements()) {
+                Driver driver = DriverManager.getDrivers().nextElement();
                 DriverManager.deregisterDriver(driver);
-            } catch (SQLException e) {
-                // TODO: 01.09.2020 log
             }
-        });
+        } catch (SQLException e) {
+            throw new PoolException("Error in time of deregister driver", e);
+        }
     }
 }

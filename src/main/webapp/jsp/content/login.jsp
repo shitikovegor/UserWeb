@@ -11,9 +11,9 @@
             </div>
             <form name="loginForm" action="controller" method="post">
                 <input type="hidden" name="command" value="login"/>
-                <div class="form-group"><label for="login"><fmt:message key="page.login.login"/></label>
+                <div class="form-group"><label for="login"><fmt:message key="common.login"/></label>
                     <input class="form-control item" type="text" name="login" id="login" required></div>
-                <div class="form-group"><label for="password"><fmt:message key="page.login.password"/></label>
+                <div class="form-group"><label for="password"><fmt:message key="common.password"/></label>
                     <input class="form-control" type="password" name="password" id="password" required></div>
                 <div class="form-group">
                     <div class="form-check"><input class="form-check-input" type="checkbox" id="checkbox"><label
