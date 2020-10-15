@@ -2,9 +2,9 @@ package com.shitikov.project.util;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-public class PasswordCrypt {
+public class PasswordEncoder {
 
-    public PasswordCrypt() {
+    public PasswordEncoder() {
     }
 
     public String hashPassword(String password) {

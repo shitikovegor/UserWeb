@@ -1,6 +1,6 @@
 package com.shitikov.project.model.service.impl;
 
-import com.shitikov.project.controller.command.impl.ParameterName;
+import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.model.builder.UserBuilder;
 import com.shitikov.project.model.dao.UserDao;
 import com.shitikov.project.model.dao.impl.UserDaoImpl;
@@ -10,16 +10,16 @@ import com.shitikov.project.model.entity.type.SubjectType;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.UserService;
-import com.shitikov.project.util.PasswordCrypt;
+import com.shitikov.project.util.PasswordEncoder;
 import com.shitikov.project.validator.UserValidator;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
     private static UserServiceImpl instance;
+    private static final String EXISTS = "exists";
 
     private UserServiceImpl() {
     }
@@ -31,20 +31,14 @@ public class UserServiceImpl implements UserService {
         return instance;
     }
 
-    // TODO: 28.09.2020 is correct method of check logi and password?
+    // TODO: 28.09.2020 is correct method of check login and password?
     @Override
-    public boolean checkLogin(String login, String password) throws ServiceException {
+    public boolean checkLogin(String login) throws ServiceException {
         UserDao userDao = UserDaoImpl.getInstance();
         boolean isLoginCorrect = false;
-        if (UserValidator.getInstance().checkLogin(login)
-                && UserValidator.getInstance().checkPassword(password)) {
+        if (UserValidator.getInstance().checkLogin(login)) {
             try {
-                if (userDao.checkLogin(login)) {
-                    String hashedPassword = userDao.getPassword(login, password);
-                    if (!hashedPassword.isEmpty()) {
-                        isLoginCorrect = new PasswordCrypt().checkPassword(password, hashedPassword);
-                    }
-                }
+                isLoginCorrect = userDao.checkLogin(login);
             } catch (DaoException e) {
                 throw new ServiceException("Program exception. ", e);
             }
@@ -53,9 +47,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RoleType getRole(String login) throws ServiceException {
+    public boolean checkPassword(String login, String password) throws ServiceException {
+        UserDao userDao = UserDaoImpl.getInstance();
+        boolean isPasswordCorrect = false;
+        if (UserValidator.getInstance().checkPassword(password)) {
+            try {
+                String hashedPassword = userDao.findPassword(login, password);
+                if (!hashedPassword.isEmpty()) {
+                    isPasswordCorrect = new PasswordEncoder().checkPassword(password, hashedPassword);
+                }
+            } catch (DaoException e) {
+                throw new ServiceException("Program exception. ", e);
+            }
+        }
+        return isPasswordCorrect;
+    }
+
+    @Override
+    public RoleType findRole(String login) throws ServiceException {
         try {
-            return UserDaoImpl.getInstance().getRole(login);
+            return UserDaoImpl.getInstance().findRole(login);
         } catch (DaoException e) {
             throw new ServiceException("Getting role error. ", e);
         }
@@ -67,31 +78,37 @@ public class UserServiceImpl implements UserService {
         UserValidator validator = UserValidator.getInstance();
         boolean isUserAdded = false;
 
-        String login = parameters.get(ParameterName.LOGIN);
-        String password = parameters.get(ParameterName.PASSWORD);
-        String email = parameters.get(ParameterName.EMAIL);
-        String phone = parameters.get(ParameterName.PHONE);
-        Optional<RoleType> roleTypeOptional = getRoleType(parameters.get(ParameterName.ROLE_TYPE));
-        Optional<SubjectType> subjectTypeOptional = getSubjectType(parameters.get(ParameterName.SUBJECT_TYPE));
-        String name = parameters.get(ParameterName.NAME).replaceAll("</?script>", "");
-        String surname = parameters.get(ParameterName.SURNAME).replaceAll("</?script>", "");
+        if (validator.checkParameters(parameters)) {
+            RoleType roleType = RoleType.valueOf(parameters.get(ParameterName.ROLE_TYPE).toUpperCase());
+            SubjectType subjectType = SubjectType.valueOf(parameters.get(ParameterName.SUBJECT_TYPE).toUpperCase());
+            String name = parameters.get(ParameterName.NAME).replaceAll("</?script>", "");
+            String surname = parameters.get(ParameterName.SURNAME).replaceAll("</?script>", "");
+            String email = parameters.get(ParameterName.EMAIL);
 
-        if (validator.checkParameters(login, password, email, phone)
-                && roleTypeOptional.isPresent()
-                && subjectTypeOptional.isPresent()) {
-
-            String hashedPassword = new PasswordCrypt().hashPassword(password);
+            String hashedPassword = new PasswordEncoder().hashPassword(parameters.get(ParameterName.PASSWORD));
             User user = new UserBuilder()
-                    .buildLogin(login)
+                    .buildLogin(parameters.get(ParameterName.LOGIN))
                     .buildName(name)
                     .buildSurname(surname)
                     .buildEmail(email)
-                    .buildPhone(Long.parseLong(phone))
-                    .buildSubjectType(subjectTypeOptional.get())
-                    .buildRoleType(roleTypeOptional.get())
+                    .buildPhone(Long.parseLong(parameters.get(ParameterName.PHONE)))
+                    .buildSubjectType(subjectType)
+                    .buildRoleType(roleType)
                     .buildUser();
             try {
-                isUserAdded = userDao.add(user, hashedPassword);
+                boolean isUserInBase = userDao.isUserInBase(user);
+                boolean isEmailInBase = userDao.isEmailInBase(email);
+
+                if (!isUserInBase && !isEmailInBase) {
+                    isUserAdded = userDao.add(user, hashedPassword);
+                }
+
+                if (isUserInBase) {
+                    parameters.replace(ParameterName.LOGIN, EXISTS);
+                }
+                if (isEmailInBase) {
+                    parameters.replace(ParameterName.EMAIL, EXISTS);
+                }
             } catch (DaoException e) {
                 throw new ServiceException("Program error of adding user. ", e);
             }
@@ -120,8 +137,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByLogin(String login) throws ServiceException  {
-        return Optional.empty();
+    public Optional<User> findByLogin(String login) throws ServiceException {
+        try {
+            return UserDaoImpl.getInstance().findByLogin(login);
+        } catch (DaoException e) {
+            throw new ServiceException("Program error. ", e);
+        }
     }
 
     @Override
@@ -129,22 +150,13 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-
-    private Optional<RoleType> getRoleType(String roleTypeInput) {
-        Optional<RoleType> roleTypeOptional = Arrays.stream(RoleType.values())
-                .filter(roleType -> roleType.toString()
-                        .equalsIgnoreCase(roleTypeInput.toUpperCase()))
-                .findFirst();
-
-        return roleTypeOptional;
-    }
-
-    private Optional<SubjectType> getSubjectType(String subjectTypeInput) {
-        Optional<SubjectType> subjectTypeOptional = Arrays.stream(SubjectType.values())
-                .filter(subjectType -> subjectType.toString()
-                        .equalsIgnoreCase(subjectTypeInput.toUpperCase()))
-                .findFirst();
-
-        return subjectTypeOptional;
+    @Override
+    public boolean activate(String login) throws ServiceException {
+        UserDao userDao = UserDaoImpl.getInstance();
+        try {
+            return userDao.activate(login);
+        } catch (DaoException e) {
+            throw new ServiceException("Program error of user's activation. ", e);
+        }
     }
 }

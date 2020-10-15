@@ -13,6 +13,7 @@ public class UserBuilder {
     private RoleType roleType;
     private SubjectType subjectType;
     private boolean blocked = false;
+    private boolean active = false;
 
     public String getLogin() {
         return login;
@@ -70,6 +71,20 @@ public class UserBuilder {
 
     public boolean isBlocked() {
         return blocked;
+    }
+
+    public UserBuilder buildBlocked(boolean blocked) {
+        this.blocked = blocked;
+        return this;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public UserBuilder buildActive(boolean active) {
+        this.active = active;
+        return this;
     }
 
     public RoleType getRoleType() {

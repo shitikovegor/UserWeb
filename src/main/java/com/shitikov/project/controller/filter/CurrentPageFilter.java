@@ -1,6 +1,6 @@
 package com.shitikov.project.controller.filter;
 
-import com.shitikov.project.controller.command.impl.ParameterName;
+import com.shitikov.project.util.ParameterName;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -39,7 +39,7 @@ public class CurrentPageFilter implements Filter {
             if (matcher.find()) {
                 path = matcher.group(0);
             } else {
-                path = ResourceBundle.getBundle("properties.config").getString("path.page.home");
+                path = ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.home");
             }
         }
         return path;

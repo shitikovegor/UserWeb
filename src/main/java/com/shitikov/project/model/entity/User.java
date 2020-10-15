@@ -13,6 +13,7 @@ public class User extends Entity {
     private RoleType roleType;
     private SubjectType subjectType;
     private boolean blocked;
+    private boolean active;
 
     public User(String login, String name, String surname, String email,
                 long phone, RoleType roleType, SubjectType subjectType) {
@@ -24,7 +25,9 @@ public class User extends Entity {
         this.roleType = roleType;
         this.subjectType = subjectType;
         this.blocked = false;
+        this.active = false;
     }
+    // TODO: 14.10.2020 is need to do constructor for class or need be only builder constructor?
 
     public User(UserBuilder builder) {
         this.login = builder.getLogin();
@@ -35,78 +38,79 @@ public class User extends Entity {
         this.roleType = builder.getRoleType();
         this.subjectType = builder.getSubjectType();
         this.blocked = builder.isBlocked();
+        this.active = builder.isActive();
     }
 
     public String getLogin() {
         return login;
     }
 
-    public User setLogin(String login) {
+    public void setLogin(String login) {
         this.login = login;
-        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public User setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     public String getSurname() {
         return surname;
     }
 
-    public User setSurname(String surname) {
+    public void setSurname(String surname) {
         this.surname = surname;
-        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public User setEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
-        return this;
     }
 
     public long getPhone() {
         return phone;
     }
 
-    public User setPhone(long phone) {
+    public void setPhone(long phone) {
         this.phone = phone;
-        return this;
-    }
-
-    public SubjectType getSubjectType() {
-        return subjectType;
-    }
-
-    public User setSubjectType(SubjectType subjectType) {
-        this.subjectType = subjectType;
-        return this;
-    }
-
-    public boolean isBlocked() {
-        return blocked;
-    }
-
-    public User setBlocked(boolean blocked) {
-        this.blocked = blocked;
-        return this;
     }
 
     public RoleType getRoleType() {
         return roleType;
     }
 
-    public User setRoleType(RoleType roleType) {
+    public void setRoleType(RoleType roleType) {
         this.roleType = roleType;
-        return this;
+    }
+
+    public SubjectType getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(SubjectType subjectType) {
+        this.subjectType = subjectType;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override
@@ -124,6 +128,9 @@ public class User extends Entity {
             return false;
         }
         if (blocked != other.blocked) {
+            return false;
+        }
+        if (active != other.active) {
             return false;
         }
         if (login != null ? !login.equals(other.login) : other.login != null) {
@@ -155,6 +162,7 @@ public class User extends Entity {
         result = prime * result + (roleType != null ? roleType.hashCode() : 0);
         result = prime * result + (subjectType != null ? subjectType.hashCode() : 0);
         result = prime * result + (blocked ? 1 : 0);
+        result = prime * result + (active ? 1 : 0);
         return result;
     }
 
@@ -169,6 +177,7 @@ public class User extends Entity {
         sb.append(", roleType=").append(roleType);
         sb.append(", subjectType=").append(subjectType);
         sb.append(", blocked=").append(blocked);
+        sb.append(", active=").append(active);
         sb.append('}');
         return sb.toString();
     }

@@ -216,3 +216,61 @@ html, body {
   background-color: #d1d3d6;
 }
 
+.clean-block.clean-services.dark {
+  background-color: rgb(255,255,255);
+}
+
+.container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+  padding-top: 15px;
+}
+
+.card.shadow {
+  margin-bottom: 16px;
+  max-width: 800px;
+  opacity: 1;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.car-number {
+}
+
+.car-div {
+  height: 31px;
+  padding-top: 4px;
+  width: 205px;
+}
+
+.form-row {
+}
+
+.card-body {
+  padding-bottom: 5px;
+  padding-top: 10px;
+}
+
+@media (min-width:992px) {
+  .col-lg-8 {
+    -ms-flex: 0 0 33.33333%;
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%;
+  }
+}
+
+@media (min-width:992px) {
+  .col-lg-4 {
+    -ms-flex: 0 0 66.66667%;
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%;
+  }
+}
+
+#accordion-1 {
+  max-width: 800px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.container.justify-content-center {
+}
+

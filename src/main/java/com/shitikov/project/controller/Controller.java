@@ -2,6 +2,7 @@ package com.shitikov.project.controller;
 
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.provider.CommandProvider;
+import com.shitikov.project.util.ParameterName;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -33,7 +34,7 @@ public class Controller extends HttpServlet {
         } else {
             request.getSession().setAttribute("nullPage", "Page is null");
             response.sendRedirect(request.getContextPath()
-                    + ResourceBundle.getBundle("properties.config").getString("path.page.home"));
+                    + ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.home"));
         }
     }
 }

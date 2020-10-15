@@ -30,7 +30,7 @@ public class ConnectionPool {
         givenAwayConnections = new ArrayDeque<>();
 
         Properties properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("properties.database");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/database.properties");
         try {
             properties.load(inputStream);
         } catch (IOException e) {
