@@ -2,8 +2,9 @@ package com.shitikov.project.model.entity.application;
 
 import com.shitikov.project.model.builder.AddressTimeDataBuilder;
 import com.shitikov.project.model.entity.Address;
+import com.shitikov.project.model.entity.Entity;
 
-public class AddressTimeData {
+public class AddressTimeData extends Entity {
     private long departureDate;
     private Address departureAddress;
     private int daysToComplete;

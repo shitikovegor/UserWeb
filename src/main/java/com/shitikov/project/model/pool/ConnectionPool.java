@@ -1,6 +1,5 @@
 package com.shitikov.project.model.pool;
 
-import com.shitikov.project.model.exception.PoolException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +24,7 @@ public class ConnectionPool {
     private BlockingQueue<ProxyConnection> freeConnections;
     private Queue<ProxyConnection> givenAwayConnections;
 
-    ConnectionPool() throws PoolException {
+    ConnectionPool() {
         freeConnections = new LinkedBlockingDeque<>(POOL_SIZE);
         givenAwayConnections = new ArrayDeque<>();
 
@@ -34,7 +33,8 @@ public class ConnectionPool {
         try {
             properties.load(inputStream);
         } catch (IOException e) {
-            throw new PoolException("Reading properties error. ", e);
+            throw new RuntimeException("Reading properties error.", e);
+//            throw new PoolException("Reading properties error. ", e); // TODO: 16.10.2020 need to do RuntimeException or not???
         }
 
         try {
@@ -44,19 +44,18 @@ public class ConnectionPool {
             throw new RuntimeException("Driver not found error.", e);
         }
 
-        for (int i = 0; i < POOL_SIZE; i++) {
-            try {
+        try {
+            for (int i = 0; i < POOL_SIZE; i++) {
                 freeConnections.offer(new ProxyConnection(DriverManager.getConnection(
                         properties.getProperty("url"), properties)));
-            } catch (SQLException e) {
-                logger.log(Level.ERROR, "Connection creating error.", e);
-//                throw new RuntimeException("Connection creating error", e); 
-// TODO: 23.09.2020  is need to throw exception?!
             }
+        } catch (SQLException e) {
+            logger.log(Level.ERROR, "Connection creating error.", e);
+            throw new RuntimeException("Connection creating error", e); // TODO: 23.09.2020  is need to throw exception?!
         }
     }
 
-    public static ConnectionPool getInstance() throws PoolException {
+    public static ConnectionPool getInstance() {
         if (!isInstanceCreated) {
             synchronized (ConnectionPool.class) {
                 if (!isInstanceCreated) {
@@ -79,33 +78,29 @@ public class ConnectionPool {
         return connection;
     }
 
-    public void releaseConnection(Connection connection) throws PoolException {
+    public void releaseConnection(Connection connection) {
         if (connection instanceof ProxyConnection && givenAwayConnections.remove(connection)) {
             freeConnections.offer((ProxyConnection) connection);
         } else {
-            throw new PoolException("Closing connection is incorrect.");
+            logger.log(Level.WARN, "Incorrect connection to release.");
         }
     }
 
-    public void destroyPool() throws PoolException {
-        for (int i = 0; i < POOL_SIZE; i++) {
-            try {
-                freeConnections.take().reallyClose();
-            } catch (SQLException | InterruptedException e) {
-                throw new PoolException("Pool destroy error. ", e);
-            }
-        }
-        deregisterDrivers();
-    }
-
-    private void deregisterDrivers() throws PoolException {
+    public void destroyPool() {
         try {
-            while (DriverManager.getDrivers().hasMoreElements()) {
-                Driver driver = DriverManager.getDrivers().nextElement();
-                DriverManager.deregisterDriver(driver);
+            for (int i = 0; i < POOL_SIZE; i++) {
+                freeConnections.take().reallyClose();
             }
-        } catch (SQLException e) {
-            throw new PoolException("Error in time of deregister driver", e);
+            deregisterDrivers();
+        } catch (SQLException | InterruptedException e) {
+            logger.log(Level.ERROR, "Pool destroy error. ", e);
+        }
+    }
+
+    private void deregisterDrivers() throws SQLException {
+        while (DriverManager.getDrivers().hasMoreElements()) {
+            Driver driver = DriverManager.getDrivers().nextElement();
+            DriverManager.deregisterDriver(driver);
         }
     }
 }

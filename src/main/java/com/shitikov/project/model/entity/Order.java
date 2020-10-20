@@ -4,7 +4,7 @@ import com.shitikov.project.model.builder.OrderBuilder;
 import com.shitikov.project.model.entity.application.Application;
 import com.shitikov.project.model.entity.type.OrderStatus;
 
-public class Order {
+public class Order extends Entity {
     private Application application;
     private Car car;
     private OrderStatus status;

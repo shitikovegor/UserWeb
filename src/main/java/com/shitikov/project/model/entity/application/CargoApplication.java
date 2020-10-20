@@ -5,14 +5,14 @@ import com.shitikov.project.model.builder.CargoApplicationBuilder;
 public class CargoApplication extends Application {
     private double cargoWeight;
     private double cargoVolume;
-//
-//    public CargoApplication(String title, ApplicationType applicationType, long date
-//            , AddressTimeData addressTimeData, String description
-//            , double cargoWeight, double cargoVolume) {
-//        super(title, applicationType, date, addressTimeData, description);
-//        this.cargoWeight = cargoWeight;
-//        this.cargoVolume = cargoVolume;
-//    }
+
+    public CargoApplication(String title, ApplicationType applicationType, long date
+            , AddressTimeData addressTimeData, String description
+            , double cargoWeight, double cargoVolume) {
+        super(title, applicationType, date, addressTimeData, description);
+        this.cargoWeight = cargoWeight;
+        this.cargoVolume = cargoVolume;
+    }
 
     public CargoApplication(CargoApplicationBuilder builder) {
         super(builder);

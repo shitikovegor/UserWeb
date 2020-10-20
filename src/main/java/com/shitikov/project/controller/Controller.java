@@ -1,7 +1,8 @@
 package com.shitikov.project.controller;
 
 import com.shitikov.project.controller.command.Command;
-import com.shitikov.project.controller.command.provider.CommandProvider;
+import com.shitikov.project.controller.command.CommandProvider;
+import com.shitikov.project.model.pool.ConnectionPool;
 import com.shitikov.project.util.ParameterName;
 
 import javax.servlet.RequestDispatcher;
@@ -36,6 +37,12 @@ public class Controller extends HttpServlet {
             response.sendRedirect(request.getContextPath()
                     + ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.home"));
         }
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        ConnectionPool.getInstance().destroyPool();
     }
 }
 

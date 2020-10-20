@@ -2,7 +2,7 @@ package com.shitikov.project.model.entity;
 
 import com.shitikov.project.model.builder.AddressBuilder;
 
-public class Address {
+public class Address extends Entity {
     private String city;
     private String streetHome;
 

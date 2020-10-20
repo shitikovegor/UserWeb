@@ -49,7 +49,8 @@ public class LoginCommand implements Command {
                     Properties properties = new Properties();
                     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/mail.properties");
                     properties.load(inputStream);
-                    String emailBody = String.format(ParameterName.EMAIL_BODY, request.getParameter(ParameterName.LOGIN));
+                    String emailBody = String.format(ParameterName.EMAIL_BODY,
+                            request.getRequestURL(), request.getParameter(ParameterName.LOGIN));
                     MailSender sender = new MailSender(user.getEmail()
                             , EMAIL_SUBJECT, emailBody, properties);
                     sender.send();

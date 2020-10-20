@@ -5,44 +5,51 @@ import java.util.Map;
 import static com.shitikov.project.util.ParameterName.*;
 
 public class UserValidator {
-    private static UserValidator instance;
-//    public static final String LOGIN = "login";
-//    public static final String PASSWORD = "password";
-//    public static final String NAME = "name";
-//    public static final String SURNAME = "surname";
-//    public static final String EMAIL = "email";
-//    public static final String PHONE = "phone";
-// TODO: 09.10.2020 Can use parameterName or create new fields?
     private static final String LOGIN_PATTERN = "^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]{4,20}";
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{6,20}$";
     private static final String NAME_SURNAME_PATTERN = "[\\p{L}\\s-]{1,50}";
     private static final String EMAIL_PATTERN
             = "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,100})";
     private static final String PHONE_PATTERN = "^\\+?\\d{12}";
+    private static final String ADDRESS_PATTERN = "[\\p{L}\\p{Digit}\\s\\-,]{1,150}";
+    private static final String CITY_PATTERN = "[\\p{L}\\s-\\p{Digit}]{1,50}";
 
     private UserValidator() {
     }
 
-    public static UserValidator getInstance() {
-        if (instance == null) {
-            instance = new UserValidator();
-        }
-        return instance;
-    }
-
-    public boolean checkLogin(String login) {
+    public static boolean checkLogin(String login) {
         return login.matches(LOGIN_PATTERN);
     }
 
-    public boolean checkPassword(String password) {
+    public static boolean checkPassword(String password) {
         return password.matches(PASSWORD_PATTERN);
     }
 
-    public boolean checkParameter(String parameter, String pattern) {
-        return parameter.matches(pattern);
+    public static boolean checkName(String name) {
+        return name.matches(NAME_SURNAME_PATTERN);
     }
 
-    public boolean checkParameters(Map<String, String> parameters) {
+    public static boolean checkSurname(String surname) {
+        return surname.matches(NAME_SURNAME_PATTERN);
+    }
+
+    public static boolean checkEmail(String email) {
+        return email.matches(EMAIL_PATTERN);
+    }
+
+    public static boolean checkPhone(String phone) {
+        return phone.matches(PHONE_PATTERN);
+    }
+
+    public static boolean checkAddress(String address) {
+        return address.matches(ADDRESS_PATTERN);
+    }
+
+    public static boolean checkCity(String city) {
+        return city.matches(CITY_PATTERN);
+    }
+
+    public static boolean checkParameters(Map<String, String> parameters) {
         boolean areParametersCorrect = true;
 
         if (!checkLogin(parameters.get(LOGIN))) {
@@ -53,19 +60,19 @@ public class UserValidator {
             areParametersCorrect = false;
             parameters.replace(PASSWORD, "");
         }
-        if (!checkParameter(parameters.get(NAME), NAME_SURNAME_PATTERN)) {
+        if (!checkName(parameters.get(NAME))) {
             areParametersCorrect = false;
             parameters.replace(NAME, "");
         }
-        if (!checkParameter(parameters.get(SURNAME), NAME_SURNAME_PATTERN)) {
+        if (!checkSurname(parameters.get(SURNAME))) {
             areParametersCorrect = false;
             parameters.replace(SURNAME, "");
         }
-        if (!checkParameter(parameters.get(EMAIL), EMAIL_PATTERN)) {
+        if (!checkEmail(parameters.get(EMAIL))) {
             areParametersCorrect = false;
             parameters.replace(EMAIL, "");
         }
-        if (!checkParameter(parameters.get(PHONE), PHONE_PATTERN)) {
+        if (!checkPhone(parameters.get(PHONE))) {
             areParametersCorrect = false;
             parameters.replace(PHONE, "");
         }

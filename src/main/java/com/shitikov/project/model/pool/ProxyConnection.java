@@ -1,12 +1,9 @@
 package com.shitikov.project.model.pool;
 
-import com.shitikov.project.model.exception.PoolException;
-
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
 
 public class ProxyConnection implements Connection {
     private Connection connection;
@@ -57,11 +54,7 @@ public class ProxyConnection implements Connection {
 
     @Override
     public void close() throws SQLException {
-        try {
-            ConnectionPool.getInstance().releaseConnection(this);
-        } catch (PoolException e) {
-            // TODO: 01.09.2020 log
-        }
+        ConnectionPool.getInstance().releaseConnection(this);
     }
 
     void reallyClose() throws SQLException {

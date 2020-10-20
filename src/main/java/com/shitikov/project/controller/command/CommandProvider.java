@@ -1,6 +1,5 @@
-package com.shitikov.project.controller.command.provider;
+package com.shitikov.project.controller.command;
 
-import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.type.CommandType;
 
 import javax.servlet.http.HttpServletRequest;

@@ -17,14 +17,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import static com.shitikov.project.controller.command.AttributeName.*;
+
 
 public class RegistrationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
     private static final String EXISTS = "exists";
-    private static final String LOGIN_EXISTS_ATTRIBUTE = "loginExists";
-    private static final String EMAIL_EXISTS_ATTRIBUTE = "emailExists";
+    private static final String ATTRIBUTE_SUBSTRING_INVALID = "_invalid";
     private static final String EMAIL_SUBJECT = "HelpByCar. Activate your account"; // TODO: 09.10.2020 from properties
+    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
     @Override
     public String execute(HttpServletRequest request) {
@@ -47,18 +48,19 @@ public class RegistrationCommand implements Command {
                 Properties properties = new Properties();
                 InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/mail.properties");
                 properties.load(inputStream);
-                String emailBody = String.format(ParameterName.EMAIL_BODY, request.getParameter(ParameterName.LOGIN));
+                String emailBody = String.format(ParameterName.EMAIL_BODY,
+                        request.getRequestURL(), request.getParameter(ParameterName.LOGIN));
                 MailSender sender = new MailSender(request.getParameter(ParameterName.EMAIL)
                         , EMAIL_SUBJECT, emailBody, properties);
                 sender.send();
                 page = resourceBundle.getString("path.page.activation");
             } else {
                 if (parameters.get(ParameterName.LOGIN).equals(EXISTS)) {
-                    request.setAttribute(LOGIN_EXISTS_ATTRIBUTE, true);
+                    request.setAttribute(LOGIN_EXISTS, true);
                     parameters.remove(ParameterName.LOGIN);
                 }
                 if (parameters.get(ParameterName.EMAIL).equals(EXISTS)) {
-                    request.setAttribute(EMAIL_EXISTS_ATTRIBUTE, true);
+                    request.setAttribute(EMAIL_EXISTS, true);
                     parameters.remove(ParameterName.EMAIL);
                 }
                 parameters.remove(ParameterName.PASSWORD);
@@ -66,7 +68,7 @@ public class RegistrationCommand implements Command {
                     if (!entry.getValue().isEmpty()) {
                         request.setAttribute(entry.getKey(), entry.getValue());
                     } else {
-                        request.setAttribute(entry.getKey().concat("Error"), true);
+                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
                 page = resourceBundle.getString("path.page.registration");

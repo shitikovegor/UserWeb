@@ -1,4 +1,4 @@
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <fmt:setBundle basename="properties.pagecontent"/>
@@ -20,10 +20,10 @@
                            value="${login}"
                            title="<fmt:message key="page.registration.required.login"/>">
                     <small class="text-danger">
-                        <c:if test="${loginExists}">
+                        <c:if test="${login_exists}">
                             <fmt:message key="page.registration.error.loginExists"/>
                         </c:if>
-                        <c:if test="${loginError}">
+                        <c:if test="${login_invalid}">
                             <fmt:message key="page.registration.required.login"/>
                         </c:if>
                     </small>
@@ -37,7 +37,7 @@
                            value="${password}"
                            title="<fmt:message key="page.registration.required.password"/>">
                     <small class="text-danger">
-                        <c:if test="${passwordError}">
+                        <c:if test="${password_invalid}">
                             <fmt:message key="page.registration.required.password"/>
                         </c:if>
                     </small>
@@ -47,10 +47,10 @@
                     <input class="form-control item" type="email" id="email" required="" name="email"
                            value="${email}">
                     <small class="text-danger">
-                        <c:if test="${emailError}">
+                        <c:if test="${email_invalid}">
                             <fmt:message key="page.registration.error.email"/>
                         </c:if>
-                        <c:if test="${emailExists}">
+                        <c:if test="${email_exists}">
                             <fmt:message key="page.registration.error.emailExists"/>
                         </c:if>
                     </small>
@@ -83,7 +83,7 @@
                            pattern="[\p{L}\s-]{1,50}" minlength="1" maxlength="50"
                            value="${name}">
                     <small class="text-danger">
-                        <c:if test="${nameError}">
+                        <c:if test="${name_invalid}">
                             <fmt:message key="page.registration.error.name"/>
                         </c:if>
                     </small>
@@ -94,7 +94,7 @@
                            pattern="[\p{L}\s-]{1,50}" minlength="1" maxlength="50"
                            value="${surname}">
                     <small class="text-danger">
-                        <c:if test="${surnameError}">
+                        <c:if test="${surname_invalid}">
                             <fmt:message key="page.registration.error.surname"/>
                         </c:if>
                     </small>
@@ -108,7 +108,7 @@
                            value="${phone}"
                            title="<fmt:message key="page.registration.required.phone"/>">
                     <small class="text-danger">
-                        <c:if test="${phoneError}">
+                        <c:if test="${phone_invalid}">
                             <fmt:message key="page.registration.required.phone"/>
                         </c:if>
                     </small>
@@ -142,31 +142,3 @@
         </div>
     </section>
 </main>
-
-
-<%--<html>--%>
-<%--<meta charset="UTF-8">--%>
-<%--<head>--%>
-<%--    <title>Login</title>--%>
-<%--</head>--%>
-<%--<body>--%>
-<%--<h2>Application</h2>--%>
-<%--<FORM name="registrationForm" action="controller" method="POST">--%>
-<%--    <h4>Registration</h4>--%>
-<%--    <input type="hidden" name="command" value="registration" />--%>
-<%--    <br/>Enter login (Latin characters, digits or -, _, .):<br/>--%>
-<%--    <input type="text" name="login" value=""/>--%>
-<%--    <br/>Enter password (Must contain 1 or more upper and lower character, digit):<br/>--%>
-<%--    <input type="password" name="password" value=""/>--%>
-<%--    <br/>--%>
-<%--    ${errorLoginPassMessage}--%>
-<%--    <br/>--%>
-<%--&lt;%&ndash;    ${wrongAction}&ndash;%&gt;--%>
-<%--&lt;%&ndash;    <br/>&ndash;%&gt;--%>
-<%--&lt;%&ndash;    ${nullPage}&ndash;%&gt;--%>
-<%--&lt;%&ndash;    <br/>&ndash;%&gt;--%>
-<%--    <input type="submit" value="Registration"/>--%>
-<%--</FORM>--%>
-<%--<input type=button value="Back" onCLick="history.back()">--%>
-<%--</body>--%>
-<%--</html>--%>
