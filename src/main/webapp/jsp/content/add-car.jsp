@@ -15,7 +15,7 @@
                     <label for="car_number"><fmt:message key="page.addCar.carNumber"/></label>
                     <input class="form-control car_number" type="text" id="car_number"
                            pattern="\d{4}\p{Alpha}{2}[1-7]" minlength="7" maxlength="7"
-                           name="car_number" title="Car number must be in format 1111AA1" required=""
+                           name="car_number" title="" required="<fmt:message key="page.addCar.required.carNumber"/>"
                            value="${car_number}">
                     <small class="text-danger">
                         <c:if test="${number_exists}">
@@ -42,6 +42,9 @@
                            placeholder="0" name="passengers_number" value="${passengers_number}">
                 </div>
                 <button class="btn btn-primary btn-block" type="submit"><fmt:message key="page.addCar.title"/></button>
+                <c:if test="${adding_error}">
+                    <p class="text-center text-danger"><fmt:message key="page.addCar.error"/></p>
+                </c:if>
             </form>
         </div>
     </section>

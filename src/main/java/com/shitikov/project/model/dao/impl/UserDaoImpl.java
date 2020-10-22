@@ -40,22 +40,15 @@ public class UserDaoImpl implements UserDao {
             "SELECT address, city FROM addresses INNER JOIN users ON addresses.user_id_fk = users.user_id WHERE users.login = ?";
     private static UserDaoImpl instance;
 
-    private UserDaoImpl() {
-    }
-
-    public static UserDaoImpl getInstance() {
-        if (instance == null) {
-            instance = new UserDaoImpl();
-        }
-        return instance;
+    public UserDaoImpl() {
     }
 
     @Override
     public boolean add(User user, String password) throws DaoException {
-        boolean isUserAdded = false;
         if (user == null) {
             throw new DaoException("User is null.");
         }
+        boolean isUserAdded = false;
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_USER)) {
 
@@ -158,6 +151,7 @@ public class UserDaoImpl implements UserDao {
         Address address = null;
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_ADDRESS_BY_LOGIN)) {
+
             statement.setString(1, login);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -201,19 +195,19 @@ public class UserDaoImpl implements UserDao {
         if (login == null) {
             throw new DaoException("Login is null.");
         }
-        boolean isloginExists;
+        boolean isloginInBase;
 
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHECK_BY_LOGIN)) {
 
             statement.setString(1, login);
             try (ResultSet resultSet = statement.executeQuery()) {
-                isloginExists = resultSet.next();
+                isloginInBase = resultSet.next();
             }
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return isloginExists;
+        return isloginInBase;
     }
 
     @Override
@@ -285,14 +279,7 @@ public class UserDaoImpl implements UserDao {
         if (login == null || parameters == null) {
             throw new DaoException("Incorrect data. ");
         }
-        StringBuilder parametersSQL = new StringBuilder();
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            parametersSQL.append(entry.getKey())
-                    .append(" = \"")
-                    .append(entry.getValue())
-                    .append("\", ");
-        }
-        parametersSQL.delete(parametersSQL.lastIndexOf(","), parametersSQL.length());
+        String parametersSQL = fillParametersSQL(parameters);
         String sqlRequest = String.format(SQL_UPDATE_PARAMETERS, parametersSQL);
 
         try (Connection connection = ConnectionPool.getInstance().getConnection();
@@ -313,14 +300,7 @@ public class UserDaoImpl implements UserDao {
         if (login == null || parameters == null) {
             throw new DaoException("Incorrect data. ");
         }
-        StringBuilder parametersSQL = new StringBuilder();
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            parametersSQL.append(entry.getKey())
-                    .append(" = \"")
-                    .append(entry.getValue())
-                    .append("\", ");
-        }
-        parametersSQL.delete(parametersSQL.lastIndexOf(","), parametersSQL.length());
+        String parametersSQL = fillParametersSQL(parameters);
         String sqlRequest = String.format(SQL_UPDATE_ADDRESS, parametersSQL);
 
         try (Connection connection = ConnectionPool.getInstance().getConnection();
@@ -391,5 +371,18 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Connection error. ", e);
         }
         return isActivated;
+    }
+
+    private String fillParametersSQL(Map<String, String> parameters) {
+
+        StringBuilder parametersSQL = new StringBuilder();
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            parametersSQL.append(entry.getKey())
+                    .append(" = \"")
+                    .append(entry.getValue())
+                    .append("\", ");
+        }
+        parametersSQL.delete(parametersSQL.lastIndexOf(","), parametersSQL.length());
+        return parametersSQL.toString();
     }
 }

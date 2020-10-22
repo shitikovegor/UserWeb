@@ -26,5 +26,6 @@
 <script src="${pageContext.request.contextPath}assets/js/smoothproducts.min.js"></script>
 <script src="${pageContext.request.contextPath}assets/js/theme.js"></script>
 <script src="${pageContext.request.contextPath}assets/js/footer.js"></script>
+<script src="${pageContext.request.contextPath}assets/js/toggleSet.js"></script>
 </body>
 </html>

@@ -11,6 +11,7 @@ public class AttributeName {
     public static final String CITY_INVALID = "city_invalid";
     public static final String PHONE_INVALID = "phone_invalid";
     public static final String PASSWORD_INVALID = "password_invalid";
+
     public static final String NEW_PASSWORD_INVALID = "new_password_invalid";
     public static final String LOGIN_UPDATED = "login_updated";
     public static final String NAME_UPDATED = "name_updated";
@@ -22,9 +23,7 @@ public class AttributeName {
     public static final String PASSWORD_UPDATED = "password_updated";
     public static final String SHOW_ACCORDION = "show_accordion";
 
-    public static final String NUMBER_EXISTS = "number_exists";
-    public static final String NUMBER_INVALID = "number_invalid";
-
+    public static final String ADDING_ERROR = "adding_error";
 
     private AttributeName() {
     }

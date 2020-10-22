@@ -1,4 +1,4 @@
-package com.shitikov.project.controller.command.impl.open.page;
+package com.shitikov.project.controller.command.impl.page;
 
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.Address;

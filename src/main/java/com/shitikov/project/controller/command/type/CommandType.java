@@ -3,6 +3,7 @@ package com.shitikov.project.controller.command.type;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.impl.*;
 import com.shitikov.project.controller.command.impl.open.page.*;
+import com.shitikov.project.controller.command.impl.page.*;
 
 public enum CommandType {
     LOGIN(new LoginCommand()),
@@ -20,7 +21,8 @@ public enum CommandType {
     REGISTRATION_PAGE(new RegistrationPageCommand()),
     LOGIN_PAGE(new LoginPageCommand()),
     ACCOUNT_PAGE(new AccountPageCommand()),
-    ADD_CAR_PAGE(new AddCarPageCommand());
+    ADD_CAR_PAGE(new AddCarPageCommand()),
+    ADD_APPLICATION_PAGE(new AddApplicationPageCommand());
 
 
     private Command command;

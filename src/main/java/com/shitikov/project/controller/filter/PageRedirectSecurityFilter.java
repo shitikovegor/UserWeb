@@ -12,8 +12,8 @@ import java.io.IOException;
 public class PageRedirectSecurityFilter implements Filter {
     private String indexPath;
 
-    public void init(FilterConfig fConfig) throws ServletException {
-        indexPath = fConfig.getInitParameter("INDEX");
+    public void init(FilterConfig config) throws ServletException {
+        indexPath = config.getInitParameter("INDEX");
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,

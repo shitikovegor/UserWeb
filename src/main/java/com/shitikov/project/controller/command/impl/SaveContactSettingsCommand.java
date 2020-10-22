@@ -34,9 +34,9 @@ public class SaveContactSettingsCommand implements Command {
     public String execute(HttpServletRequest request) throws IOException, ServletException {
         UserService service = UserServiceImpl.getInstance();
         String page;
-        String streetHomeToChange = request.getParameter(ParameterName.ADDRESS);
-        String cityToChange = request.getParameter(ParameterName.CITY);
-        String phoneToChange = request.getParameter(ParameterName.PHONE);
+        String streetHomeToChange = request.getParameter(ParameterName.ADDRESS).replaceAll("</?script>", "");
+        String cityToChange = request.getParameter(ParameterName.CITY).replaceAll("</?script>", "");
+        String phoneToChange = request.getParameter(ParameterName.PHONE).replaceAll("</?script>", "");
 
         try {
             HttpSession session = request.getSession();

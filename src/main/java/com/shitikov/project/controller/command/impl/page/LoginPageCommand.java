@@ -1,4 +1,4 @@
-package com.shitikov.project.controller.command.impl.open.page;
+package com.shitikov.project.controller.command.impl.page;
 
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.util.ParameterName;
@@ -7,11 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ResourceBundle;
 
 
-public class HomePageCommand implements Command {
+public class LoginPageCommand implements Command {
 
     @Override
     public String execute(HttpServletRequest request) {
-        return ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.home");
+        return ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.login");
     }
 }
 

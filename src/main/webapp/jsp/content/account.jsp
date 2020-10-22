@@ -29,6 +29,9 @@
                             <p style="margin-bottom: 5px;"><strong>${application.name}</strong>
                                 <span class="float-right"><strong>${application.status}</strong></span></p>
                             <p style="margin-bottom: 5px;">${application.address}, ${application.date}
+                                <a class="float-right" href="controller?command=remove-application"
+                                   style="padding-left: 20px;">
+                                    <fmt:message key="page.account.remove"/></a>
                                 <a class="float-right" href="controller?command=edit-application"><fmt:message
                                         key="page.account.edit"/></a></p>
                         </div>
@@ -50,9 +53,11 @@
                     <c:forEach var="car" items="${cars}">
                         <div>
                             <p style="margin-bottom: 5px;"><strong>${car.getNumber()}</strong></p>
-                            <p style="margin-bottom: 5px;">${car.getCarryng()}, ${car.getPassengers()}
-                                <a class="float-right" href="controller?command=edit-car"><fmt:message
-                                        key="page.account.edit"/></a></p>
+                            <p style="margin-bottom: 5px;">${car.getCarrying()}, ${car.getPassengers()}
+                                <a class="float-right" href="controller?command=remove-car" style="padding-left: 20px;">
+                                    <fmt:message key="page.account.remove"/></a>
+                                <a class="float-right" href="controller?command=edit-car">
+                                    <fmt:message key="page.account.edit"/></a></p>
                         </div>
                     </c:forEach>
                     <form class="form-group" action="controller" method="post">
@@ -93,20 +98,20 @@
                                         </div>
                                         <c:choose>
                                             <c:when test="${login_exists}">
-                                                <small class="text-danger">
+                                                <sup class="text-danger">
                                                     <fmt:message key="page.registration.error.loginExists"/>
-                                                </small>
+                                                </sup>
                                             </c:when>
                                             <c:when test="${login_invalid}">
-                                                <small class="text-danger">
+                                                <sup class="text-danger">
                                                     <fmt:message key="page.registration.required.login"/>
-                                                </small>
+                                                </sup>
                                             </c:when>
                                         </c:choose>
                                         <c:if test="${login_updated}">
-                                            <small class="text-success">
+                                            <sup class="text-success">
                                                 <fmt:message key="page.account.fieldUpdated"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                     <div class="col">
@@ -118,20 +123,20 @@
                                         </div>
                                         <c:choose>
                                             <c:when test="${email_exists}">
-                                                <small class="text-danger">
+                                                <sup class="text-danger">
                                                     <fmt:message key="page.registration.error.emailExists"/>
-                                                </small>
+                                                </sup>
                                             </c:when>
                                             <c:when test="${email_invalid}">
-                                                <small class="text-danger">
+                                                <sup class="text-danger">
                                                     <fmt:message key="page.registration.error.email"/>
-                                                </small>
+                                                </sup>
                                             </c:when>
                                         </c:choose>
                                         <c:if test="${email_updated}">
-                                            <small class="text-success">
+                                            <sup class="text-success">
                                                 <fmt:message key="page.account.fieldUpdated"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                 </div>
@@ -145,14 +150,14 @@
                                                    pattern="[\p{L}\s-]{1,50}" minlength="1" maxlength="50">
                                         </div>
                                         <c:if test="${name_invalid}">
-                                            <small class="text-danger">
+                                            <sup class="text-danger">
                                                 <fmt:message key="page.registration.error.name"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                         <c:if test="${name_updated}">
-                                            <small class="text-success">
+                                            <sup class="text-success">
                                                 <fmt:message key="page.account.fieldUpdated"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                     <div class="col">
@@ -164,14 +169,14 @@
                                                    pattern="[\p{L}\s-]{1,50}" minlength="1" maxlength="50">
                                         </div>
                                         <c:if test="${surname_invalid}">
-                                            <small class="text-danger">
+                                            <sup class="text-danger">
                                                 <fmt:message key="page.registration.error.surname"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                         <c:if test="${surname_updated}">
-                                            <small class="text-success">
+                                            <sup class="text-success">
                                                 <fmt:message key="page.account.fieldUpdated"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                 </div>
@@ -200,14 +205,14 @@
                                     </c:if>>
                                 </div>
                                 <c:if test="${address_invalid}">
-                                    <small class="text-danger">
+                                    <sup class="text-danger">
                                         <fmt:message key="page.account.error.address"/>
-                                    </small>
+                                    </sup>
                                 </c:if>
                                 <c:if test="${address_updated}">
-                                    <small class="text-success">
+                                    <sup class="text-success">
                                         <fmt:message key="page.account.addressUpdated"/>
-                                    </small>
+                                    </sup>
                                 </c:if>
                                 <div class="form-row">
                                     <div class="col">
@@ -221,14 +226,14 @@
                                             </c:if>>
                                         </div>
                                         <c:if test="${city_invalid}">
-                                            <small class="text-danger">
+                                            <sup class="text-danger">
                                                 <fmt:message key="page.account.error.city"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                         <c:if test="${city_updated}">
-                                            <small class="text-success">
+                                            <sup class="text-success">
                                                 <fmt:message key="page.account.cityUpdated"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                     <div class="col">
@@ -241,21 +246,21 @@
                                                    pattern="^\+?\d{12}" minlength="12" maxlength="13">
                                         </div>
                                         <c:if test="${phone_invalid}">
-                                            <small class="text-danger">
+                                            <sup class="text-danger">
                                                 <fmt:message key="page.registration.required.phone"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                         <c:if test="${phone_updated}">
-                                            <small class="text-success">
+                                            <sup class="text-success">
                                                 <fmt:message key="page.account.fieldUpdated"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                 </div>
                                 <c:if test="${contact_updated}">
-                                    <small class="text-success">
+                                    <sup class="text-success">
                                         <fmt:message key="page.account.addressUpdated"/>
-                                    </small>
+                                    </sup>
                                 </c:if>
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-sm" type="submit"><fmt:message
@@ -283,14 +288,14 @@
                                                    name="password">
                                         </div>
                                         <c:if test="${password_invalid}">
-                                            <small class="text-danger">
+                                            <sup class="text-danger">
                                                 <fmt:message key="page.account.error.password"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                         <c:if test="${password_updated}">
-                                            <small class="text-success">
+                                            <sup class="text-success">
                                                 <fmt:message key="page.account.passwordUpdated"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                     <div class="col">
@@ -303,9 +308,9 @@
                                                    name="new_password">
                                         </div>
                                         <c:if test="${new_password_invalid}">
-                                            <small class="text-danger">
+                                            <sup class="text-danger">
                                                 <fmt:message key="page.registration.error.name"/>
-                                            </small>
+                                            </sup>
                                         </c:if>
                                     </div>
                                 </div>
