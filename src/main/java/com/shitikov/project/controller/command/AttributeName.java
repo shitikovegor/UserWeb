@@ -20,10 +20,15 @@ public class AttributeName {
     public static final String ADDRESS_UPDATED = "address_updated";
     public static final String CITY_UPDATED = "city_updated";
     public static final String PHONE_UPDATED = "phone_updated";
+    public static final String CONTACT_UPDATED = "contact_updated";
     public static final String PASSWORD_UPDATED = "password_updated";
     public static final String SHOW_ACCORDION = "show_accordion";
 
-    public static final String ADDING_ERROR = "adding_error";
+    public static final String ADD_ERROR = "adding_error";
+    public static final String REMOVE_ERROR = "remove_error";
+    public static final String DATA_INVALID = "data_invalid";
+    public static final String CARS = "cars";
+    public static final String EDIT_CAR = "edit_car";
 
     private AttributeName() {
     }

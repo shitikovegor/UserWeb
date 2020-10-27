@@ -4,14 +4,16 @@ import com.shitikov.project.model.builder.ApplicationBuilder;
 import com.shitikov.project.model.entity.Entity;
 
 public abstract class Application extends Entity {
+    private long applicationId;
     private String title;
     private ApplicationType applicationType;
     private long date;
     private AddressTimeData addressTimeData;
     private String description;
 
-    public Application(String title, ApplicationType applicationType
+    public Application(long applicationId, String title, ApplicationType applicationType
             , long date, AddressTimeData addressTimeData, String description) {
+        this.applicationId = applicationId;
         this.title = title;
         this.applicationType = applicationType;
         this.date = date;
@@ -20,6 +22,7 @@ public abstract class Application extends Entity {
     }
 
     protected Application(ApplicationBuilder builder) {
+        this.applicationId = builder.getApplicationId();
         this.title = builder.getTitle();
         this.applicationType = builder.getApplicationType();
         this.date = builder.getDate();
@@ -27,7 +30,12 @@ public abstract class Application extends Entity {
         this.description = builder.getDescription();
     }
 
-    protected Application() {
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
     }
 
     public String getTitle() {
@@ -81,6 +89,10 @@ public abstract class Application extends Entity {
 
         Application other = (Application) obj;
 
+        if (applicationId != other.applicationId) {
+            return false;
+        }
+
         if (date != other.date) {
             return false;
         }
@@ -98,7 +110,8 @@ public abstract class Application extends Entity {
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
+        int result = (int) (applicationId ^ (applicationId >>> 32));
+        result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (applicationType != null ? applicationType.hashCode() : 0);
         result = 31 * result + (int) (date ^ (date >>> 32));
         result = 31 * result + (addressTimeData != null ? addressTimeData.hashCode() : 0);
@@ -108,11 +121,12 @@ public abstract class Application extends Entity {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("title='").append(title).append('\'');
+        final StringBuilder sb = new StringBuilder("Application{");
+        sb.append("applicationId=").append(applicationId);
+        sb.append(", title='").append(title).append('\'');
         sb.append(", applicationType=").append(applicationType);
         sb.append(", date=").append(date);
-        sb.append(", applicationAddress=").append(addressTimeData);
+        sb.append(", addressTimeData=").append(addressTimeData);
         sb.append(", description='").append(description).append('\'');
         sb.append('}');
         return sb.toString();

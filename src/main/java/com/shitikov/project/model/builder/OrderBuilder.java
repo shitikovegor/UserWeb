@@ -1,31 +1,29 @@
 package com.shitikov.project.model.builder;
 
-import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.Order;
-import com.shitikov.project.model.entity.application.Application;
 import com.shitikov.project.model.entity.type.OrderStatus;
 
 public class OrderBuilder {
-    private Application application;
-    private Car car;
+    private long applicationId;
+    private long carId;
     private OrderStatus status;
     private long arrivalDate;
 
-    public Application getApplication() {
-        return application;
+    public long getApplicationId() {
+        return applicationId;
     }
 
-    public OrderBuilder buildApplication(Application application) {
-        this.application = application;
+    public OrderBuilder buildApplicationId(long application) {
+        this.applicationId = application;
         return this;
     }
 
-    public Car getCar() {
-        return car;
+    public long getCarId() {
+        return carId;
     }
 
-    public OrderBuilder buildCar(Car car) {
-        this.car = car;
+    public OrderBuilder buildCarId(long carId) {
+        this.carId = carId;
         return this;
     }
 

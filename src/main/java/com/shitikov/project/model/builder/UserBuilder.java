@@ -5,6 +5,7 @@ import com.shitikov.project.model.entity.type.SubjectType;
 import com.shitikov.project.model.entity.User;
 
 public class UserBuilder {
+    private long userId;
     private String login;
     private String name;
     private String surname;
@@ -14,6 +15,15 @@ public class UserBuilder {
     private SubjectType subjectType;
     private boolean blocked = false;
     private boolean active = false;
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public UserBuilder buildUserId(long userId) {
+        this.userId = userId;
+        return this;
+    }
 
     public String getLogin() {
         return login;

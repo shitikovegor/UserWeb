@@ -6,7 +6,7 @@ import com.shitikov.project.model.entity.application.AddressTimeData;
 public class AddressTimeDataBuilder {
     private long departureDate;
     private Address departureAddress;
-    private int daysToComplete;
+    private long arrivalDate;
     private Address arrivalAddress;
 
     public long getDepartureDate() {
@@ -27,12 +27,12 @@ public class AddressTimeDataBuilder {
         return this;
     }
 
-    public int getDaysToComplete() {
-        return daysToComplete;
+    public long getArrivalDate() {
+        return arrivalDate;
     }
 
-    public AddressTimeDataBuilder buildDaysToComplete(int daysToComplete) {
-        this.daysToComplete = daysToComplete;
+    public AddressTimeDataBuilder buildArrivalDate(long arrivalDate) {
+        this.arrivalDate = arrivalDate;
         return this;
     }
 

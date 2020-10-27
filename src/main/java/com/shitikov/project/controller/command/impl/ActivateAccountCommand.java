@@ -1,5 +1,6 @@
 package com.shitikov.project.controller.command.impl;
 
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
@@ -24,9 +25,9 @@ public class ActivateAccountCommand implements Command {
 
 
     @Override
-    public String execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) throws IOException, ServletException {
         UserService service = UserServiceImpl.getInstance();
-        String page;
+        Router router;
 
         String login = request.getParameter(ParameterName.LOGIN);
 
@@ -37,16 +38,16 @@ public class ActivateAccountCommand implements Command {
                 HttpSession session = request.getSession();
                 session.setAttribute(ParameterName.USER, user);
                 request.setAttribute("user", login);
-                page = resourceBundle.getString("path.page.home");
+                router = new Router(resourceBundle.getString("path.page.home"));
             } else {
                 request.setAttribute("errorLoginPassMessage", MessageManager.getProperty("command.login.error"));
-                page = resourceBundle.getString("path.page.login");
+                router = new Router(resourceBundle.getString("path.page.login"));
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);
-            page = resourceBundle.getString("path.page.error");
+            router = new Router(resourceBundle.getString("path.page.error"));
         }
-        return page;
+        return router;
     }
 }
 

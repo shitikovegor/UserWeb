@@ -5,10 +5,10 @@ import com.shitikov.project.model.builder.PassengerApplicationBuilder;
 public class PassengerApplication extends Application {
     private int passengersNumber;
 
-    public PassengerApplication(String title, ApplicationType applicationType
+    public PassengerApplication(long applicationId, String title, ApplicationType applicationType
             , long date, AddressTimeData addressTimeData
             , String description, int passengersNumber) {
-        super(title, applicationType, date, addressTimeData, description);
+        super(applicationId, title, applicationType, date, addressTimeData, description);
         this.passengersNumber = passengersNumber;
     }
 

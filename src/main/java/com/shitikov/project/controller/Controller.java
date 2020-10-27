@@ -11,8 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 @WebServlet(urlPatterns = "/controller")
 public class Controller extends HttpServlet {
@@ -25,24 +25,36 @@ public class Controller extends HttpServlet {
     }
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         Command command = CommandProvider.defineCommand(request);
-        String page = command.execute(request);
+//        String page = command.execute(request);
+        Router router = command.execute(request);
+        String page = router.getPage();
+        HttpSession session = request.getSession();
+        RequestAttributeHandler handler = new RequestAttributeHandler();
+        handler.setRequestAttributes(request);
+        session.setAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER, handler);
 
-        if (page != null) {
+        if (router.getType() == Router.Type.FORWARD) {
             RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(page);
             dispatcher.forward(request, response);
         } else {
-            request.getSession().setAttribute("nullPage", "Page is null");
-            response.sendRedirect(request.getContextPath()
-                    + ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.home"));
+            response.sendRedirect(page);
         }
+
+//        if (page != null) {
+//            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(page);
+//            dispatcher.forward(request, response);
+//        } else {
+//            request.getSession().setAttribute("nullPage", "Page is null");
+//            response.sendRedirect(request.getContextPath()
+//                    + ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.home"));
+//        }
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        ConnectionPool.getInstance().destroyPool();
+        ConnectionPool.INSTANCE.destroyPool();
     }
 }
 

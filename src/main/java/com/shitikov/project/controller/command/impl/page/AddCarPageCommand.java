@@ -1,5 +1,6 @@
 package com.shitikov.project.controller.command.impl.page;
 
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.util.ParameterName;
 
@@ -10,8 +11,8 @@ import java.util.ResourceBundle;
 public class AddCarPageCommand implements Command {
 
     @Override
-    public String execute(HttpServletRequest request) {
-        return ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.add_car");
+    public Router execute(HttpServletRequest request) {
+        return new Router(ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.add_edit_car"));
     }
 }
 

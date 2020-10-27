@@ -8,7 +8,7 @@ import com.shitikov.project.model.exception.DaoException;
 import java.util.Map;
 import java.util.Optional;
 
-public interface UserDao extends BaseDao<User>{
+public interface UserDao extends BaseDao<String, User>{
 
     boolean addAddress(String login, Map<String, String> parameters) throws DaoException;
 
@@ -25,8 +25,6 @@ public interface UserDao extends BaseDao<User>{
     RoleType findRole(String login) throws DaoException;
 
     Optional<Address> findUserAddress(String login) throws DaoException;
-
-    boolean updateParameters(String login, Map<String, String> parameters) throws DaoException;
 
     boolean updateContactParameters(String login, Map<String, String> parameters) throws DaoException;
 

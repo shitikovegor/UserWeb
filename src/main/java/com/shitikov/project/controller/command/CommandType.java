@@ -1,8 +1,6 @@
-package com.shitikov.project.controller.command.type;
+package com.shitikov.project.controller.command;
 
-import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.impl.*;
-import com.shitikov.project.controller.command.impl.open.page.*;
 import com.shitikov.project.controller.command.impl.page.*;
 
 public enum CommandType {
@@ -16,12 +14,16 @@ public enum CommandType {
     SAVE_CONTACT_SETTINGS(new SaveContactSettingsCommand()),
     SAVE_PASSWORD(new SavePasswordCommand()),
     ADD_CAR(new AddCarCommand()),
+    EDIT_CAR(new EditCarCommand()),
+    ADD_APPLICATION(new AddApplicationCommand()),
+    REMOVE_CAR(new RemoveCarCommand()),
     //pages
     HOME_PAGE(new HomePageCommand()),
     REGISTRATION_PAGE(new RegistrationPageCommand()),
     LOGIN_PAGE(new LoginPageCommand()),
     ACCOUNT_PAGE(new AccountPageCommand()),
     ADD_CAR_PAGE(new AddCarPageCommand()),
+    EDIT_CAR_PAGE(new EditCarPageCommand()),
     ADD_APPLICATION_PAGE(new AddApplicationPageCommand());
 
 

@@ -1,5 +1,7 @@
 package com.shitikov.project.controller.command.impl;
 
+import com.shitikov.project.controller.RequestAttributeHandler;
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
@@ -14,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.shitikov.project.controller.command.AttributeName.*;
@@ -25,9 +28,9 @@ public class SavePasswordCommand implements Command {
 
 
     @Override
-    public String execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) throws IOException, ServletException {
         UserService service = UserServiceImpl.getInstance();
-        String page;
+        Router router;
         String password = request.getParameter(ParameterName.PASSWORD);
         String newPassword = request.getParameter(ParameterName.NEW_PASSWORD);
 
@@ -47,13 +50,20 @@ public class SavePasswordCommand implements Command {
                 logger.log(Level.DEBUG, "Password is invalid.");
             }
             request.setAttribute(SHOW_ACCORDION, true);
-            page = resourceBundle.getString("path.page.account");
+
+            RequestAttributeHandler handler =
+                    (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
+            Map<String, Object> attributes = handler.getRequestAttributes();
+            for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+                request.setAttribute(entry.getKey(), entry.getValue());
+            }
+            router = new Router(resourceBundle.getString("path.page.account"));
 
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);
-            page = resourceBundle.getString("path.page.error");
+            router = new Router(resourceBundle.getString("path.page.error"));
         }
-        return page;
+        return router;
     }
 }
 

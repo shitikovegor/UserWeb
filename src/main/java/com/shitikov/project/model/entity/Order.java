@@ -1,43 +1,42 @@
 package com.shitikov.project.model.entity;
 
 import com.shitikov.project.model.builder.OrderBuilder;
-import com.shitikov.project.model.entity.application.Application;
 import com.shitikov.project.model.entity.type.OrderStatus;
 
 public class Order extends Entity {
-    private Application application;
-    private Car car;
+    private long applicationId;
+    private long carId;
     private OrderStatus status;
     private long arrivalDate;
 
-    public Order(Application application, Car car, OrderStatus status, long arrivalDate) {
-        this.application = application;
-        this.car = car;
+    public Order(long applicationId, long carId, OrderStatus status, long arrivalDate) {
+        this.applicationId = applicationId;
+        this.carId = carId;
         this.status = status;
         this.arrivalDate = arrivalDate;
     }
 
     public Order(OrderBuilder builder) {
-        this.application = builder.getApplication();
-        this.car = builder.getCar();
+        this.applicationId = builder.getApplicationId();
+        this.carId = builder.getCarId();
         this.status = builder.getStatus();
         this.arrivalDate = builder.getArrivalDate();
     }
 
-    public Application getApplication() {
-        return application;
+    public long getApplicationId() {
+        return applicationId;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
     }
 
-    public Car getCar() {
-        return car;
+    public long getCarId() {
+        return carId;
     }
 
-    public void setCar(Car car) {
-        this.car = car;
+    public void setCarId(long carId) {
+        this.carId = carId;
     }
 
     public OrderStatus getStatus() {
@@ -70,10 +69,10 @@ public class Order extends Entity {
         if (arrivalDate != other.arrivalDate) {
             return false;
         }
-        if (application != null ? !application.equals(other.application) : other.application != null) {
+        if (applicationId != other.applicationId) {
             return false;
         }
-        if (car != null ? !car.equals(other.car) : other.car != null) {
+        if (carId != other.carId) {
             return false;
         }
         return status == other.status;
@@ -81,8 +80,8 @@ public class Order extends Entity {
 
     @Override
     public int hashCode() {
-        int result = application != null ? application.hashCode() : 0;
-        result = 31 * result + (car != null ? car.hashCode() : 0);
+        int result = (int) (applicationId ^ (applicationId >>> 32));
+        result = 31 * result + (int) (carId ^ (carId >>> 32));
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (int) (arrivalDate ^ (arrivalDate >>> 32));
         return result;
@@ -91,8 +90,8 @@ public class Order extends Entity {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Order{");
-        sb.append("application=").append(application);
-        sb.append(", car=").append(car);
+        sb.append("applicationId=").append(applicationId);
+        sb.append(", carId=").append(carId);
         sb.append(", status=").append(status);
         sb.append(", arrivalDate=").append(arrivalDate);
         sb.append('}');

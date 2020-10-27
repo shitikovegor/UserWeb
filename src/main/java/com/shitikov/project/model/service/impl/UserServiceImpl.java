@@ -12,6 +12,7 @@ import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.UserService;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.PasswordEncoder;
+import com.shitikov.project.validator.AddressValidator;
 import com.shitikov.project.validator.UserValidator;
 
 import java.util.HashMap;
@@ -20,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
-    private static final String INVALID_VALUE = "-1";
     private static final String EXISTS = "exists";
     private static UserServiceImpl instance;
     UserDao userDao = new UserDaoImpl();
@@ -83,8 +83,8 @@ public class UserServiceImpl implements UserService {
         boolean isUserAddressAdded = false;
 
         boolean areParametersValid = UserValidator.checkLogin(login)
-                && UserValidator.checkAddress(parameters.get(ParameterName.ADDRESS))
-                && UserValidator.checkCity(parameters.get(ParameterName.CITY));
+                && AddressValidator.checkAddress(parameters.get(ParameterName.ADDRESS))
+                && AddressValidator.checkCity(parameters.get(ParameterName.CITY));
 
         if (areParametersValid) {
             try {
@@ -174,22 +174,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateParameters(String login, Map<String, String> parameters) throws ServiceException {
+    public boolean update(String login, Map<String, String> parameters) throws ServiceException {
         String loginToChange = parameters.get(ParameterName.LOGIN);
         if (loginToChange != null && !UserValidator.checkLogin(loginToChange)) {
-            parameters.replace(ParameterName.LOGIN, INVALID_VALUE);
+            parameters.replace(ParameterName.LOGIN, "");
         }
         String nameToChange = parameters.get(ParameterName.NAME);
         if (nameToChange != null && !UserValidator.checkName(nameToChange)) {
-            parameters.replace(ParameterName.NAME, INVALID_VALUE);
+            parameters.replace(ParameterName.NAME, "");
         }
         String surnameToChange = parameters.get(ParameterName.SURNAME);
         if (surnameToChange != null && !UserValidator.checkSurname(surnameToChange)) {
-            parameters.replace(ParameterName.SURNAME, INVALID_VALUE);
+            parameters.replace(ParameterName.SURNAME, "");
         }
         String emailToChange = parameters.get(ParameterName.EMAIL);
         if (emailToChange != null && !UserValidator.checkEmail(emailToChange)) {
-            parameters.replace(ParameterName.EMAIL, INVALID_VALUE);
+            parameters.replace(ParameterName.EMAIL, "");
         }
 
         try {
@@ -204,16 +204,14 @@ public class UserServiceImpl implements UserService {
 
             for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
                 String element = entry.getValue();
-                if (element.equals(INVALID_VALUE) || element.equals(EXISTS)) {
+                if (element.isEmpty() || element.equals(EXISTS)) {
                     paramToUpdate.remove(entry.getKey());
                 }
             }
 
-            boolean areParametersUpdated;
-            if (paramToUpdate.isEmpty()) {
-                areParametersUpdated = false;
-            } else {
-                areParametersUpdated = userDao.updateParameters(login, paramToUpdate);
+            boolean areParametersUpdated = false;
+            if (!paramToUpdate.isEmpty()) {
+                areParametersUpdated = userDao.update(login, paramToUpdate);
             }
             return areParametersUpdated;
 
@@ -224,30 +222,35 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateContactParameters(String login, Map<String, String> parameters) throws ServiceException {
+        boolean areParametersCorrect = true;
         String streetHomeToChange = parameters.get(ParameterName.ADDRESS);
-        if (streetHomeToChange != null && !UserValidator.checkAddress(streetHomeToChange)) {
-            parameters.replace(ParameterName.ADDRESS, INVALID_VALUE);
+        if (streetHomeToChange != null && !AddressValidator.checkAddress(streetHomeToChange)) {
+            parameters.replace(ParameterName.ADDRESS, "");
+            areParametersCorrect = false;
         }
         String cityToChange = parameters.get(ParameterName.CITY);
-        if (cityToChange != null && !UserValidator.checkCity(cityToChange)) {
-            parameters.replace(ParameterName.CITY, INVALID_VALUE);
+        if (cityToChange != null && !AddressValidator.checkCity(cityToChange)) {
+            parameters.replace(ParameterName.CITY, "");
+            areParametersCorrect = false;
         }
 
         try {
-            Map<String, String> paramToUpdate = new HashMap<>(parameters);
+            boolean isUpdated = false;
+            if (areParametersCorrect) {
+                Map<String, String> paramToUpdate = new HashMap<>(parameters);
 
-            for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
-                String element = entry.getValue();
-                if (element.equals(INVALID_VALUE) || element.equals(EXISTS)) {
-                    paramToUpdate.remove(entry.getKey());
+                for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
+                    String element = entry.getValue();
+                    if (element.isEmpty() || element.equals(EXISTS)) {
+                        paramToUpdate.remove(entry.getKey());
+                    }
+                }
+
+                if (!paramToUpdate.isEmpty()) {
+                    isUpdated = userDao.updateContactParameters(login, paramToUpdate);
                 }
             }
-            boolean isUpdated = false;
-            if (!paramToUpdate.isEmpty()) {
-                isUpdated = userDao.updateContactParameters(login, paramToUpdate);
-            }
             return isUpdated;
-
         } catch (DaoException e) {
             throw new ServiceException("Program error. ", e);
         }

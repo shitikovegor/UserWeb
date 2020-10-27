@@ -1,5 +1,6 @@
 package com.shitikov.project.controller.command.impl;
 
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
@@ -28,9 +29,9 @@ public class LoginCommand implements Command {
 
 
     @Override
-    public String execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) throws IOException, ServletException {
         UserService service = UserServiceImpl.getInstance();
-        String page;
+        Router router;
 
         String login = request.getParameter(ParameterName.LOGIN);
         String password = request.getParameter(ParameterName.PASSWORD);
@@ -44,7 +45,7 @@ public class LoginCommand implements Command {
                     session.setAttribute(ParameterName.USER, user);
                     session.setAttribute(ParameterName.ROLE_TYPE, user.getRoleType());
                     request.setAttribute("user", login);
-                    page = resourceBundle.getString("path.page.home");
+                    router = new Router(resourceBundle.getString("path.page.home"));
                 } else {
                     Properties properties = new Properties();
                     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/mail.properties");
@@ -55,18 +56,18 @@ public class LoginCommand implements Command {
                             , EMAIL_SUBJECT, emailBody, properties);
                     sender.send();
                     request.setAttribute("isAccountActivated", false);
-                    page = resourceBundle.getString("path.page.activation");
+                    router = new Router(resourceBundle.getString("path.page.activation"));
                 }
 
             } else {
                 request.setAttribute("errorLoginPassMessage", MessageManager.getProperty("command.login.error"));
-                page = resourceBundle.getString("path.page.login");
+                router = new Router(resourceBundle.getString("path.page.login"));
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);
-            page = resourceBundle.getString("path.page.error");
+            router = new Router(resourceBundle.getString("path.page.error"));
         }
-        return page;
+        return router;
     }
 }
 

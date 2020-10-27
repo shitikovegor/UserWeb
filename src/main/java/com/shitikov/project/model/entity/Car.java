@@ -3,13 +3,15 @@ package com.shitikov.project.model.entity;
 import com.shitikov.project.model.builder.CarBuilder;
 
 public class Car extends Entity {
+    private long carId;
     private String carNumber;
     private double carryingWeight;
     private double carryingVolume;
     private int passengers;
     private User owner;
 
-    public Car(String carNumber, double carryingWeight, double carryingVolume, int passengers, User owner) {
+    public Car(long carId, String carNumber, double carryingWeight, double carryingVolume, int passengers, User owner) {
+        this.carId = carId;
         this.carNumber = carNumber;
         this.carryingWeight = carryingWeight;
         this.carryingVolume = carryingVolume;
@@ -18,11 +20,20 @@ public class Car extends Entity {
     }
 
     public Car(CarBuilder builder) {
+        this.carId = builder.getCarId();
         this.carNumber = builder.getCarNumber();
         this.carryingWeight = builder.getCarryingWeight();
         this.carryingVolume = builder.getCarryingVolume();
         this.passengers = builder.getPassengers();
         this.owner = builder.getOwner();
+    }
+
+    public long getCarId() {
+        return carId;
+    }
+
+    public void setCarId(long carId) {
+        this.carId = carId;
     }
 
     public String getCarNumber() {
@@ -76,6 +87,10 @@ public class Car extends Entity {
 
         Car other = (Car) obj;
 
+        if (carId != other.carId) {
+            return false;
+        }
+
         if (Double.compare(other.carryingWeight, carryingWeight) != 0) {
             return false;
         }
@@ -95,7 +110,8 @@ public class Car extends Entity {
     public int hashCode() {
         int result;
         long temp;
-        result = carNumber != null ? carNumber.hashCode() : 0;
+        result = (int) (carId ^ (carId >>> 32));
+        result = 31 * result + (carNumber != null ? carNumber.hashCode() : 0);
         temp = Double.doubleToLongBits(carryingWeight);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(carryingVolume);
@@ -108,7 +124,8 @@ public class Car extends Entity {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Car{");
-        sb.append("carNumber='").append(carNumber).append('\'');
+        sb.append("carId=").append(carId);
+        sb.append(", carNumber='").append(carNumber).append('\'');
         sb.append(", carryingWeight=").append(carryingWeight);
         sb.append(", carryingVolume=").append(carryingVolume);
         sb.append(", passengers=").append(passengers);

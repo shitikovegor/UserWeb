@@ -25,7 +25,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
 <script src="${pageContext.request.contextPath}assets/js/smoothproducts.min.js"></script>
 <script src="${pageContext.request.contextPath}assets/js/theme.js"></script>
-<script src="${pageContext.request.contextPath}assets/js/footer.js"></script>
-<script src="${pageContext.request.contextPath}assets/js/toggleSet.js"></script>
+<script src="${pageContext.request.contextPath}assets/js/webproject.js"></script>
 </body>
 </html>

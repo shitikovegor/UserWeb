@@ -30,7 +30,7 @@ public interface UserService {
 
     boolean checkUserAddress(String login) throws ServiceException;
 
-    boolean updateParameters(String login, Map<String, String> parameters) throws ServiceException;
+    boolean update(String login, Map<String, String> parameters) throws ServiceException;
 
     boolean updatePhone(String login, String phone) throws ServiceException;
 

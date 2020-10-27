@@ -16,11 +16,11 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-public class ConnectionPool {
+public enum  ConnectionPool {
+    INSTANCE;
+
     private static final int POOL_SIZE = 10;
-    private static Logger logger = LogManager.getLogger();
-    private static ConnectionPool instance;
-    private static boolean isInstanceCreated;
+    private Logger logger = LogManager.getLogger();
     private BlockingQueue<ProxyConnection> freeConnections;
     private Queue<ProxyConnection> givenAwayConnections;
 
@@ -32,39 +32,15 @@ public class ConnectionPool {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/database.properties");
         try {
             properties.load(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException("Reading properties error.", e);
-//            throw new PoolException("Reading properties error. ", e); // TODO: 16.10.2020 need to do RuntimeException or not???
-        }
-
-        try {
             Class.forName(properties.getProperty("driver"));
-        } catch (ClassNotFoundException e) {
-            logger.log(Level.FATAL, "Driver not found error.", e);
-            throw new RuntimeException("Driver not found error.", e);
-        }
-
-        try {
             for (int i = 0; i < POOL_SIZE; i++) {
                 freeConnections.offer(new ProxyConnection(DriverManager.getConnection(
                         properties.getProperty("url"), properties)));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException | IOException e) {
             logger.log(Level.ERROR, "Connection creating error.", e);
             throw new RuntimeException("Connection creating error", e); // TODO: 23.09.2020  is need to throw exception?!
         }
-    }
-
-    public static ConnectionPool getInstance() {
-        if (!isInstanceCreated) {
-            synchronized (ConnectionPool.class) {
-                if (!isInstanceCreated) {
-                    instance = new ConnectionPool();
-                    isInstanceCreated = true;
-                }
-            }
-        }
-        return instance;
     }
 
     public Connection getConnection() {

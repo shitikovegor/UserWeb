@@ -4,11 +4,21 @@ import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.User;
 
 public class CarBuilder {
+    private long carId;
     private String carNumber;
     private double carryingWeight;
     private double carryingVolume;
     private int passengers;
     private User owner;
+
+    public long getCarId() {
+        return carId;
+    }
+
+    public CarBuilder buildCarId(long carId) {
+        this.carId = carId;
+        return this;
+    }
 
     public String getCarNumber() {
         return carNumber;

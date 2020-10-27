@@ -5,11 +5,21 @@ import com.shitikov.project.model.entity.application.AddressTimeData;
 import com.shitikov.project.model.entity.application.ApplicationType;
 
 public abstract class ApplicationBuilder<T extends Application> {
+    private long applicationId;
     private String title;
     private ApplicationType applicationType;
     private long date;
     private AddressTimeData addressTimeData;
     private String description;
+
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    public ApplicationBuilder<T> buildApplicationId(long applicationId) {
+        this.applicationId = applicationId;
+        return this;
+    }
 
     public String getTitle() {
         return title;

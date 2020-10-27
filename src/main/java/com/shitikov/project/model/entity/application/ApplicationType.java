@@ -2,15 +2,15 @@ package com.shitikov.project.model.entity.application;
 
 public enum ApplicationType {
     CARGO("cargo"),
-    PEOPLE("people");
+    PASSENGER("passenger");
 
-    private String applicationName;
+    private String typeName;
 
-    ApplicationType(String applicationName) {
-        this.applicationName = applicationName;
+    ApplicationType(String typeName) {
+        this.typeName = typeName;
     }
 
-    public String getApplicationName() {
-        return applicationName;
+    public String getName() {
+        return typeName;
     }
 }

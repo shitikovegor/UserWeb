@@ -5,6 +5,7 @@ import com.shitikov.project.model.entity.type.RoleType;
 import com.shitikov.project.model.entity.type.SubjectType;
 
 public class User extends Entity {
+    private long userId;
     private String login;
     private String name;
     private String surname;
@@ -15,8 +16,9 @@ public class User extends Entity {
     private boolean blocked;
     private boolean active;
 
-    public User(String login, String name, String surname, String email,
+    public User(long userId, String login, String name, String surname, String email,
                 long phone, RoleType roleType, SubjectType subjectType) {
+        this.userId = userId;
         this.login = login;
         this.name = name;
         this.surname = surname;
@@ -30,6 +32,7 @@ public class User extends Entity {
     // TODO: 14.10.2020 is need to do constructor for class or need be only builder constructor?
 
     public User(UserBuilder builder) {
+        this.userId = builder.getUserId();
         this.login = builder.getLogin();
         this.name = builder.getName();
         this.surname = builder.getSurname();
@@ -39,6 +42,14 @@ public class User extends Entity {
         this.subjectType = builder.getSubjectType();
         this.blocked = builder.isBlocked();
         this.active = builder.isActive();
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getLogin() {
@@ -124,6 +135,10 @@ public class User extends Entity {
 
         User other = (User) obj;
 
+        if (userId != other.userId) {
+            return false;
+        }
+
         if (phone != other.phone) {
             return false;
         }
@@ -154,7 +169,8 @@ public class User extends Entity {
     @Override
     public int hashCode() {
         int prime = 31;
-        int result = login != null ? login.hashCode() : 0;
+        int result = (int) (userId ^ (userId >>> 32));
+        result = prime * result + (login != null ? login.hashCode() : 0);
         result = prime * result + (name != null ? name.hashCode() : 0);
         result = prime * result + (surname != null ? surname.hashCode() : 0);
         result = prime * result + (email != null ? email.hashCode() : 0);
@@ -169,6 +185,7 @@ public class User extends Entity {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");
+        sb.append("userId='").append(userId).append('\'');
         sb.append("login='").append(login).append('\'');
         sb.append(", name='").append(name).append('\'');
         sb.append(", surname='").append(surname).append('\'');

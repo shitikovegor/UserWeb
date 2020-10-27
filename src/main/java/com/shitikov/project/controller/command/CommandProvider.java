@@ -1,12 +1,10 @@
 package com.shitikov.project.controller.command;
 
-import com.shitikov.project.controller.command.type.CommandType;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.shitikov.project.controller.command.type.CommandType.EMPTY_COMMAND;
+import static com.shitikov.project.controller.command.CommandType.EMPTY_COMMAND;
 
 
 public final class CommandProvider {

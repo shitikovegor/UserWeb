@@ -24,16 +24,64 @@
                     <h6 class="text-primary font-weight-bold m-0"><fmt:message key="page.account.applications"/></h6>
                 </div>
                 <div class="card-body">
-                    <c:forEach var="application" items="${applications}">
-                        <div>
-                            <p style="margin-bottom: 5px;"><strong>${application.name}</strong>
-                                <span class="float-right"><strong>${application.status}</strong></span></p>
-                            <p style="margin-bottom: 5px;">${application.address}, ${application.date}
-                                <a class="float-right" href="controller?command=remove-application"
-                                   style="padding-left: 20px;">
-                                    <fmt:message key="page.account.remove"/></a>
-                                <a class="float-right" href="controller?command=edit-application"><fmt:message
-                                        key="page.account.edit"/></a></p>
+                    <div class="custom-control text-right custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="formCheck-1" />
+                        <label class="custom-control-label"
+                               for="formCheck-1"><fmt:message key="page.account.showCompleted"/></label>
+                    </div>
+                    <c:forEach var="entry" items="${applications}">
+                        <c:set var="application" value="${entry.value}"/>
+                        <div class="card" style="margin-top: 5px;margin-bottom: 10px;">
+                            <div class="card-header bg-light">
+                                <p style="margin-bottom: 5px;">
+                                    <strong><fmt:message key="application.appTitle"/>: ${application.title}</strong>
+                                    <span class="float-right">
+                                        <strong><fmt:message key="application.status"/>: ${entry.key}</strong>
+                                    </span>
+                                </p>
+                                <div class="row" style="margin-top: 6px;margin-bottom: 5px;margin-right: 0px;margin-left: 0px;">
+                                    <div class="col-lg-3" style="padding-right: 0px;padding-left: 0px;">
+                                        <p style="margin-bottom: 0px;">
+                                            <fmt:message key="application.date"/>: ${application.date}<br />
+                                        </p>
+                                    </div>
+                                    <div class="col-lg-6" style="padding-right: 0px;padding-left: 0px;">
+                                        <p style="margin-bottom: 0px;">
+                                            <fmt:message key="application.type"/>: ${application.applicationType}<br />
+                                        </p>
+                                    </div>
+                                    <div class="col-lg-3 offset-lg-0" style="margin-right: 0px;">
+                                        <a class="float-right"
+                                           href="controller?command=remove-application&application_id=${application_id}"
+                                           style="padding-left: 20px;margin-right: -15px;"><fmt:message key="page.account.remove"/></a>
+                                        <a class="float-right" href="controller?command=edit-application&application_id=${application_id}">
+                                            <fmt:message key="page.account.edit"/></a></div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text" style="margin-bottom: 5px;">
+                                    <strong class="d-inline-block"><fmt:message key="application.departure"/>: <br /></strong>
+                                    <fmt:message key="application.date"/> -
+                                        ${application.addressTimeData.departureDate},
+                                    <fmt:message key="application.address"/> -
+                                        ${application.addressTimeData.departureAddress.streetHome},
+                                    <fmt:message key="application.city"/> -
+                                        ${application.addressTimeData.departureAddress.city}
+                                </p>
+                                <p class="card-text" style="margin-bottom: 5px;">
+                                    <strong class="d-inline-block"><fmt:message key="application.arrival"/>: <br /></strong>
+                                     <fmt:message key="application.date"/> - ${application.addressTimeData.arrivalDate},
+                                    <fmt:message key="application.address"/> -
+                                        ${application.addressTimeData.arrivalAddress.streetHome},
+                                    <fmt:message key="application.city"/> -
+                                        ${application.addressTimeData.arrivalAddress.city}
+                                </p>
+                                <p class="card-text" style="margin-bottom: 5px;">
+                                    <strong class="d-inline-block">
+                                        <fmt:message key="application.description"/>: <br /></strong>
+                                     ${application.description}
+                                </p>
+                            </div>
                         </div>
                     </c:forEach>
                     <form class="form-group" action="controller" method="post">
@@ -51,13 +99,29 @@
                 </div>
                 <div class="card-body">
                     <c:forEach var="car" items="${cars}">
-                        <div>
-                            <p style="margin-bottom: 5px;"><strong>${car.getNumber()}</strong></p>
-                            <p style="margin-bottom: 5px;">${car.getCarrying()}, ${car.getPassengers()}
-                                <a class="float-right" href="controller?command=remove-car" style="padding-left: 20px;">
-                                    <fmt:message key="page.account.remove"/></a>
-                                <a class="float-right" href="controller?command=edit-car">
-                                    <fmt:message key="page.account.edit"/></a></p>
+                        <div class="border rounded shadow-sm"
+                             style="padding: 8px; margin-bottom: 10px; margin-top: 5px;">
+                            <p style="margin-bottom: 5px;">
+                                <c:set var="carNumber" value="${car.carNumber}"/>
+                                <strong><fmt:message key="car.carNumber"/>: ${carNumber}</strong>
+                                <a class="float-right" href="controller?command=remove-car&car_number=${carNumber}"
+                                   style="padding-left: 20px;">
+                                    <fmt:message key="page.account.remove"/>
+                                </a>
+                                <a class="float-right" href="controller?command=edit-car-page&car_number=${carNumber}">
+                                    <fmt:message key="page.account.edit"/>
+                                </a>
+                            </p>
+                            <div>
+                                <p style="margin-bottom: 5px;margin-top: 6px;">
+                                    <fmt:message key="page.account.carryingCapacity"/>: 
+                                    <fmt:message key="page.account.weight"/> - ${car.carryingWeight},
+                                    <fmt:message key="page.account.volume"/> - ${car.carryingVolume}
+                                    <br /></p>
+                                <p style="margin-bottom: 5px;">
+                                    <fmt:message key="car.passengersNumber"/>: ${car.passengers}
+                                    <br /></p>
+                            </div>
                         </div>
                     </c:forEach>
                     <form class="form-group" action="controller" method="post">
@@ -65,6 +129,14 @@
                         <button class="btn btn-primary btn-sm" type="submit" style="margin-top: 10px;"><fmt:message
                                 key="page.account.addCar"/></button>
                     </form>
+                    <c:if test="${remove_error}">
+                        <div role="alert" class="alert alert-danger" autofocus>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            <span>
+                                <fmt:message key="error.removeFailed"/>
+                            </span>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </c:if>
@@ -94,17 +166,17 @@
                                                    id="login" value="${sessionScope.user.login}"
                                                    pattern="^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]+" minlength="4"
                                                    maxlength="20"
-                                                   required="<fmt:message key="page.registration.required.login"/>">
+                                                   required="<fmt:message key="required.login"/>">
                                         </div>
                                         <c:choose>
                                             <c:when test="${login_exists}">
                                                 <sup class="text-danger">
-                                                    <fmt:message key="page.registration.error.loginExists"/>
+                                                    <fmt:message key="error.loginExists"/>
                                                 </sup>
                                             </c:when>
                                             <c:when test="${login_invalid}">
                                                 <sup class="text-danger">
-                                                    <fmt:message key="page.registration.required.login"/>
+                                                    <fmt:message key="required.login"/>
                                                 </sup>
                                             </c:when>
                                         </c:choose>
@@ -124,12 +196,12 @@
                                         <c:choose>
                                             <c:when test="${email_exists}">
                                                 <sup class="text-danger">
-                                                    <fmt:message key="page.registration.error.emailExists"/>
+                                                    <fmt:message key="error.emailExists"/>
                                                 </sup>
                                             </c:when>
                                             <c:when test="${email_invalid}">
                                                 <sup class="text-danger">
-                                                    <fmt:message key="page.registration.error.email"/>
+                                                    <fmt:message key="error.email"/>
                                                 </sup>
                                             </c:when>
                                         </c:choose>
@@ -151,7 +223,7 @@
                                         </div>
                                         <c:if test="${name_invalid}">
                                             <sup class="text-danger">
-                                                <fmt:message key="page.registration.error.name"/>
+                                                <fmt:message key="error.name"/>
                                             </sup>
                                         </c:if>
                                         <c:if test="${name_updated}">
@@ -170,7 +242,7 @@
                                         </div>
                                         <c:if test="${surname_invalid}">
                                             <sup class="text-danger">
-                                                <fmt:message key="page.registration.error.surname"/>
+                                                <fmt:message key="error.surname"/>
                                             </sup>
                                         </c:if>
                                         <c:if test="${surname_updated}">
@@ -198,20 +270,15 @@
                                 <div class="form-group"><label for="address"><fmt:message
                                         key="page.account.address"/></label>
                                     <input class="form-control" type="text" id="address" name="address"
-                                           pattern="[\p{L}0-9\s\-,]{1,150}" minlength="1" maxlength="150"
-                                           value="${address}"
+                                           pattern="[\p{L}0-9\s-,.]{1,150}" minlength="1" maxlength="150"
+                                           value="${address}" title="<fmt:message key="required.address"/>"
                                     <c:if test="${not empty address}">
-                                           required=""
+                                           required="<fmt:message key="required.address"/>"
                                     </c:if>>
                                 </div>
                                 <c:if test="${address_invalid}">
                                     <sup class="text-danger">
-                                        <fmt:message key="page.account.error.address"/>
-                                    </sup>
-                                </c:if>
-                                <c:if test="${address_updated}">
-                                    <sup class="text-success">
-                                        <fmt:message key="page.account.addressUpdated"/>
+                                        <fmt:message key="error.address"/>
                                     </sup>
                                 </c:if>
                                 <div class="form-row">
@@ -220,19 +287,14 @@
                                                 key="page.account.city"/></label>
                                             <input class="form-control" type="text" id="city" name="city"
                                                    pattern="[\p{L}0-9\s\-]{1,50}" minlength="1" maxlength="50"
-                                                   value="${city}"
+                                                   value="${city}" title="<fmt:message key="required.city"/>"
                                             <c:if test="${not empty city}">
-                                            required=""
+                                                   required="<fmt:message key="required.city"/>"
                                             </c:if>>
                                         </div>
                                         <c:if test="${city_invalid}">
                                             <sup class="text-danger">
-                                                <fmt:message key="page.account.error.city"/>
-                                            </sup>
-                                        </c:if>
-                                        <c:if test="${city_updated}">
-                                            <sup class="text-success">
-                                                <fmt:message key="page.account.cityUpdated"/>
+                                                <fmt:message key="error.city"/>
                                             </sup>
                                         </c:if>
                                     </div>
@@ -242,12 +304,12 @@
                                             <input class="form-control" type="tel" placeholder=""
                                                    value="${sessionScope.user.phone}"
                                                    id="phone" name="phone"
-                                                   required="<fmt:message key="page.registration.required.phone"/>"
+                                                   required="<fmt:message key="required.phone"/>"
                                                    pattern="^\+?\d{12}" minlength="12" maxlength="13">
                                         </div>
                                         <c:if test="${phone_invalid}">
                                             <sup class="text-danger">
-                                                <fmt:message key="page.registration.required.phone"/>
+                                                <fmt:message key="required.phone"/>
                                             </sup>
                                         </c:if>
                                         <c:if test="${phone_updated}">
@@ -257,15 +319,26 @@
                                         </c:if>
                                     </div>
                                 </div>
-                                <c:if test="${contact_updated}">
-                                    <sup class="text-success">
-                                        <fmt:message key="page.account.addressUpdated"/>
-                                    </sup>
-                                </c:if>
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-sm" type="submit"><fmt:message
                                             key="page.account.save"/></button>
                                 </div>
+                                <c:if test="${data_invalid}">
+                                    <div role="alert" class="alert alert-danger" autofocus>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                        <span>
+                                            <fmt:message key="error.dataInvalid"/>
+                                        </span>
+                                    </div>
+                                </c:if>
+                                <c:if test="${contact_updated}">
+                                    <div role="alert" class="alert alert-success" autofocus>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                        <span>
+                                            <strong><fmt:message key="page.account.addressUpdated"/></strong>
+                                        </span>
+                                    </div>
+                                </c:if>
                             </form>
                         </div>
                     </div>
@@ -284,17 +357,12 @@
                                             <input class="form-control" type="password" id="password" placeholder=""
                                                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]+"
                                                    minlength="6" maxlength="20"
-                                                   required="<fmt:message key="page.registration.required.password"/>"
+                                                   required="<fmt:message key="required.password"/>"
                                                    name="password">
                                         </div>
                                         <c:if test="${password_invalid}">
                                             <sup class="text-danger">
-                                                <fmt:message key="page.account.error.password"/>
-                                            </sup>
-                                        </c:if>
-                                        <c:if test="${password_updated}">
-                                            <sup class="text-success">
-                                                <fmt:message key="page.account.passwordUpdated"/>
+                                                <fmt:message key="error.password"/>
                                             </sup>
                                         </c:if>
                                     </div>
@@ -303,13 +371,13 @@
                                                 key="page.account.newPassword"/></label>
                                             <input class="form-control" type="password" id="new_password"
                                                    placeholder=""
-                                                   required="<fmt:message key="page.registration.required.password"/>"
+                                                   required="<fmt:message key="required.password"/>"
                                                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]+"
                                                    name="new_password">
                                         </div>
                                         <c:if test="${new_password_invalid}">
                                             <sup class="text-danger">
-                                                <fmt:message key="page.registration.error.name"/>
+                                                <fmt:message key="required.password"/>
                                             </sup>
                                         </c:if>
                                     </div>
@@ -318,6 +386,14 @@
                                     <button class="btn btn-primary btn-sm" type="submit"><fmt:message
                                             key="page.account.savePassword"/></button>
                                 </div>
+                                <c:if test="${password_updated}">
+                                    <div role="alert" class="alert alert-success" autofocus>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                        <span>
+                                            <strong><fmt:message key="page.account.passwordUpdated"/></strong>
+                                        </span>
+                                    </div>
+                                </c:if>
                             </form>
                         </div>
                     </div>

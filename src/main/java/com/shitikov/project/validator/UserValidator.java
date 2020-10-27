@@ -11,8 +11,6 @@ public class UserValidator {
     private static final String EMAIL_PATTERN
             = "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,100})";
     private static final String PHONE_PATTERN = "^\\+?\\d{12}";
-    private static final String ADDRESS_PATTERN = "[\\p{L}\\p{Digit}\\s\\-,]{1,150}";
-    private static final String CITY_PATTERN = "[\\p{L}\\s-\\p{Digit}]{1,50}";
 
     private UserValidator() {
     }
@@ -39,14 +37,6 @@ public class UserValidator {
 
     public static boolean checkPhone(String phone) {
         return phone.matches(PHONE_PATTERN);
-    }
-
-    public static boolean checkAddress(String address) {
-        return address.matches(ADDRESS_PATTERN);
-    }
-
-    public static boolean checkCity(String city) {
-        return city.matches(CITY_PATTERN);
     }
 
     public static boolean checkParameters(Map<String, String> parameters) {

@@ -38,7 +38,6 @@ public class UserDaoImpl implements UserDao {
             " users ON addresses.user_id_fk = users.user_id SET %s WHERE users.login = ?";
     private static final String SQL_FIND_ADDRESS_BY_LOGIN =
             "SELECT address, city FROM addresses INNER JOIN users ON addresses.user_id_fk = users.user_id WHERE users.login = ?";
-    private static UserDaoImpl instance;
 
     public UserDaoImpl() {
     }
@@ -49,7 +48,7 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("User is null.");
         }
         boolean isUserAdded = false;
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_USER)) {
 
             statement.setString(1, user.getLogin());
@@ -76,21 +75,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findByLogin(String login) throws DaoException {
-        if (login == null) {
-            throw new DaoException("Login is null.");
-        }
+    public Optional<User> findById(long userId) throws DaoException {
         User user = null;
-        String sqlRequest = String.format(SQL_FIND_BY_PARAMETER, ParameterName.LOGIN);
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        String sqlRequest = String.format(SQL_FIND_BY_PARAMETER, ParameterName.USER_ID);
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
-            statement.setString(1, login);
+            statement.setLong(1, userId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
+                    String login = resultSet.getString(ParameterName.LOGIN);
                     String name = resultSet.getString(ParameterName.NAME);
                     String surname = resultSet.getString(ParameterName.SURNAME);
                     String email = resultSet.getString(ParameterName.EMAIL);
-                    Long phone = resultSet.getLong(ParameterName.PHONE);
+                    long phone = resultSet.getLong(ParameterName.PHONE);
                     RoleType roleType =
                             RoleType.valueOf(resultSet.getString(ParameterName.ROLE_TYPE).toUpperCase());
                     SubjectType subjectType =
@@ -99,6 +96,51 @@ public class UserDaoImpl implements UserDao {
                     boolean active = resultSet.getBoolean(ParameterName.ACTIVE);
 
                     user = new UserBuilder()
+                            .buildUserId(userId)
+                            .buildLogin(login)
+                            .buildName(name)
+                            .buildSurname(surname)
+                            .buildEmail(email)
+                            .buildPhone(phone)
+                            .buildSubjectType(subjectType)
+                            .buildRoleType(roleType)
+                            .buildBlocked(blocked)
+                            .buildActive(active)
+                            .buildUser();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+        return Optional.ofNullable(user);
+    }
+
+    @Override
+    public Optional<User> findByLogin(String login) throws DaoException {
+        if (login == null) {
+            throw new DaoException("Login is null.");
+        }
+        User user = null;
+        String sqlRequest = String.format(SQL_FIND_BY_PARAMETER, ParameterName.LOGIN);
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+            statement.setString(1, login);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    long userId = resultSet.getLong(ParameterName.USER_ID);
+                    String name = resultSet.getString(ParameterName.NAME);
+                    String surname = resultSet.getString(ParameterName.SURNAME);
+                    String email = resultSet.getString(ParameterName.EMAIL);
+                    long phone = resultSet.getLong(ParameterName.PHONE);
+                    RoleType roleType =
+                            RoleType.valueOf(resultSet.getString(ParameterName.ROLE_TYPE).toUpperCase());
+                    SubjectType subjectType =
+                            SubjectType.valueOf(resultSet.getString(ParameterName.SUBJECT_TYPE).toUpperCase());
+                    boolean blocked = resultSet.getBoolean(ParameterName.BLOCKED);
+                    boolean active = resultSet.getBoolean(ParameterName.ACTIVE);
+
+                    user = new UserBuilder()
+                            .buildUserId(userId)
                             .buildLogin(login)
                             .buildName(name)
                             .buildSurname(surname)
@@ -123,7 +165,7 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Login is null.");
         }
         String hashedPassword = "";
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHECK_BY_LOGIN)) {
 
             statement.setString(1, login);
@@ -149,7 +191,7 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Login is null.");
         }
         Address address = null;
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_ADDRESS_BY_LOGIN)) {
 
             statement.setString(1, login);
@@ -176,7 +218,7 @@ public class UserDaoImpl implements UserDao {
         if (login == null || parameters == null || parameters.isEmpty()) {
             throw new DaoException("Invalid data.");
         }
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_ADDRESS)) {
 
             statement.setString(1, parameters.get(ParameterName.ADDRESS));
@@ -197,7 +239,7 @@ public class UserDaoImpl implements UserDao {
         }
         boolean isloginInBase;
 
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHECK_BY_LOGIN)) {
 
             statement.setString(1, login);
@@ -217,7 +259,7 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Email is null.");
         }
         String sqlRequest = String.format(SQL_FIND_BY_PARAMETER, ParameterName.EMAIL);
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
             statement.setString(1, email);
@@ -237,7 +279,7 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Login is null.");
         }
 
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_ADDRESS_BY_LOGIN)) {
 
             statement.setString(1, login);
@@ -257,7 +299,7 @@ public class UserDaoImpl implements UserDao {
         }
         RoleType role = RoleType.GUEST;
 
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHECK_BY_LOGIN)) {
 
             statement.setString(1, login);
@@ -274,7 +316,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean updateParameters(String login, Map<String, String> parameters) throws DaoException {
+    public boolean update(String login, Map<String, String> parameters) throws DaoException {
         boolean isUpdated;
         if (login == null || parameters == null) {
             throw new DaoException("Incorrect data. ");
@@ -282,7 +324,7 @@ public class UserDaoImpl implements UserDao {
         String parametersSQL = fillParametersSQL(parameters);
         String sqlRequest = String.format(SQL_UPDATE_PARAMETERS, parametersSQL);
 
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
             statement.setString(1, login);
@@ -303,7 +345,7 @@ public class UserDaoImpl implements UserDao {
         String parametersSQL = fillParametersSQL(parameters);
         String sqlRequest = String.format(SQL_UPDATE_ADDRESS, parametersSQL);
 
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
             statement.setString(1, login);
@@ -322,7 +364,7 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Incorrect data. ");
         }
 
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PHONE)) {
 
             statement.setLong(1, phone);
@@ -342,7 +384,7 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Incorrect data. ");
         }
 
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PASSWORD)) {
 
             statement.setString(1, newPassword);
@@ -361,7 +403,7 @@ public class UserDaoImpl implements UserDao {
         if (login == null) {
             throw new DaoException("User is null.");
         }
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ACTIVATE_ACCOUNT)) {
 
             statement.setString(1, login);
@@ -371,18 +413,5 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Connection error. ", e);
         }
         return isActivated;
-    }
-
-    private String fillParametersSQL(Map<String, String> parameters) {
-
-        StringBuilder parametersSQL = new StringBuilder();
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            parametersSQL.append(entry.getKey())
-                    .append(" = \"")
-                    .append(entry.getValue())
-                    .append("\", ");
-        }
-        parametersSQL.delete(parametersSQL.lastIndexOf(","), parametersSQL.length());
-        return parametersSQL.toString();
     }
 }

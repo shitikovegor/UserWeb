@@ -6,10 +6,10 @@ public class CargoApplication extends Application {
     private double cargoWeight;
     private double cargoVolume;
 
-    public CargoApplication(String title, ApplicationType applicationType, long date
+    public CargoApplication(long applicationId, String title, ApplicationType applicationType, long date
             , AddressTimeData addressTimeData, String description
             , double cargoWeight, double cargoVolume) {
-        super(title, applicationType, date, addressTimeData, description);
+        super(applicationId, title, applicationType, date, addressTimeData, description);
         this.cargoWeight = cargoWeight;
         this.cargoVolume = cargoVolume;
     }

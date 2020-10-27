@@ -1,5 +1,6 @@
 package com.shitikov.project.controller.command.impl;
 
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.util.ParameterName;
 import org.apache.logging.log4j.LogManager;
@@ -18,12 +19,10 @@ public class LogoutCommand implements Command {
 
 
     @Override
-    public String execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) throws IOException, ServletException {
         HttpSession session = request.getSession();
         session.invalidate();
-        String page = resourceBundle.getString("path.page.home");
-
-        return page;
+        return new Router(resourceBundle.getString("path.page.home"));
     }
 }
 

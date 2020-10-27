@@ -7,5 +7,5 @@
     <c:param name="title">
         <fmt:message key="title.addCar"/>
     </c:param>
-    <c:param name="page" value="add-car"/>
+    <c:param name="page" value="add-edit-car"/>
 </c:import>

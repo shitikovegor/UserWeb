@@ -1,5 +1,6 @@
 package com.shitikov.project.controller.command.impl;
 
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.UserServiceImpl;
@@ -28,8 +29,8 @@ public class RegistrationCommand implements Command {
     private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
     @Override
-    public String execute(HttpServletRequest request) {
-        String page;
+    public Router execute(HttpServletRequest request) {
+        Router router;
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(ParameterName.LOGIN, request.getParameter(ParameterName.LOGIN));
@@ -53,7 +54,7 @@ public class RegistrationCommand implements Command {
                 MailSender sender = new MailSender(request.getParameter(ParameterName.EMAIL)
                         , EMAIL_SUBJECT, emailBody, properties);
                 sender.send();
-                page = resourceBundle.getString("path.page.activation");
+                router = new Router(resourceBundle.getString("path.page.activation"));
             } else {
                 if (parameters.get(ParameterName.LOGIN).equals(EXISTS)) {
                     request.setAttribute(LOGIN_EXISTS, true);
@@ -71,13 +72,13 @@ public class RegistrationCommand implements Command {
                         request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
-                page = resourceBundle.getString("path.page.registration");
+                router = new Router(resourceBundle.getString("path.page.registration"));
             }
         } catch (ServiceException | IOException e) {
 
-            page = resourceBundle.getString("path.page.error");
+            router = new Router(resourceBundle.getString("path.page.error"));
         }
-        return page;
+        return router;
     }
 }
 

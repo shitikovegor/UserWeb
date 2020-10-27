@@ -10,6 +10,6 @@
 <body>
 <h2>Exception occurred while processing the request</h2>
 <p>Type: ${pageContext.exception}</p>
-<p>Message: ${pageContext.exception.message}</p>
+<p>Message: ${pageContext.exception.cause}</p>
 </body>
 </html>

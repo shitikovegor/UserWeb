@@ -1,5 +1,7 @@
 package com.shitikov.project.controller.command.impl;
 
+import com.shitikov.project.controller.RequestAttributeHandler;
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
@@ -22,16 +24,15 @@ import static com.shitikov.project.controller.command.AttributeName.*;
 
 
 public class SaveUserSettingsCommand implements Command {
-    private static final String INVALID_VALUE = "-1";
     private static final String EXISTS = "exists";
     private static Logger logger = LogManager.getLogger();
     private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
 
     @Override
-    public String execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) throws IOException, ServletException {
         UserService service = UserServiceImpl.getInstance();
-        String page;
+        Router router;
         String loginToChange = request.getParameter(ParameterName.LOGIN);
         String nameToChange = request.getParameter(ParameterName.NAME);
         String surnameToChange = request.getParameter(ParameterName.SURNAME);
@@ -42,10 +43,10 @@ public class SaveUserSettingsCommand implements Command {
             User user = (User) session.getAttribute(ParameterName.USER);
             Map<String, String> parameters
                     = checkParameters(loginToChange, nameToChange, surnameToChange, emailToChange, user);
-            service.updateParameters(user.getLogin(), parameters);
+            service.update(user.getLogin(), parameters);
 
             if (parameters.get(ParameterName.LOGIN) != null) {
-                if (parameters.get(ParameterName.LOGIN).equals(INVALID_VALUE)) {
+                if (parameters.get(ParameterName.LOGIN).isEmpty()) {
                     request.setAttribute(LOGIN_INVALID, true);
                     parameters.remove(ParameterName.LOGIN);
                 } else if (parameters.get(ParameterName.LOGIN).equals(EXISTS)) {
@@ -57,7 +58,7 @@ public class SaveUserSettingsCommand implements Command {
                 }
             }
             if (parameters.get(ParameterName.NAME) != null) {
-                if (parameters.get(ParameterName.NAME).equals(INVALID_VALUE)) {
+                if (parameters.get(ParameterName.NAME).isEmpty()) {
                     request.setAttribute(NAME_INVALID, true);
                     parameters.remove(ParameterName.NAME);
                 } else {
@@ -66,7 +67,7 @@ public class SaveUserSettingsCommand implements Command {
                 }
             }
             if (parameters.get(ParameterName.SURNAME) != null) {
-                if (parameters.get(ParameterName.SURNAME).equals(INVALID_VALUE)) {
+                if (parameters.get(ParameterName.SURNAME).isEmpty()) {
                     request.setAttribute(SURNAME_INVALID, true);
                     parameters.remove(ParameterName.SURNAME);
                 } else {
@@ -75,7 +76,7 @@ public class SaveUserSettingsCommand implements Command {
                 }
             }
             if (parameters.get(ParameterName.EMAIL) != null) {
-                if (parameters.get(ParameterName.EMAIL).equals(INVALID_VALUE)) {
+                if (parameters.get(ParameterName.EMAIL).isEmpty()) {
                     request.setAttribute(EMAIL_INVALID, true);
                     parameters.remove(ParameterName.EMAIL);
                 } else if (parameters.get(ParameterName.EMAIL).equals(EXISTS)) {
@@ -87,13 +88,20 @@ public class SaveUserSettingsCommand implements Command {
                 }
             }
             request.setAttribute(SHOW_ACCORDION, true);
-            page = resourceBundle.getString("path.page.account");
+
+            RequestAttributeHandler handler =
+                    (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
+            Map<String, Object> attributes = handler.getRequestAttributes();
+            for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+                request.setAttribute(entry.getKey(), entry.getValue());
+            }
+            router = new Router(resourceBundle.getString("path.page.account"));
 
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);
-            page = resourceBundle.getString("path.page.error");
+            router = new Router(resourceBundle.getString("path.page.error"));
         }
-        return page;
+        return router;
     }
 
     private Map<String, String> checkParameters

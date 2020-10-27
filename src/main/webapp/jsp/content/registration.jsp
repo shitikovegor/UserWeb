@@ -1,4 +1,4 @@
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+ <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <fmt:setBundle basename="properties.pagecontent"/>
@@ -14,31 +14,31 @@
                 <div class="form-group">
                     <label for="login"><fmt:message key="common.login"/></label>
                     <input class="form-control item" type="text" id="login"
-                           required="<fmt:message key="page.registration.required.login"/>"
+                           required="<fmt:message key="required.login"/>"
                            pattern="^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]+" minlength="4" maxlength="20"
                            name="login"
                            value="${login}"
-                           title="<fmt:message key="page.registration.required.login"/>">
+                           title="<fmt:message key="required.login"/>">
                     <small class="text-danger">
                         <c:if test="${login_exists}">
-                            <fmt:message key="page.registration.error.loginExists"/>
+                            <fmt:message key="error.loginExists"/>
                         </c:if>
                         <c:if test="${login_invalid}">
-                            <fmt:message key="page.registration.required.login"/>
+                            <fmt:message key="required.login"/>
                         </c:if>
                     </small>
                 </div>
                 <div class="form-group">
                     <label for="password"><fmt:message key="common.password"/></label>
                     <input class="form-control item" type="password" id="password"
-                           required="<fmt:message key="page.registration.required.password"/>"
+                           required="<fmt:message key="required.password"/>"
                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]+" minlength="6" maxlength="20"
                            name="password"
                            value="${password}"
-                           title="<fmt:message key="page.registration.required.password"/>">
+                           title="<fmt:message key="required.password"/>">
                     <small class="text-danger">
                         <c:if test="${password_invalid}">
-                            <fmt:message key="page.registration.required.password"/>
+                            <fmt:message key="required.password"/>
                         </c:if>
                     </small>
                 </div>
@@ -48,10 +48,10 @@
                            value="${email}">
                     <small class="text-danger">
                         <c:if test="${email_invalid}">
-                            <fmt:message key="page.registration.error.email"/>
+                            <fmt:message key="error.email"/>
                         </c:if>
                         <c:if test="${email_exists}">
-                            <fmt:message key="page.registration.error.emailExists"/>
+                            <fmt:message key="error.emailExists"/>
                         </c:if>
                     </small>
                 </div>
@@ -84,7 +84,7 @@
                            value="${name}">
                     <small class="text-danger">
                         <c:if test="${name_invalid}">
-                            <fmt:message key="page.registration.error.name"/>
+                            <fmt:message key="error.name"/>
                         </c:if>
                     </small>
                 </div>
@@ -95,21 +95,21 @@
                            value="${surname}">
                     <small class="text-danger">
                         <c:if test="${surname_invalid}">
-                            <fmt:message key="page.registration.error.surname"/>
+                            <fmt:message key="error.surname"/>
                         </c:if>
                     </small>
                 </div>
                 <div class="form-group">
                     <label for="phone"><fmt:message key="common.phone"/></label>
                     <input class="form-control item" type="tel" id="phone"
-                           required="<fmt:message key="page.registration.required.phone"/>"
+                           required="<fmt:message key="required.phone"/>"
                            pattern="^\+?\d{12}" minlength="12" maxlength="13"
                            name="phone"
                            value="${phone}"
-                           title="<fmt:message key="page.registration.required.phone"/>">
+                           title="<fmt:message key="required.phone"/>">
                     <small class="text-danger">
                         <c:if test="${phone_invalid}">
-                            <fmt:message key="page.registration.required.phone"/>
+                            <fmt:message key="required.phone"/>
                         </c:if>
                     </small>
                 </div>

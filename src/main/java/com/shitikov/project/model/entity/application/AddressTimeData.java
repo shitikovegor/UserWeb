@@ -7,13 +7,13 @@ import com.shitikov.project.model.entity.Entity;
 public class AddressTimeData extends Entity {
     private long departureDate;
     private Address departureAddress;
-    private int daysToComplete;
+    private long arrivalDate;
     private Address arrivalAddress;
 
     public AddressTimeData(AddressTimeDataBuilder builder) {
         this.departureDate = builder.getDepartureDate();
         this.departureAddress = builder.getDepartureAddress();
-        this.daysToComplete = builder.getDaysToComplete();
+        this.arrivalDate = builder.getArrivalDate();
         this.arrivalAddress = builder.getArrivalAddress();
     }
 
@@ -33,12 +33,12 @@ public class AddressTimeData extends Entity {
         this.departureAddress = departureAddress;
     }
 
-    public int getDaysToComplete() {
-        return daysToComplete;
+    public long getArrivalDate() {
+        return arrivalDate;
     }
 
-    public void setDaysToComplete(int daysToComplete) {
-        this.daysToComplete = daysToComplete;
+    public void setArrivalDate(long arrivalDate) {
+        this.arrivalDate = arrivalDate;
     }
 
     public Address getArrivalAddress() {
@@ -63,7 +63,7 @@ public class AddressTimeData extends Entity {
         if (departureDate != other.departureDate) {
             return false;
         }
-        if (daysToComplete != other.daysToComplete) {
+        if (arrivalDate != other.arrivalDate) {
             return false;
         }
         if (departureAddress != null ? !departureAddress.equals(other.departureAddress) : other.departureAddress != null) {
@@ -76,7 +76,7 @@ public class AddressTimeData extends Entity {
     public int hashCode() {
         int result = (int) (departureDate ^ (departureDate >>> 32));
         result = 31 * result + (departureAddress != null ? departureAddress.hashCode() : 0);
-        result = 31 * result + daysToComplete;
+        result = 31 * result + (int) (arrivalDate ^ (arrivalDate >>> 32));
         result = 31 * result + (arrivalAddress != null ? arrivalAddress.hashCode() : 0);
         return result;
     }
@@ -86,7 +86,7 @@ public class AddressTimeData extends Entity {
         final StringBuilder sb = new StringBuilder("ApplicationAddress{");
         sb.append("departureDate=").append(departureDate);
         sb.append(", departureAddress='").append(departureAddress).append('\'');
-        sb.append(", daysToComplete=").append(daysToComplete);
+        sb.append(", arrivalDate=").append(arrivalDate);
         sb.append(", arrivalAddress='").append(arrivalAddress).append('\'');
         sb.append('}');
         return sb.toString();

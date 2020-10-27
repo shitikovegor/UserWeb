@@ -1,5 +1,6 @@
 package com.shitikov.project.controller.command.impl;
 
+import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.util.ParameterName;
 
@@ -10,10 +11,11 @@ import java.io.IOException;
 
 public class ChangeLanguageCommand implements Command {
     @Override
-    public String execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) throws IOException, ServletException {
         String language = request.getParameter("locale");
         HttpSession session = request.getSession();
         session.setAttribute(ParameterName.LOCALE, language);
-        return session.getAttribute(ParameterName.CURRENT_PAGE).toString(); // TODO: 28.09.2020 page from filter
+        return new Router(session.getAttribute(ParameterName.CURRENT_PAGE).toString());
+        // TODO: 28.09.2020 page from filter
     }
 }
