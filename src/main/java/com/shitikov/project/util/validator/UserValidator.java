@@ -1,10 +1,10 @@
-package com.shitikov.project.validator;
+package com.shitikov.project.util.validator;
 
 import java.util.Map;
 
 import static com.shitikov.project.util.ParameterName.*;
 
-public class UserValidator {
+public class UserValidator extends Validator {
     private static final String LOGIN_PATTERN = "^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]{4,20}";
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{6,20}$";
     private static final String NAME_SURNAME_PATTERN = "[\\p{L}\\s-]{1,50}";

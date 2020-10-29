@@ -12,7 +12,7 @@ public class AddApplicationPageCommand implements Command {
 
     @Override
     public Router execute(HttpServletRequest request) {
-        return new Router(ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.add_application"));
+        return new Router(ResourceBundle.getBundle(ParameterName.PAGES_PATH).getString("path.page.add_edit_application"));
     }
 }
 

@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import static com.shitikov.project.util.ParameterName.*;
+
 
 public class LoginCommand implements Command {
     private static Logger logger = LogManager.getLogger();
@@ -33,8 +35,8 @@ public class LoginCommand implements Command {
         UserService service = UserServiceImpl.getInstance();
         Router router;
 
-        String login = request.getParameter(ParameterName.LOGIN);
-        String password = request.getParameter(ParameterName.PASSWORD);
+        String login = request.getParameter(LOGIN);
+        String password = request.getParameter(PASSWORD);
 
         try {
             if (service.checkLogin(login) && service.checkPassword(login, password)) {
@@ -42,16 +44,16 @@ public class LoginCommand implements Command {
 
                 if (user.isActive()) {
                     HttpSession session = request.getSession();
-                    session.setAttribute(ParameterName.USER, user);
-                    session.setAttribute(ParameterName.ROLE_TYPE, user.getRoleType());
+                    session.setAttribute(USER, user);
+                    session.setAttribute(ROLE_TYPE, user.getRoleType());
                     request.setAttribute("user", login);
                     router = new Router(resourceBundle.getString("path.page.home"));
                 } else {
                     Properties properties = new Properties();
                     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/mail.properties");
                     properties.load(inputStream);
-                    String emailBody = String.format(ParameterName.EMAIL_BODY,
-                            request.getRequestURL(), request.getParameter(ParameterName.LOGIN));
+                    String emailBody = String.format(EMAIL_BODY,
+                            request.getRequestURL(), request.getParameter(LOGIN));
                     MailSender sender = new MailSender(user.getEmail()
                             , EMAIL_SUBJECT, emailBody, properties);
                     sender.send();

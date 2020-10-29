@@ -12,8 +12,8 @@ import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.UserService;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.PasswordEncoder;
-import com.shitikov.project.validator.AddressValidator;
-import com.shitikov.project.validator.UserValidator;
+import com.shitikov.project.util.validator.AddressDateValidator;
+import com.shitikov.project.util.validator.UserValidator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -83,8 +83,8 @@ public class UserServiceImpl implements UserService {
         boolean isUserAddressAdded = false;
 
         boolean areParametersValid = UserValidator.checkLogin(login)
-                && AddressValidator.checkAddress(parameters.get(ParameterName.ADDRESS))
-                && AddressValidator.checkCity(parameters.get(ParameterName.CITY));
+                && AddressDateValidator.checkAddress(parameters.get(ParameterName.ADDRESS))
+                && AddressDateValidator.checkCity(parameters.get(ParameterName.CITY));
 
         if (areParametersValid) {
             try {
@@ -224,12 +224,12 @@ public class UserServiceImpl implements UserService {
     public boolean updateContactParameters(String login, Map<String, String> parameters) throws ServiceException {
         boolean areParametersCorrect = true;
         String streetHomeToChange = parameters.get(ParameterName.ADDRESS);
-        if (streetHomeToChange != null && !AddressValidator.checkAddress(streetHomeToChange)) {
+        if (streetHomeToChange != null && !AddressDateValidator.checkAddress(streetHomeToChange)) {
             parameters.replace(ParameterName.ADDRESS, "");
             areParametersCorrect = false;
         }
         String cityToChange = parameters.get(ParameterName.CITY);
-        if (cityToChange != null && !AddressValidator.checkCity(cityToChange)) {
+        if (cityToChange != null && !AddressDateValidator.checkCity(cityToChange)) {
             parameters.replace(ParameterName.CITY, "");
             areParametersCorrect = false;
         }

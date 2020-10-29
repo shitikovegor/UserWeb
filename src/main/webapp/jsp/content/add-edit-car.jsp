@@ -9,13 +9,12 @@
                 <c:choose>
                     <c:when test="${edit_car}">
                         <h2 class="text-info"><fmt:message key="page.addEditCar.titleEdit"/></h2>
-                        <p><fmt:message key="page.addEditCar.text"/></p>
                     </c:when>
                     <c:otherwise>
                         <h2 class="text-info"><fmt:message key="page.addEditCar.titleAdd"/></h2>
-                        <p><fmt:message key="page.addEditCar.text"/></p>
                     </c:otherwise>
                 </c:choose>
+                <p><fmt:message key="page.addEditCar.text"/></p>
             </div>
             <form action="controller" method="post">
                 <c:choose>
@@ -30,7 +29,7 @@
                     <label for="car_number"><fmt:message key="car.carNumber"/></label>
                     <input class="form-control car_number" type="text" id="car_number"
                            pattern="\d{4}\p{Alpha}{2}[1-7]" minlength="7" maxlength="7"
-                           name="car_number" title="" required="<fmt:message key="required.carNumber"/>"
+                           name="car_number" title="<fmt:message key="required.carNumber"/>" required="<fmt:message key="required.carNumber"/>"
                            value="${car_number}">
                     <small class="text-danger">
                         <c:if test="${number_exists}">
@@ -70,7 +69,12 @@
                 </c:choose>
 
                 <c:if test="${adding_error}">
-                    <p class="text-center text-danger"><fmt:message key="error.addCar"/></p>
+                    <div role="alert" class="alert alert-danger" autofocus>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        <span>
+                            <fmt:message key="error.addCar"/>
+                        </span>
+                    </div>
                 </c:if>
             </form>
         </div>

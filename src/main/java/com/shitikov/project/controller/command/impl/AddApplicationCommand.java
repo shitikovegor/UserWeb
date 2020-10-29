@@ -22,7 +22,6 @@ import static com.shitikov.project.util.ParameterName.*;
 
 public class AddApplicationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final String ATTRIBUTE_SUBSTRING_INVALID = "_invalid";
     private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
 
     @Override
@@ -40,7 +39,7 @@ public class AddApplicationCommand implements Command {
         String arrivalDate = request.getParameter(ARRIVAL_DATE);
         String arrivalAddress = request.getParameter(ARRIVAL_ADDRESS).replaceAll("</?script>", "");
         String arrivalCity = request.getParameter(ARRIVAL_CITY).replaceAll("</?script>", "");
-        String description = request.getParameter(DESCRIPTION).replaceAll("</?script>", "");
+        String description = request.getParameter(DESCRIPTION).replaceAll("</?script>", "").trim();
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(TITLE, title);
@@ -69,7 +68,7 @@ public class AddApplicationCommand implements Command {
                 for (Map.Entry<String, Object> entry : attributes.entrySet()) {
                     request.setAttribute(entry.getKey(), entry.getValue());
                 }
-                router = new Router(resourceBundle.getString("path.page.account"));
+                router = new Router(Router.Type.REDIRECT, resourceBundle.getString("path.page.account"));
             } else {
                 for (Map.Entry<String, String> entry : parameters.entrySet()) {
                     if (!entry.getValue().isEmpty()) {

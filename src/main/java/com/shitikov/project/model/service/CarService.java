@@ -21,5 +21,5 @@ public interface CarService {
 
     boolean update(String carNumber, Map<String, String> parameters) throws ServiceException;
 
-    boolean updateById(long carId, Map<String, String> parameters) throws ServiceException;
+    boolean updateById(String id, Map<String, String> parameters) throws ServiceException;
 }

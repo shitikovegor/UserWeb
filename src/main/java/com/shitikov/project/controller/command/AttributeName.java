@@ -29,6 +29,7 @@ public class AttributeName {
     public static final String DATA_INVALID = "data_invalid";
     public static final String CARS = "cars";
     public static final String EDIT_CAR = "edit_car";
+    public static final String EDIT_APPLICATION = "edit_application";
 
     private AttributeName() {
     }

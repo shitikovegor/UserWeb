@@ -9,7 +9,7 @@ import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.CarService;
 import com.shitikov.project.util.ParameterName;
-import com.shitikov.project.validator.CarValidator;
+import com.shitikov.project.util.validator.CarValidator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -104,44 +104,29 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public boolean updateById(long carId, Map<String, String> parameters) throws ServiceException {
-        boolean areParametersValid = true;
+    public boolean updateById(String id, Map<String, String> parameters) throws ServiceException {
+        if (!CarValidator.checkId(id)) {
+            return false;
+        }
 
-        String numberToChange = parameters.get(ParameterName.CAR_NUMBER);
-        if (numberToChange != null && !CarValidator.checkCarNumber(numberToChange)) {
-            parameters.replace(ParameterName.CAR_NUMBER, "");
-            areParametersValid = false;
-        }
-        String weightToChange = parameters.get(ParameterName.CARRYING_WEIGHT);
-        if (weightToChange != null && !CarValidator.checkCarrying(weightToChange)) {
-            parameters.replace(ParameterName.CARRYING_WEIGHT, "");
-            areParametersValid = false;
-        }
-        String volumeToChange = parameters.get(ParameterName.CARRYING_VOLUME);
-        if (volumeToChange != null && !CarValidator.checkCarrying(volumeToChange)) {
-            parameters.replace(ParameterName.CARRYING_VOLUME, "");
-            areParametersValid = false;
-        }
-        String passengerToChange = parameters.get(ParameterName.PASSENGERS_NUMBER);
-        if (passengerToChange != null && !CarValidator.checkPassenger(passengerToChange)) {
-            parameters.replace(ParameterName.PASSENGERS_NUMBER, "");
-            areParametersValid = false;
-        }
+        boolean isUpdated = CarValidator.checkParameters(parameters);
+
 
         try {
-            Map<String, String> paramToUpdate = new HashMap<>(parameters);
+            if (isUpdated) {
+                Map<String, String> paramToUpdate = new HashMap<>(parameters);
 
-            for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
-                String element = entry.getValue();
-                if (element.isEmpty()) {
-                    paramToUpdate.remove(entry.getKey());
+                for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
+                    String element = entry.getValue();
+                    if (element.isEmpty()) {
+                        paramToUpdate.remove(entry.getKey());
+                    }
+                }
+                if (!paramToUpdate.isEmpty()) {
+                    isUpdated = carDao.updateById(Long.parseLong(id), paramToUpdate);
                 }
             }
-            boolean areParametersUpdated = false;
-            if (!paramToUpdate.isEmpty() && areParametersValid) {
-                areParametersUpdated = carDao.updateById(carId, paramToUpdate);
-            }
-            return areParametersUpdated;
+            return isUpdated;
         } catch (DaoException e) {
             throw new ServiceException("Program error. ", e);
         }

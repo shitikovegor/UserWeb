@@ -21,10 +21,10 @@
 <c:import url="content/${param.page}.jsp"/>
 <c:import url="footer.jsp"/>
 <script src="${pageContext.request.contextPath}assets/js/jquery.min.js"></script>
+<script src="${pageContext.request.contextPath}assets/js/webproject.js"></script>
 <script src="${pageContext.request.contextPath}assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
 <script src="${pageContext.request.contextPath}assets/js/smoothproducts.min.js"></script>
 <script src="${pageContext.request.contextPath}assets/js/theme.js"></script>
-<script src="${pageContext.request.contextPath}assets/js/webproject.js"></script>
 </body>
 </html>

@@ -13,5 +13,5 @@ public interface ApplicationDao extends BaseDao<Long, Application> {
 
     boolean checkByApplicationId(long applicationId) throws DaoException;
 
-    Map<OrderStatus, Application> findByUser(User user) throws DaoException;
+    Map<Application, OrderStatus> findByUser(User user) throws DaoException;
 }

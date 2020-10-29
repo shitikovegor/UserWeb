@@ -5,7 +5,6 @@ import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.CommandType;
 import com.shitikov.project.model.entity.Car;
-import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.CarServiceImpl;
 import org.apache.logging.log4j.Level;
@@ -13,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -31,8 +29,6 @@ public class EditCarPageCommand implements Command {
         String carNumber = request.getParameter(CAR_NUMBER);
 
         try {
-            HttpSession session = request.getSession();
-            User user = (User) session.getAttribute(USER);
             Optional<Car> carOptional = CarServiceImpl.getInstance().findByNumber(carNumber);
             if (carOptional.isPresent()) {
                 Car car = carOptional.get();

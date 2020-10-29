@@ -15,10 +15,12 @@ import com.shitikov.project.model.entity.type.OrderStatus;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.ApplicationService;
-import com.shitikov.project.validator.ApplicationValidator;
+import com.shitikov.project.util.validator.AddressDateValidator;
+import com.shitikov.project.util.validator.ApplicationValidator;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,20 +44,27 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public boolean add(Map<String, String> parameters, String login) throws ServiceException {
         boolean isAdded = false;
-        boolean areTextFieldsValid = true;
+        boolean areTextDateFieldsValid = true;
 
         if (!ApplicationValidator.checkTitle(parameters.get(TITLE))) {
-            areTextFieldsValid = false;
+            areTextDateFieldsValid = false;
             parameters.replace(TITLE, "");
         }
-
         if (!ApplicationValidator.checkDescription(parameters.get(DESCRIPTION))) {
-            areTextFieldsValid = false;
+            areTextDateFieldsValid = false;
             parameters.replace(DESCRIPTION, "");
+        }
+        if (!AddressDateValidator.checkDate(parameters.get(DEPARTURE_DATE))) {
+            areTextDateFieldsValid = false;
+            parameters.replace(DEPARTURE_DATE, "");
+        }
+        if (!AddressDateValidator.checkDate(parameters.get(ARRIVAL_DATE))) {
+            areTextDateFieldsValid = false;
+            parameters.replace(ARRIVAL_DATE, "");
         }
 
         try {
-            if (areTextFieldsValid) {
+            if (areTextDateFieldsValid) {
                 if (ApplicationType.valueOf(parameters.get(APPLICATION_TYPE)
                         .toUpperCase()) == ApplicationType.CARGO) {
 
@@ -90,19 +99,35 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public boolean remove(long id) throws ServiceException {
-        return false;
+    public boolean remove(String id) throws ServiceException {
+        boolean isRemoved = false;
+        try {
+            if (ApplicationValidator.checkId(id)) {
+                isRemoved = applicationDao.remove(Long.parseLong(id));
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return isRemoved;
     }
 
     @Override
-    public Optional<Application> findById(long id) throws ServiceException {
+    public Optional<Application> findById(String id) throws ServiceException {
+        if (ApplicationValidator.checkId(id)) {
+            try {
+                Optional<Application> application = applicationDao.findById(Long.parseLong(id));
+                return application;
+            } catch (DaoException e) {
+                throw new ServiceException(e);
+            }
+        }
         return Optional.empty();
     }
 
     @Override
-    public Map<OrderStatus, Application> findByUser(User user) throws ServiceException {
+    public Map<Application, OrderStatus> findByUser(User user) throws ServiceException {
         try {
-            Map<OrderStatus, Application> applications = applicationDao.findByUser(user);
+            Map<Application, OrderStatus> applications = applicationDao.findByUser(user);
             return applications;
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -115,15 +140,36 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public boolean updateParameters(String carNumber, Map<String, String> parameters) throws ServiceException {
-        return false;
+    public boolean update(String id, Map<String, String> parameters) throws ServiceException {
+        if (!ApplicationValidator.checkId(id)) {
+            return false;
+        }
+        boolean isUpdated = ApplicationValidator.checkParameters(parameters);
+        try {
+            if (isUpdated) {
+                Map<String, String> paramToUpdate = new HashMap<>(parameters);
+                for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
+                    String element = entry.getValue();
+                    if (element.isEmpty()) {
+                        paramToUpdate.remove(entry.getKey());
+                    }
+                }
+                if (!paramToUpdate.isEmpty()) {
+                    String departureDate = paramToUpdate.get(DEPARTURE_DATE);
+                    paramToUpdate.replace(DEPARTURE_DATE, dateToLong(departureDate).toString());
+                    String arrivalDate = paramToUpdate.get(ARRIVAL_DATE);
+                    paramToUpdate.replace(ARRIVAL_DATE, dateToLong(arrivalDate).toString());
+
+                    isUpdated = applicationDao.update(Long.parseLong(id), paramToUpdate);
+                }
+            }
+            return isUpdated;
+        } catch (DaoException e) {
+            throw new ServiceException("Program error. ", e);
+        }
     }
 
     private CargoApplication buildCargoApplication(Map<String, String> parameters) {
-        long departureDate =
-                LocalDateTime.parse(parameters.get(DEPARTURE_DATE)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        long arrivalDate =
-                LocalDateTime.parse(parameters.get(ARRIVAL_DATE)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         CargoApplication application = new CargoApplicationBuilder()
                 .buildCargoWeight(Double.parseDouble(parameters.get(CARGO_WEIGHT)))
                 .buildCargoVolume(Double.parseDouble(parameters.get(CARGO_VOLUME)))
@@ -131,12 +177,12 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .buildApplicationType(ApplicationType.CARGO)
                 .buildDate(System.currentTimeMillis())
                 .buildAddressTimeData(new AddressTimeDataBuilder()
-                        .buildDepartureDate(departureDate)
+                        .buildDepartureDate(dateToLong(parameters.get(DEPARTURE_DATE)))
                         .buildDepartureAddress(new AddressBuilder()
                                 .buildStreetHome(parameters.get(DEPARTURE_ADDRESS))
                                 .buildCity(parameters.get(DEPARTURE_CITY))
                                 .buildAddress())
-                        .buildArrivalDate(arrivalDate)
+                        .buildArrivalDate(dateToLong(parameters.get(ARRIVAL_DATE)))
                         .buildArrivalAddress(new AddressBuilder()
                                 .buildStreetHome(parameters.get(ARRIVAL_ADDRESS))
                                 .buildCity(parameters.get(ARRIVAL_CITY))
@@ -150,9 +196,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private PassengerApplication buildPassengerApplication(Map<String, String> parameters) {
         long departureDate =
-                LocalDateTime.parse(parameters.get(DEPARTURE_DATE)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                LocalDate.parse(parameters.get(DEPARTURE_DATE)).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
         long arrivalDate =
-                LocalDateTime.parse(parameters.get(ARRIVAL_DATE)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                LocalDate.parse(parameters.get(ARRIVAL_DATE)).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
         PassengerApplication application = new PassengerApplicationBuilder()
                 .buildPassengersNumber(Integer.parseInt(parameters.get(PASSENGERS_NUMBER)))
                 .buildTitle(parameters.get(TITLE))
@@ -174,5 +220,9 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .buildApplication();
 
         return application;
+    }
+
+    private Long dateToLong(String date) {
+        return LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 }

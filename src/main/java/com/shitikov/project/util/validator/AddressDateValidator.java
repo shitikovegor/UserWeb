@@ -1,15 +1,16 @@
-package com.shitikov.project.validator;
+package com.shitikov.project.util.validator;
 
 import java.util.Map;
 
-import static com.shitikov.project.util.ParameterName.ADDRESS;
-import static com.shitikov.project.util.ParameterName.CITY;
+import static com.shitikov.project.util.ParameterName.*;
 
-public class AddressValidator {
-    private static final String ADDRESS_PATTERN = "[\\p{L}\\p{Digit}\\s-,.]{1,150}";
+public class AddressDateValidator extends Validator {
+    private static final String ADDRESS_PATTERN = "[\\p{L}\\p{Digit}\\s-,./]{1,150}";
     private static final String CITY_PATTERN = "[\\p{L}\\s-\\p{Digit}]{1,50}";
+    private static final String DATE_PATTERN = "^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$";
+    private static final String DATE_IE_PATTERN = "^(0?[1-9]|[12][0-9]|3[01])\\.(0?[1-9]|1[012])\\.\\d{4}$";
 
-    private AddressValidator() {
+    private AddressDateValidator() {
     }
 
     public static boolean checkAddress(String address) {
@@ -18,6 +19,10 @@ public class AddressValidator {
 
     public static boolean checkCity(String city) {
         return city.matches(CITY_PATTERN);
+    }
+
+    public static boolean checkDate(String date) {
+        return date.matches(DATE_PATTERN) || date.matches(DATE_IE_PATTERN);
     }
 
     public static boolean checkParameters(Map<String, String> parameters) {

@@ -17,7 +17,7 @@ public interface BaseDao<E, T extends Entity> {
 
     boolean update(E uniqueField, Map<String, String> parameters) throws DaoException;
 
-    boolean remove(T t) throws DaoException;
+    boolean remove(long id) throws DaoException;
     // TODO: 21.10.2020 is update required method in BaseDao if it exists in UserDao?
 
     default String fillParametersSQL(Map<String, String> parameters) {

@@ -54,7 +54,7 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
-    public boolean remove(Car car) throws DaoException {
+    public boolean remove(long id) throws DaoException {
         return false;
     }
 

@@ -7,6 +7,7 @@ import com.shitikov.project.model.service.impl.UserServiceImpl;
 import com.shitikov.project.util.MessageManager;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.mail.MailSender;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,12 +20,12 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import static com.shitikov.project.controller.command.AttributeName.*;
+import static com.shitikov.project.util.ParameterName.*;
 
 
 public class RegistrationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final String EXISTS = "exists";
-    private static final String ATTRIBUTE_SUBSTRING_INVALID = "_invalid";
     private static final String EMAIL_SUBJECT = "HelpByCar. Activate your account"; // TODO: 09.10.2020 from properties
     private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
@@ -33,14 +34,14 @@ public class RegistrationCommand implements Command {
         Router router;
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put(ParameterName.LOGIN, request.getParameter(ParameterName.LOGIN));
-        parameters.put(ParameterName.PASSWORD, request.getParameter(ParameterName.PASSWORD));
-        parameters.put(ParameterName.NAME, request.getParameter(ParameterName.NAME));
-        parameters.put(ParameterName.SURNAME, request.getParameter(ParameterName.SURNAME));
-        parameters.put(ParameterName.EMAIL, request.getParameter(ParameterName.EMAIL));
-        parameters.put(ParameterName.PHONE, request.getParameter(ParameterName.PHONE));
-        parameters.put(ParameterName.SUBJECT_TYPE, request.getParameter(ParameterName.SUBJECT_TYPE));
-        parameters.put(ParameterName.ROLE_TYPE, request.getParameter(ParameterName.ROLE_TYPE));
+        parameters.put(LOGIN, request.getParameter(LOGIN));
+        parameters.put(PASSWORD, request.getParameter(PASSWORD));
+        parameters.put(NAME, request.getParameter(NAME));
+        parameters.put(SURNAME, request.getParameter(SURNAME));
+        parameters.put(EMAIL, request.getParameter(EMAIL));
+        parameters.put(PHONE, request.getParameter(PHONE));
+        parameters.put(SUBJECT_TYPE, request.getParameter(SUBJECT_TYPE));
+        parameters.put(ROLE_TYPE, request.getParameter(ROLE_TYPE));
 
         try {
             if (UserServiceImpl.getInstance().add(parameters)) {
@@ -49,22 +50,23 @@ public class RegistrationCommand implements Command {
                 Properties properties = new Properties();
                 InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/mail.properties");
                 properties.load(inputStream);
-                String emailBody = String.format(ParameterName.EMAIL_BODY,
-                        request.getRequestURL(), request.getParameter(ParameterName.LOGIN));
-                MailSender sender = new MailSender(request.getParameter(ParameterName.EMAIL)
+                String emailBody = String.format(EMAIL_BODY,
+                        request.getRequestURL(), request.getParameter(LOGIN));
+                MailSender sender = new MailSender(request.getParameter(EMAIL)
                         , EMAIL_SUBJECT, emailBody, properties);
                 sender.send();
                 router = new Router(resourceBundle.getString("path.page.activation"));
+                logger.log(Level.INFO, "User added");
             } else {
-                if (parameters.get(ParameterName.LOGIN).equals(EXISTS)) {
+                if (parameters.get(LOGIN).equals(EXISTS)) {
                     request.setAttribute(LOGIN_EXISTS, true);
-                    parameters.remove(ParameterName.LOGIN);
+                    parameters.remove(LOGIN);
                 }
-                if (parameters.get(ParameterName.EMAIL).equals(EXISTS)) {
+                if (parameters.get(EMAIL).equals(EXISTS)) {
                     request.setAttribute(EMAIL_EXISTS, true);
-                    parameters.remove(ParameterName.EMAIL);
+                    parameters.remove(EMAIL);
                 }
-                parameters.remove(ParameterName.PASSWORD);
+                parameters.remove(PASSWORD);
                 for (Map.Entry<String, String> entry : parameters.entrySet()) {
                     if (!entry.getValue().isEmpty()) {
                         request.setAttribute(entry.getKey(), entry.getValue());
@@ -73,6 +75,7 @@ public class RegistrationCommand implements Command {
                     }
                 }
                 router = new Router(resourceBundle.getString("path.page.registration"));
+                logger.log(Level.INFO, "User didn't add");
             }
         } catch (ServiceException | IOException e) {
 

@@ -1,5 +1,8 @@
 package com.shitikov.project.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ParameterName {
 
     //properties paths
@@ -10,6 +13,8 @@ public class ParameterName {
     public static final String CURRENT_PAGE = "current_page";
 
     public static final String REQUEST_ATTRIBUTE_HANDLER = "attribute_handler";
+    public static final String ATTRIBUTE_SUBSTRING_INVALID = "_invalid";
+
 
     //user
     public static final String USER = "user";
@@ -39,6 +44,8 @@ public class ParameterName {
     public static final String CAR_NUMBER = "car_number";
     public static final String CARRYING_WEIGHT = "carrying_weight";
     public static final String CARRYING_VOLUME = "carrying_volume";
+
+    //car & application
     public static final String PASSENGERS_NUMBER = "passengers_number";
 
     //application
@@ -58,6 +65,30 @@ public class ParameterName {
     public static final String DESCRIPTION = "description";
     public static final String STATUS = "status";
 
+    public static final List<String> APPLICATION_PARAMS;
+    public static final List<String> CAR_PARAMS;
+
+    static {
+        APPLICATION_PARAMS = new ArrayList<>();
+        APPLICATION_PARAMS.add(TITLE);
+        APPLICATION_PARAMS.add(APPLICATION_TYPE);
+        APPLICATION_PARAMS.add(CARGO_WEIGHT);
+        APPLICATION_PARAMS.add(CARGO_VOLUME);
+        APPLICATION_PARAMS.add(PASSENGERS_NUMBER);
+        APPLICATION_PARAMS.add(DEPARTURE_DATE);
+        APPLICATION_PARAMS.add(DEPARTURE_ADDRESS);
+        APPLICATION_PARAMS.add(DEPARTURE_CITY);
+        APPLICATION_PARAMS.add(ARRIVAL_DATE);
+        APPLICATION_PARAMS.add(ARRIVAL_ADDRESS);
+        APPLICATION_PARAMS.add(ARRIVAL_CITY);
+        APPLICATION_PARAMS.add(DESCRIPTION);
+
+        CAR_PARAMS = new ArrayList<>();
+        CAR_PARAMS.add(CAR_NUMBER);
+        CAR_PARAMS.add(CARRYING_WEIGHT);
+        CAR_PARAMS.add(CARRYING_VOLUME);
+        CAR_PARAMS.add(PASSENGERS_NUMBER);
+    }
 
     private ParameterName() {
     }

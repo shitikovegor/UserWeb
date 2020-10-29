@@ -1,5 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ctg" uri="customtags" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <fmt:setBundle basename="properties.pagecontent"/>
 <c:set var="show" value="${show_accordion ? 'show' : ''}"/>
@@ -10,14 +11,6 @@
     <div class="container justify-content-center">
         <h2 class="text-center text-primary mb-4"
             style="padding-top: 20px;"><fmt:message key="page.account.title"/></h2>
-        <div class="card d-none mb-3">
-            <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="dogs/image2.jpeg"
-                                                           width="160" height="160">
-                <div class="mb-3">
-                    <button class="btn btn-primary btn-sm" type="button">Change Photo</button>
-                </div>
-            </div>
-        </div>
         <c:if test="${sessionScope.user.roleType == 'CLIENT'}">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -30,39 +23,50 @@
                                for="formCheck-1"><fmt:message key="page.account.showCompleted"/></label>
                     </div>
                     <c:forEach var="entry" items="${applications}">
-                        <c:set var="application" value="${entry.value}"/>
+                        <c:set var="application" value="${entry.key}"/>
                         <div class="card" style="margin-top: 5px;margin-bottom: 10px;">
                             <div class="card-header bg-light">
                                 <p style="margin-bottom: 5px;">
                                     <strong><fmt:message key="application.appTitle"/>: ${application.title}</strong>
                                     <span class="float-right">
-                                        <strong><fmt:message key="application.status"/>: ${entry.key}</strong>
+                                        <strong><fmt:message key="application.status"/>: ${entry.value}</strong>
                                     </span>
                                 </p>
                                 <div class="row" style="margin-top: 6px;margin-bottom: 5px;margin-right: 0px;margin-left: 0px;">
                                     <div class="col-lg-3" style="padding-right: 0px;padding-left: 0px;">
                                         <p style="margin-bottom: 0px;">
-                                            <fmt:message key="application.date"/>: ${application.date}<br />
+                                            <fmt:message key="application.date"/>:
+                                            <ctg:format-date date="${application.date}"/><br />
                                         </p>
                                     </div>
-                                    <div class="col-lg-6" style="padding-right: 0px;padding-left: 0px;">
+                                    <div class="col-lg-3" style="padding-right: 0px;padding-left: 0px;">
                                         <p style="margin-bottom: 0px;">
                                             <fmt:message key="application.type"/>: ${application.applicationType}<br />
                                         </p>
                                     </div>
-                                    <div class="col-lg-3 offset-lg-0" style="margin-right: 0px;">
-                                        <a class="float-right"
-                                           href="controller?command=remove-application&application_id=${application_id}"
-                                           style="padding-left: 20px;margin-right: -15px;"><fmt:message key="page.account.remove"/></a>
-                                        <a class="float-right" href="controller?command=edit-application&application_id=${application_id}">
-                                            <fmt:message key="page.account.edit"/></a></div>
+                                    <div class="col-lg-6 offset-lg-0" style="margin-right: 0px; margin-bottom: -1em;">
+                                        <form class="float-right" style="padding-left: 20px;margin-right: -15px;"
+                                              id="remove-app${application.applicationId}" action="controller" method="post">
+                                            <input type="hidden" name="application_id" value="${application.applicationId}">
+                                            <input type="hidden" name="command" value="remove-application">
+                                            <a href="javascript:document.getElementById('remove-app${application.applicationId}').submit()">
+                                                <fmt:message key="page.account.remove"/></a>
+                                        </form>
+                                        <form class="float-right" id="edit-page${application.applicationId}" action="controller"
+                                               method="post">
+                                            <input type="hidden" name="application_id" value="${application.applicationId}">
+                                            <input type="hidden" name="command" value="edit-application-page">
+                                            <a href="javascript:document.getElementById('edit-page${application.applicationId}').submit()">
+                                                <fmt:message key="page.account.edit"/></a>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <p class="card-text" style="margin-bottom: 5px;">
                                     <strong class="d-inline-block"><fmt:message key="application.departure"/>: <br /></strong>
                                     <fmt:message key="application.date"/> -
-                                        ${application.addressTimeData.departureDate},
+                                    <ctg:format-date date="${application.addressTimeData.departureDate}"/>,
                                     <fmt:message key="application.address"/> -
                                         ${application.addressTimeData.departureAddress.streetHome},
                                     <fmt:message key="application.city"/> -
@@ -70,11 +74,26 @@
                                 </p>
                                 <p class="card-text" style="margin-bottom: 5px;">
                                     <strong class="d-inline-block"><fmt:message key="application.arrival"/>: <br /></strong>
-                                     <fmt:message key="application.date"/> - ${application.addressTimeData.arrivalDate},
+                                     <fmt:message key="application.date"/> -
+                                    <ctg:format-date date="${application.addressTimeData.arrivalDate}"/>,
                                     <fmt:message key="application.address"/> -
                                         ${application.addressTimeData.arrivalAddress.streetHome},
                                     <fmt:message key="application.city"/> -
                                         ${application.addressTimeData.arrivalAddress.city}
+                                </p>
+                                <p class="card-text" style="margin-bottom: 5px;">
+                                    <c:choose>
+                                        <c:when test="${application.applicationType == 'CARGO'}">
+                                            <fmt:message key="page.account.weight"/> -
+                                            ${application.cargoWeight},
+                                            <fmt:message key="page.account.volume"/> -
+                                            ${application.cargoVolume}
+                                        </c:when>
+                                        <c:otherwise>
+                                            <fmt:message key="application.passengersNumber"/> -
+                                            ${application.passengersNumber}
+                                        </c:otherwise>
+                                    </c:choose>
                                 </p>
                                 <p class="card-text" style="margin-bottom: 5px;">
                                     <strong class="d-inline-block">
@@ -108,7 +127,8 @@
                                    style="padding-left: 20px;">
                                     <fmt:message key="page.account.remove"/>
                                 </a>
-                                <a class="float-right" href="controller?command=edit-car-page&car_number=${carNumber}">
+                                <a class="float-right"
+                                   href="controller?command=edit-car-page&car_number=${carNumber}">
                                     <fmt:message key="page.account.edit"/>
                                 </a>
                             </p>

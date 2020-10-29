@@ -12,13 +12,13 @@ import java.util.Optional;
 public interface ApplicationService {
     boolean add(Map<String, String> parameters, String login) throws ServiceException;
 
-    boolean remove(long id) throws ServiceException;
+    boolean remove(String id) throws ServiceException;
 
-    Optional<Application> findById(long id) throws ServiceException;
+    Optional<Application> findById(String id) throws ServiceException;
 
-    Map<OrderStatus, Application> findByUser(User user) throws ServiceException;
+    Map<Application, OrderStatus> findByUser(User user) throws ServiceException;
 
     List<Application> findAll() throws ServiceException;
 
-    boolean updateParameters(String carNumber, Map<String, String> parameters) throws ServiceException;
+    boolean update(String id, Map<String, String> parameters) throws ServiceException;
 }

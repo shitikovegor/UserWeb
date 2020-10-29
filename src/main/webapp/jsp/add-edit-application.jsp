@@ -7,5 +7,5 @@
     <c:param name="title">
         <fmt:message key="title.addApplication"/>
     </c:param>
-    <c:param name="page" value="add-application"/>
+    <c:param name="page" value="add-edit-application"/>
 </c:import>

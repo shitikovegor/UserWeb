@@ -21,7 +21,9 @@ import java.util.*;
 import static com.shitikov.project.util.ParameterName.*;
 
 public class ApplicationDaoImpl implements ApplicationDao {
-    private static final String SQL_CHECK_BY_APP_ID = "SELECT application_id FROM applications WHERE application_id = ?";
+    private static final String SQL_FIND_BY_ID = "SELECT application_id, title, application_type, date, " +
+            "cargo_weight, cargo_volume, passengers_number, departure_date, departure_address, " +
+            "departure_city, arrival_date, arrival_address, arrival_city, description FROM applications WHERE application_id = ?";
     private static final String SQL_INSERT_APPLICATION = "INSERT INTO applications(title, application_type, date, " +
             "departure_date, departure_address, departure_city, arrival_date, arrival_address, arrival_city, " +
             "description, cargo_weight, cargo_volume, passengers_number, user_id_fk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?, " +
@@ -30,6 +32,9 @@ public class ApplicationDaoImpl implements ApplicationDao {
             "app.cargo_weight, app.cargo_volume, app.passengers_number, app.departure_date, app.departure_address, " +
             "app.departure_city, app.arrival_date, app.arrival_address, app.arrival_city, app.description, ord.status " +
             "FROM applications app LEFT JOIN orders ord ON app.application_id = ord.application_id_fk WHERE user_id_fk = ?";
+    private static final String SQL_DELETE_BY_ID = "DELETE FROM applications WHERE application_id = ?";
+    private static final String SQL_UPDATE_PARAMETERS = "UPDATE applications SET %s WHERE application_id = ?";
+
 
 
     public ApplicationDaoImpl() {
@@ -78,19 +83,37 @@ public class ApplicationDaoImpl implements ApplicationDao {
 
     @Override
     public Optional<Application> findById(long id) throws DaoException {
-        return Optional.empty();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_ID)) {
+
+            Application application = null;
+            statement.setLong(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    ApplicationType applicationType =
+                            ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
+                    if (applicationType == ApplicationType.CARGO) {
+                        application = buildCargoApplication(resultSet);
+                    } else {
+                        application = buildPassengerApplication(resultSet);
+                    }
+                }
+            }
+            return Optional.ofNullable(application);
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
     }
 
     @Override
-    public Map<OrderStatus, Application> findByUser(User user) throws DaoException {
+    public Map<Application, OrderStatus> findByUser(User user) throws DaoException {
         if (user == null) {
             throw new DaoException("User is null.");
         }
-        Map<OrderStatus, Application> applications = new HashMap<>();
-
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_USER_ID)) {
 
+            Map<Application, OrderStatus> applications = new HashMap<>();
             statement.setLong(1, user.getUserId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -100,17 +123,17 @@ public class ApplicationDaoImpl implements ApplicationDao {
                     OrderStatus orderStatus = status != null ? OrderStatus.valueOf(status.toUpperCase()) : OrderStatus.ACTIVE;
                     if (applicationType == ApplicationType.CARGO) {
                         CargoApplication cargoApplication = buildCargoApplication(resultSet);
-                        applications.put(orderStatus, cargoApplication);
+                        applications.put(cargoApplication, orderStatus);
                     } else {
                         PassengerApplication passengerApplication = buildPassengerApplication(resultSet);
-                        applications.put(orderStatus, passengerApplication);
+                        applications.put(passengerApplication, orderStatus);
                     }
                 }
             }
+            return applications;
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return applications;
     }
 
     @Override
@@ -120,12 +143,38 @@ public class ApplicationDaoImpl implements ApplicationDao {
 
     @Override
     public boolean update(Long applicationId, Map<String, String> parameters) throws DaoException {
-        return false;
+        boolean isUpdated;
+        if (parameters == null) {
+            throw new DaoException("Incorrect data. ");
+        }
+        String parametersSQL = fillParametersSQL(parameters);
+        String sqlRequest = String.format(SQL_UPDATE_PARAMETERS, parametersSQL);
+
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+
+            statement.setLong(1, applicationId);
+            int result = statement.executeUpdate();
+            isUpdated = result != 0;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. " + e, e);
+        }
+        return isUpdated;
     }
 
     @Override
-    public boolean remove(Application application) throws DaoException {
-        return false;
+    public boolean remove(long id) throws DaoException {
+        boolean isRemoved;
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
+
+            statement.setLong(1, id);
+            int result = statement.executeUpdate();
+            isRemoved = result != 0;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+        return isRemoved;
     }
 
     @Override
@@ -142,6 +191,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
         CargoApplication application = new CargoApplicationBuilder()
                 .buildCargoWeight(resultSet.getDouble(CARGO_WEIGHT))
                 .buildCargoVolume(resultSet.getDouble(CARGO_VOLUME))
+                .buildApplicationId(resultSet.getLong(APPLICATION_ID))
                 .buildTitle(resultSet.getString(TITLE))
                 .buildApplicationType(ApplicationType.CARGO)
                 .buildDate(resultSet.getLong(DATE))
@@ -166,8 +216,9 @@ public class ApplicationDaoImpl implements ApplicationDao {
     private PassengerApplication buildPassengerApplication(ResultSet resultSet) throws SQLException {
         PassengerApplication application = new PassengerApplicationBuilder()
                 .buildPassengersNumber(resultSet.getInt(PASSENGERS_NUMBER))
+                .buildApplicationId(resultSet.getLong(APPLICATION_ID))
                 .buildTitle(resultSet.getString(TITLE))
-                .buildApplicationType(ApplicationType.CARGO)
+                .buildApplicationType(ApplicationType.PASSENGER)
                 .buildDate(resultSet.getLong(DATE))
                 .buildAddressTimeData(new AddressTimeDataBuilder()
                         .buildDepartureDate(resultSet.getLong(DEPARTURE_DATE))

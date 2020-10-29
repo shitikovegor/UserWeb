@@ -30,10 +30,14 @@ public class AddCarCommand implements Command {
         CarService carService = CarServiceImpl.getInstance();
         Router router;
 
-        String weight = request.getParameter(CARRYING_WEIGHT).isEmpty() ? "0.0" : request.getParameter(CARRYING_WEIGHT);
-        String volume = request.getParameter(CARRYING_VOLUME).isEmpty() ? "0.0" : request.getParameter(CARRYING_VOLUME);
+        String weight = request.getParameter(CARRYING_WEIGHT).isEmpty() ? "0" : request.getParameter(CARRYING_WEIGHT);
+        String volume = request.getParameter(CARRYING_VOLUME).isEmpty() ? "0" : request.getParameter(CARRYING_VOLUME);
         String passengers = request.getParameter(PASSENGERS_NUMBER).isEmpty() ? "0"
                 : request.getParameter(PASSENGERS_NUMBER);
+
+        boolean areAllZeros = weight.equals(volume)
+                && volume.equals(passengers)
+                && passengers.equals("0");
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(CAR_NUMBER, request.getParameter(CAR_NUMBER));
@@ -45,13 +49,20 @@ public class AddCarCommand implements Command {
             HttpSession session = request.getSession();
             User user = (User) session.getAttribute(USER);
 
-            if (carService.add(parameters, user.getLogin())) {
+            if (!areAllZeros && carService.add(parameters, user.getLogin())) {
                 logger.log(Level.INFO, "Car added successfully.");
 
                 String page = getRedirectPage(request, CommandType.ACCOUNT_PAGE);
                 router = new Router(Router.Type.REDIRECT, page);
             } else {
                 request.setAttribute(AttributeName.ADD_ERROR, true);
+                for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                    if (!entry.getValue().isEmpty()) {
+                        request.setAttribute(entry.getKey(), entry.getValue());
+                    } else {
+                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
+                    }
+                }
                 logger.log(Level.INFO, "Car didn't add.");
 
                 String page = resourceBundle.getString("path.page.add_edit_car");
