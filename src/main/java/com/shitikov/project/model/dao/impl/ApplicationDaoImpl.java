@@ -397,7 +397,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
     }
 
     private void checkWhere(StringBuilder sqlRequest) {
-        if (!sqlRequest.substring(sqlRequest.length() - 6).equals("WHERE ")) {
+        if (!sqlRequest.substring(sqlRequest.length() - 6).equals(WHERE)) {
             sqlRequest.append(LOGICAL_AND);
         }
     }
