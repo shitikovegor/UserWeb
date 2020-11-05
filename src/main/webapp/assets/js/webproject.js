@@ -3,9 +3,16 @@ function dateValidation() {
     let dates = $('input[type=date]');
     let dateNow = new Date().toDateLocal();
 
-    dates.on('focus', function () {
+    dates.each(function () {
+        $(this).attr('min', dateNow);
+    })
+
+    dates.on('change', function () {
         let date = $(this);
-        date.attr('min', dateNow);
+        if (date.attr('id') == 'date_from') {
+            $('#date_to').attr('min', date.val());
+        }
+
     })
 };
 

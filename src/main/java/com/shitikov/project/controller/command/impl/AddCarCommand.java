@@ -48,8 +48,9 @@ public class AddCarCommand implements Command {
         try {
             HttpSession session = request.getSession();
             User user = (User) session.getAttribute(USER);
+            parameters.put(LOGIN, user.getLogin());
 
-            if (!areAllZeros && carService.add(parameters, user.getLogin())) {
+            if (!areAllZeros && carService.add(parameters)) {
                 logger.log(Level.INFO, "Car added successfully.");
 
                 String page = getRedirectPage(request, CommandType.ACCOUNT_PAGE);
@@ -60,7 +61,7 @@ public class AddCarCommand implements Command {
                     if (!entry.getValue().isEmpty()) {
                         request.setAttribute(entry.getKey(), entry.getValue());
                     } else {
-                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
+                        request.setAttribute(entry.getKey().concat(AttributeName.ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
                 logger.log(Level.INFO, "Car didn't add.");
@@ -70,7 +71,7 @@ public class AddCarCommand implements Command {
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

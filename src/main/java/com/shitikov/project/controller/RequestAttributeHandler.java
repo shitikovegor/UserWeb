@@ -9,7 +9,7 @@ public class RequestAttributeHandler {
     private Map<String, Object> requestAttributes = new HashMap<>();
 
     public Map<String, Object> getRequestAttributes() {
-        return requestAttributes;  // TODO: 22.10.2020 unmodifiable or not?
+        return requestAttributes;
     }
 
     public void setRequestAttributes(HttpServletRequest request) {

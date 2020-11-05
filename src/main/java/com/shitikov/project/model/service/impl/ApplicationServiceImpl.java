@@ -17,11 +17,11 @@ import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.ApplicationService;
 import com.shitikov.project.util.validator.AddressDateValidator;
 import com.shitikov.project.util.validator.ApplicationValidator;
+import com.shitikov.project.util.validator.OrderValidator;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,9 +42,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public boolean add(Map<String, String> parameters, String login) throws ServiceException {
+    public boolean add(Map<String, String> parameters) throws ServiceException {
         boolean isAdded = false;
         boolean areTextDateFieldsValid = true;
+        String login = parameters.get(LOGIN);
 
         if (!ApplicationValidator.checkTitle(parameters.get(TITLE))) {
             areTextDateFieldsValid = false;
@@ -57,10 +58,16 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (!AddressDateValidator.checkDate(parameters.get(DEPARTURE_DATE))) {
             areTextDateFieldsValid = false;
             parameters.replace(DEPARTURE_DATE, "");
+        } else {
+            String departureDate = parameters.get(DEPARTURE_DATE);
+            parameters.replace(DEPARTURE_DATE, dateToLong(departureDate).toString());
         }
         if (!AddressDateValidator.checkDate(parameters.get(ARRIVAL_DATE))) {
             areTextDateFieldsValid = false;
             parameters.replace(ARRIVAL_DATE, "");
+        } else {
+            String departureDate = parameters.get(ARRIVAL_DATE);
+            parameters.replace(ARRIVAL_DATE, dateToLong(departureDate).toString());
         }
 
         try {
@@ -135,8 +142,24 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<Application> findAll() throws ServiceException {
-        return null;
+    public Map<Application, OrderStatus> findAll() throws ServiceException {
+        try {
+            Map<Application, OrderStatus> applications = applicationDao.findAll();
+            return applications;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public Map<Application, OrderStatus> findByParameters(Map<String, String> parameters) throws ServiceException {
+        try {
+            Map<String, Object> validParameters = fillValidParameters(parameters);
+            Map<Application, OrderStatus> applications = applicationDao.findByParameters(validParameters);
+            return applications;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
@@ -144,7 +167,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (!ApplicationValidator.checkId(id)) {
             return false;
         }
-        boolean isUpdated = ApplicationValidator.checkParameters(parameters);
+        boolean isUpdated;
+        if (parameters.get(APPLICATION_TYPE).equals(CARGO)) {
+            isUpdated = ApplicationValidator.checkCargoAppParameters(parameters);
+        } else {
+            isUpdated = ApplicationValidator.checkPassengerAppParameters(parameters);
+        }
         try {
             if (isUpdated) {
                 Map<String, String> paramToUpdate = new HashMap<>(parameters);
@@ -155,11 +183,15 @@ public class ApplicationServiceImpl implements ApplicationService {
                     }
                 }
                 if (!paramToUpdate.isEmpty()) {
-                    String departureDate = paramToUpdate.get(DEPARTURE_DATE);
-                    paramToUpdate.replace(DEPARTURE_DATE, dateToLong(departureDate).toString());
-                    String arrivalDate = paramToUpdate.get(ARRIVAL_DATE);
-                    paramToUpdate.replace(ARRIVAL_DATE, dateToLong(arrivalDate).toString());
+                    if (paramToUpdate.containsKey(DEPARTURE_DATE)) {
+                        String departureDate = paramToUpdate.get(DEPARTURE_DATE);
+                        paramToUpdate.replace(DEPARTURE_DATE, dateToLong(departureDate).toString());
 
+                    }
+                    if (paramToUpdate.containsKey(ARRIVAL_DATE)) {
+                        String arrivalDate = paramToUpdate.get(ARRIVAL_DATE);
+                        paramToUpdate.replace(ARRIVAL_DATE, dateToLong(arrivalDate).toString());
+                    }
                     isUpdated = applicationDao.update(Long.parseLong(id), paramToUpdate);
                 }
             }
@@ -177,12 +209,12 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .buildApplicationType(ApplicationType.CARGO)
                 .buildDate(System.currentTimeMillis())
                 .buildAddressTimeData(new AddressTimeDataBuilder()
-                        .buildDepartureDate(dateToLong(parameters.get(DEPARTURE_DATE)))
+                        .buildDepartureDate(Long.parseLong(parameters.get(DEPARTURE_DATE)))
                         .buildDepartureAddress(new AddressBuilder()
                                 .buildStreetHome(parameters.get(DEPARTURE_ADDRESS))
                                 .buildCity(parameters.get(DEPARTURE_CITY))
                                 .buildAddress())
-                        .buildArrivalDate(dateToLong(parameters.get(ARRIVAL_DATE)))
+                        .buildArrivalDate(Long.parseLong(parameters.get(ARRIVAL_DATE)))
                         .buildArrivalAddress(new AddressBuilder()
                                 .buildStreetHome(parameters.get(ARRIVAL_ADDRESS))
                                 .buildCity(parameters.get(ARRIVAL_CITY))
@@ -195,22 +227,18 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     private PassengerApplication buildPassengerApplication(Map<String, String> parameters) {
-        long departureDate =
-                LocalDate.parse(parameters.get(DEPARTURE_DATE)).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        long arrivalDate =
-                LocalDate.parse(parameters.get(ARRIVAL_DATE)).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
         PassengerApplication application = new PassengerApplicationBuilder()
                 .buildPassengersNumber(Integer.parseInt(parameters.get(PASSENGERS_NUMBER)))
                 .buildTitle(parameters.get(TITLE))
                 .buildApplicationType(ApplicationType.PASSENGER)
                 .buildDate(System.currentTimeMillis())
                 .buildAddressTimeData(new AddressTimeDataBuilder()
-                        .buildDepartureDate(departureDate)
+                        .buildDepartureDate(Long.parseLong(parameters.get(DEPARTURE_DATE)))
                         .buildDepartureAddress(new AddressBuilder()
                                 .buildStreetHome(parameters.get(DEPARTURE_ADDRESS))
                                 .buildCity(parameters.get(DEPARTURE_CITY))
                                 .buildAddress())
-                        .buildArrivalDate(arrivalDate)
+                        .buildArrivalDate(Long.parseLong(parameters.get(ARRIVAL_DATE)))
                         .buildArrivalAddress(new AddressBuilder()
                                 .buildStreetHome(parameters.get(ARRIVAL_ADDRESS))
                                 .buildCity(parameters.get(ARRIVAL_CITY))
@@ -224,5 +252,82 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private Long dateToLong(String date) {
         return LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    private Map<String, Object> fillValidParameters(Map<String, String> parameters) {
+        String typeCargo = parameters.get(CARGO);
+        String typePassenger = parameters.get(PASSENGER);
+        String departureDateFrom = parameters.get(DEPARTURE_DATE_FROM);
+        String departureDateTo = parameters.get(DEPARTURE_DATE_TO);
+        String passengerNumberFrom = parameters.get(PASSENGER_NUMBER_FROM);
+        String passengerNumberTo = parameters.get(PASSENGER_NUMBER_TO);
+        String cargoWeightFrom = parameters.get(CARGO_WEIGHT_FROM);
+        String cargoWeightTo = parameters.get(CARGO_WEIGHT_TO);
+        String cargoVolumeFrom = parameters.get(CARGO_VOLUME_FROM);
+        String cargoVolumeTo = parameters.get(CARGO_VOLUME_TO);
+        String city = parameters.get(CITY);
+        String statusActive = parameters.get(ACTIVE);
+        String statusConfirmed = parameters.get(CONFIRMED);
+        String statusCompleted = parameters.get(COMPLETED);
+        String statusCanceled = parameters.get(CANCELED);
+
+        Map<String, Object> validParameters = new HashMap<>();
+        if (ApplicationValidator.checkType(typeCargo)) {
+            validParameters.put(CARGO, typeCargo);
+        }
+        if (ApplicationValidator.checkType(typePassenger)) {
+            validParameters.put(PASSENGER, typePassenger);
+        }
+        if (AddressDateValidator.checkDate(departureDateFrom) && AddressDateValidator.checkDate(departureDateTo)) {
+            long from = dateToLong(departureDateFrom);
+            long to = dateToLong(departureDateTo);
+            if (from <= to) {
+                validParameters.put(DEPARTURE_DATE_FROM, from);
+                validParameters.put(DEPARTURE_DATE_TO, to);
+            }
+        }
+        if (ApplicationValidator.checkPassenger(passengerNumberFrom)
+                && ApplicationValidator.checkPassenger(passengerNumberTo)) {
+            int from = Integer.parseInt(passengerNumberFrom);
+            int to = Integer.parseInt(passengerNumberTo);
+            if (from <= to) {
+                validParameters.put(PASSENGER_NUMBER_FROM, from);
+                validParameters.put(PASSENGER_NUMBER_TO, to);
+            }
+        }
+        if (ApplicationValidator.checkCargo(cargoWeightFrom)
+                && ApplicationValidator.checkCargo(cargoWeightTo)) {
+            double from = Double.parseDouble(cargoWeightFrom);
+            double to = Double.parseDouble(cargoWeightTo);
+            if (from <= to) {
+                validParameters.put(CARGO_WEIGHT_FROM, from);
+                validParameters.put(CARGO_WEIGHT_TO, to);
+            }
+        }
+        if (ApplicationValidator.checkCargo(cargoVolumeFrom)
+                && ApplicationValidator.checkCargo(cargoVolumeTo)) {
+            double from = Double.parseDouble(cargoVolumeFrom);
+            double to = Double.parseDouble(cargoVolumeTo);
+            if (from <= to) {
+                validParameters.put(CARGO_VOLUME_FROM, from);
+                validParameters.put(CARGO_VOLUME_TO, to);
+            }
+        }
+        if (AddressDateValidator.checkCity(city)) {
+            validParameters.put(CITY, city);
+        }
+        if (OrderValidator.checkStatus(statusActive)) {
+            validParameters.put(ACTIVE, statusActive);
+        }
+        if (OrderValidator.checkStatus(statusConfirmed)) {
+            validParameters.put(CONFIRMED, statusConfirmed);
+        }
+        if (OrderValidator.checkStatus(statusCompleted)) {
+            validParameters.put(COMPLETED, statusCompleted);
+        }
+        if (OrderValidator.checkStatus(statusCanceled)) {
+            validParameters.put(CANCELED, statusCanceled);
+        }
+        return validParameters;
     }
 }

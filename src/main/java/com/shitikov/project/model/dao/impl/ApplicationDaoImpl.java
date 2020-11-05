@@ -28,13 +28,33 @@ public class ApplicationDaoImpl implements ApplicationDao {
             "departure_date, departure_address, departure_city, arrival_date, arrival_address, arrival_city, " +
             "description, cargo_weight, cargo_volume, passengers_number, user_id_fk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?, " +
             "(SELECT user_id FROM users WHERE login = ?))";
+    private static final String SQL_FIND_ALL = "SELECT app.application_id, app.title, app.application_type, app.date, " +
+            "app.cargo_weight, app.cargo_volume, app.passengers_number, app.departure_date, app.departure_address, " +
+            "app.departure_city, app.arrival_date, app.arrival_address, app.arrival_city, app.description, ord.status " +
+            "FROM applications app LEFT JOIN orders ord ON app.application_id = ord.application_id_fk";
     private static final String SQL_FIND_BY_USER_ID = "SELECT app.application_id, app.title, app.application_type, app.date, " +
             "app.cargo_weight, app.cargo_volume, app.passengers_number, app.departure_date, app.departure_address, " +
             "app.departure_city, app.arrival_date, app.arrival_address, app.arrival_city, app.description, ord.status " +
-            "FROM applications app LEFT JOIN orders ord ON app.application_id = ord.application_id_fk WHERE user_id_fk = ?";
+            "FROM applications app LEFT JOIN orders ord ON app.application_id = ord.application_id_fk WHERE " +
+            "app.user_id_fk = ?";
     private static final String SQL_DELETE_BY_ID = "DELETE FROM applications WHERE application_id = ?";
     private static final String SQL_UPDATE_PARAMETERS = "UPDATE applications SET %s WHERE application_id = ?";
-
+    private static final String WHERE = " WHERE ";
+    private static final String OPEN_PARENTHESIS = "(";
+    private static final String CLOSED_PARENTHESIS = ") ";
+    private static final String TYPE_FIELD = "app.application_type = ";
+    private static final String APOSTROPHE = "\'";
+    private static final String LOGICAL_AND = " && ";
+    private static final String LOGICAL_OR = " || ";
+    private static final String DEP_DATE_FIELD = "app.departure_date ";
+    private static final String BETWEEN = "BETWEEN ";
+    private static final String AND = " AND ";
+    private static final String PASS_NUMBER_FIELD = "app.passengers_number ";
+    private static final String WEIGHT_FIELD = "app.cargo_weight ";
+    private static final String VOLUME_FIELD = "app.cargo_volume ";
+    private static final String CITY_FIELD = "app.departure_city = ";
+    private static final String STATUS_NULL = "ord.status is null ";
+    private static final String STATUS_FIELD = "ord.status = ";
 
 
     public ApplicationDaoImpl() {
@@ -113,7 +133,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_USER_ID)) {
 
-            Map<Application, OrderStatus> applications = new HashMap<>();
+            Map<Application, OrderStatus> applications = new TreeMap<>(new Application.IdComparator());
             statement.setLong(1, user.getUserId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -137,8 +157,62 @@ public class ApplicationDaoImpl implements ApplicationDao {
     }
 
     @Override
-    public List<Application> findAll() throws DaoException {
-        return null;
+    public Map<Application, OrderStatus> findAll() throws DaoException {
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL)) {
+
+            Map<Application, OrderStatus> applications = new TreeMap<>(new Application.DepartureDateComparator());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ApplicationType applicationType =
+                            ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
+                    String status = resultSet.getString(STATUS);
+                    OrderStatus orderStatus = status != null ? OrderStatus.valueOf(status.toUpperCase()) : OrderStatus.ACTIVE;
+                    if (applicationType == ApplicationType.CARGO) {
+                        CargoApplication cargoApplication = buildCargoApplication(resultSet);
+                        applications.put(cargoApplication, orderStatus);
+                    } else {
+                        PassengerApplication passengerApplication = buildPassengerApplication(resultSet);
+                        applications.put(passengerApplication, orderStatus);
+                    }
+                }
+            }
+            return applications;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+    }
+
+    @Override
+    public Map<Application, OrderStatus> findByParameters(Map<String, Object> parameters) throws DaoException {
+        if (parameters.isEmpty()) {
+            return findAll();
+        }
+        StringBuilder sqlRequest = new StringBuilder(SQL_FIND_ALL);
+        fillSearchParameters(sqlRequest, parameters);
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlRequest.toString())) {
+
+            Map<Application, OrderStatus> applications = new TreeMap<>(new Application.DepartureDateComparator());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ApplicationType applicationType =
+                            ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
+                    String status = resultSet.getString(STATUS);
+                    OrderStatus orderStatus = status != null ? OrderStatus.valueOf(status.toUpperCase()) : OrderStatus.ACTIVE;
+                    if (applicationType == ApplicationType.CARGO) {
+                        CargoApplication cargoApplication = buildCargoApplication(resultSet);
+                        applications.put(cargoApplication, orderStatus);
+                    } else {
+                        PassengerApplication passengerApplication = buildPassengerApplication(resultSet);
+                        applications.put(passengerApplication, orderStatus);
+                    }
+                }
+            }
+            return applications;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
     }
 
     @Override
@@ -236,5 +310,95 @@ public class ApplicationDaoImpl implements ApplicationDao {
                 .buildApplication();
 
         return application;
+    }
+
+    private void fillSearchParameters(StringBuilder sqlRequest, Map<String, Object> parameters) {
+        sqlRequest.append(WHERE);
+        if (parameters.containsKey(CARGO) && parameters.containsKey(PASSENGER)) {
+            sqlRequest.append(OPEN_PARENTHESIS);
+            sqlRequest.append(TYPE_FIELD);
+            sqlRequest.append(APOSTROPHE + parameters.get(CARGO) + APOSTROPHE);
+            sqlRequest.append(LOGICAL_OR);
+            sqlRequest.append(TYPE_FIELD);
+            sqlRequest.append(APOSTROPHE + parameters.get(PASSENGER) + APOSTROPHE);
+            sqlRequest.append(CLOSED_PARENTHESIS);
+        } else if (parameters.containsKey(CARGO)) {
+            sqlRequest.append(TYPE_FIELD);
+            sqlRequest.append(APOSTROPHE + parameters.get(CARGO) + APOSTROPHE);
+        } else if (parameters.containsKey(PASSENGER)) {
+            sqlRequest.append(TYPE_FIELD);
+            sqlRequest.append(APOSTROPHE + parameters.get(PASSENGER) + APOSTROPHE);
+        }
+        if (parameters.containsKey(DEPARTURE_DATE_FROM)) {
+            checkWhere(sqlRequest);
+            sqlRequest.append(DEP_DATE_FIELD);
+            sqlRequest.append(BETWEEN);
+            sqlRequest.append(parameters.get(DEPARTURE_DATE_FROM));
+            sqlRequest.append(AND);
+            sqlRequest.append(parameters.get(DEPARTURE_DATE_TO));
+        }
+        if (parameters.containsKey(PASSENGER_NUMBER_FROM)) {
+            checkWhere(sqlRequest);
+            sqlRequest.append(PASS_NUMBER_FIELD);
+            sqlRequest.append(BETWEEN);
+            sqlRequest.append(parameters.get(PASSENGER_NUMBER_FROM));
+            sqlRequest.append(AND);
+            sqlRequest.append(parameters.get(PASSENGER_NUMBER_TO));
+        }
+        if (parameters.containsKey(CARGO_WEIGHT_FROM)) {
+            checkWhere(sqlRequest);
+            sqlRequest.append(WEIGHT_FIELD);
+            sqlRequest.append(BETWEEN);
+            sqlRequest.append(parameters.get(CARGO_WEIGHT_FROM));
+            sqlRequest.append(AND);
+            sqlRequest.append(parameters.get(CARGO_WEIGHT_TO));
+        }
+        if (parameters.containsKey(CARGO_VOLUME_FROM)) {
+            checkWhere(sqlRequest);
+            sqlRequest.append(VOLUME_FIELD);
+            sqlRequest.append(BETWEEN);
+            sqlRequest.append(parameters.get(CARGO_VOLUME_FROM));
+            sqlRequest.append(AND);
+            sqlRequest.append(parameters.get(CARGO_VOLUME_TO));
+        }
+        if (parameters.containsKey(CITY)) {
+            checkWhere(sqlRequest);
+            sqlRequest.append(CITY_FIELD);
+            sqlRequest.append(APOSTROPHE + parameters.get(CITY) + APOSTROPHE);
+        }
+        List<String> statuses = new ArrayList<>();
+        if (parameters.containsKey(ACTIVE)) {
+            statuses.add(null);
+        }
+        if (parameters.containsKey(CONFIRMED)) {
+            statuses.add((String) parameters.get(CONFIRMED));
+        }
+        if (parameters.containsKey(COMPLETED)) {
+            statuses.add((String) parameters.get(COMPLETED));
+        }
+        if (parameters.containsKey(CANCELED)) {
+            statuses.add((String) parameters.get(CANCELED));
+        }
+        if (!statuses.isEmpty()) {
+            checkWhere(sqlRequest);
+            sqlRequest.append(OPEN_PARENTHESIS);
+            for (String status : statuses) {
+                if (status == null) {
+                    sqlRequest.append(STATUS_NULL);
+                } else {
+                    sqlRequest.append(STATUS_FIELD);
+                    sqlRequest.append(APOSTROPHE + status + APOSTROPHE);
+                }
+                sqlRequest.append(LOGICAL_OR);
+            }
+            sqlRequest.delete(sqlRequest.length() - 4, sqlRequest.length());
+            sqlRequest.append(CLOSED_PARENTHESIS);
+        }
+    }
+
+    private void checkWhere(StringBuilder sqlRequest) {
+        if (!sqlRequest.substring(sqlRequest.length() - 6).equals("WHERE ")) {
+            sqlRequest.append(LOGICAL_AND);
+        }
     }
 }

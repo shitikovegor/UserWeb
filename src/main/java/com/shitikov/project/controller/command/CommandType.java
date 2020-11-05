@@ -19,6 +19,11 @@ public enum CommandType {
     ADD_APPLICATION(new AddApplicationCommand()),
     EDIT_APPLICATION(new EditApplicationCommand()),
     REMOVE_APPLICATION(new RemoveApplicationCommand()),
+    CANCEL_APPLICATION(new CancelApplicationCommand()),
+    COMPLETE_APPLICATION(new CompleteApplicationCommand()),
+    OFFER_HELP(new OfferHelpCommand()),
+    REMOVE_ORDER(new RemoveOrderCommand()),
+    SEARCH(new SearchCommand()),
     //pages
     HOME_PAGE(new HomePageCommand()),
     REGISTRATION_PAGE(new RegistrationPageCommand()),
@@ -27,7 +32,11 @@ public enum CommandType {
     ADD_CAR_PAGE(new AddCarPageCommand()),
     EDIT_CAR_PAGE(new EditCarPageCommand()),
     ADD_APPLICATION_PAGE(new AddApplicationPageCommand()),
-    EDIT_APPLICATION_PAGE(new EditApplicationPageCommand());
+    EDIT_APPLICATION_PAGE(new EditApplicationPageCommand()),
+    APPLICATIONS_PAGE(new ApplicationsPageCommand()),
+    APPLICATION_PAGE(new ApplicationPageCommand()),
+    BACK(new BackCommand()),
+    PAGINATION(new PaginationCommand());
 
 
     private Command command;

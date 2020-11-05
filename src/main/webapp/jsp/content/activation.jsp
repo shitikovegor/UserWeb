@@ -8,7 +8,7 @@
             <div class="container">
                 <div class="block-heading">
                     <h2 class="text-info" style="margin-top: 60px;"><fmt:message key="page.activation.name"/></h2>
-                    <c:if test="${!isAccountActivated}">
+                    <c:if test="${!account_activated}">
                         <p><fmt:message key="page.activation.activate-account"/></p>
                     </c:if>
                     <p><fmt:message key="page.activation.text"/></p>

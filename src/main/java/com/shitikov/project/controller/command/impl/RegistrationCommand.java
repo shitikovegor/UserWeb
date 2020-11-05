@@ -1,10 +1,10 @@
 package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.Router;
+import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.UserServiceImpl;
-import com.shitikov.project.util.MessageManager;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.mail.MailSender;
 import org.apache.logging.log4j.Level;
@@ -19,7 +19,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import static com.shitikov.project.controller.command.AttributeName.*;
+import static com.shitikov.project.controller.command.AttributeName.EMAIL_EXISTS;
+import static com.shitikov.project.controller.command.AttributeName.LOGIN_EXISTS;
 import static com.shitikov.project.util.ParameterName.*;
 
 
@@ -27,6 +28,7 @@ public class RegistrationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final String EXISTS = "exists";
     private static final String EMAIL_SUBJECT = "HelpByCar. Activate your account"; // TODO: 09.10.2020 from properties
+    private static final String EMAIL_PROPERTIES = "config/mail.properties";
     private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
     @Override
@@ -45,10 +47,8 @@ public class RegistrationCommand implements Command {
 
         try {
             if (UserServiceImpl.getInstance().add(parameters)) {
-                request.setAttribute("userAddedMessage", MessageManager.getProperty("command.registration.success")); // TODO: 09.10.2020 page address need be in constant?
-
                 Properties properties = new Properties();
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/mail.properties");
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(EMAIL_PROPERTIES);
                 properties.load(inputStream);
                 String emailBody = String.format(EMAIL_BODY,
                         request.getRequestURL(), request.getParameter(LOGIN));
@@ -71,7 +71,7 @@ public class RegistrationCommand implements Command {
                     if (!entry.getValue().isEmpty()) {
                         request.setAttribute(entry.getKey(), entry.getValue());
                     } else {
-                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
+                        request.setAttribute(entry.getKey().concat(AttributeName.ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
                 router = new Router(resourceBundle.getString("path.page.registration"));
@@ -79,7 +79,7 @@ public class RegistrationCommand implements Command {
             }
         } catch (ServiceException | IOException e) {
 
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

@@ -11,10 +11,7 @@ public class ParameterName {
     //common
     public static final String LOCALE = "locale";
     public static final String CURRENT_PAGE = "current_page";
-
-    public static final String REQUEST_ATTRIBUTE_HANDLER = "attribute_handler";
-    public static final String ATTRIBUTE_SUBSTRING_INVALID = "_invalid";
-
+    public static final String PREVIOUS_PAGE = "previous_page";
 
     //user
     public static final String USER = "user";
@@ -40,6 +37,7 @@ public class ParameterName {
 
     //car
     public static final String CAR = "car";
+    public static final String CARS = "cars";
     public static final String CAR_ID = "car_id";
     public static final String CAR_NUMBER = "car_number";
     public static final String CARRYING_WEIGHT = "carrying_weight";
@@ -48,8 +46,10 @@ public class ParameterName {
     //car & application
     public static final String PASSENGERS_NUMBER = "passengers_number";
 
-    //application
+    //application && order
     public static final String APPLICATION = "application";
+    public static final String APPLICATIONS = "applications";
+    public static final String ORDER_ID = "order_id";
     public static final String APPLICATION_ID = "application_id";
     public static final String TITLE = "title";
     public static final String APPLICATION_TYPE = "application_type";
@@ -64,6 +64,26 @@ public class ParameterName {
     public static final String ARRIVAL_CITY = "arrival_city";
     public static final String DESCRIPTION = "description";
     public static final String STATUS = "status";
+    public static final String ORDERS = "orders";
+
+    //application type values
+    public static final String CARGO = "cargo";
+    public static final String PASSENGER = "passenger";
+
+    //order status values
+    public static final String CONFIRMED = "confirmed";
+    public static final String COMPLETED = "completed";
+    public static final String CANCELED = "canceled";
+
+    //search parameters
+    public static final String DEPARTURE_DATE_FROM = "departure_date_from";
+    public static final String DEPARTURE_DATE_TO = "departure_date_to";
+    public static final String PASSENGER_NUMBER_FROM = "passenger_number_from";
+    public static final String PASSENGER_NUMBER_TO = "passenger_number_to";
+    public static final String CARGO_WEIGHT_FROM = "cargo_weight_from";
+    public static final String CARGO_WEIGHT_TO = "cargo_weight_to";
+    public static final String CARGO_VOLUME_FROM = "cargo_volume_from";
+    public static final String CARGO_VOLUME_TO = "cargo_volume_to";
 
     public static final List<String> APPLICATION_PARAMS;
     public static final List<String> CAR_PARAMS;
@@ -92,6 +112,4 @@ public class ParameterName {
 
     private ParameterName() {
     }
-
-    // TODO: 14.10.2020 where need to keep parameter names - in util or in controller?
 }

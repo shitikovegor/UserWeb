@@ -2,18 +2,18 @@ package com.shitikov.project.model.entity.type;
 
 public enum OrderStatus {
     ACTIVE("active"),
-    IN_PROCESS("in process"),
+    CONFIRMED("confirmed"),
     COMPLETED("completed"),
     CANCELED("canceled");
 
 
-    private String statusName;
+    private String name;
 
-    OrderStatus(String statusName) {
-        this.statusName = statusName;
+    OrderStatus(String name) {
+        this.name = name;
     }
 
-    public String getStatusName() {
-        return statusName;
+    public String getName() {
+        return name;
     }
 }

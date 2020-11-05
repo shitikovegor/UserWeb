@@ -21,4 +21,19 @@
             <type>boolean</type>
         </attribute>
     </tag>
+    <tag>
+        <name>app-pagination</name>
+        <tag-class>com.shitikov.project.tag.ApplicationsPaginationTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>pageNumber</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>applicationsOnPage</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
 </taglib>

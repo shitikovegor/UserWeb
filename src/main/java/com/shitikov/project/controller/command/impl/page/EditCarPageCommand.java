@@ -26,10 +26,10 @@ public class EditCarPageCommand implements Command {
     public Router execute(HttpServletRequest request) {
         Router router;
 
-        String carNumber = request.getParameter(CAR_NUMBER);
+        String carId = request.getParameter(CAR_ID);
 
         try {
-            Optional<Car> carOptional = CarServiceImpl.getInstance().findByNumber(carNumber);
+            Optional<Car> carOptional = CarServiceImpl.getInstance().findById(carId);
             if (carOptional.isPresent()) {
                 Car car = carOptional.get();
                 logger.log(Level.INFO, "Car found successfully.");
@@ -47,7 +47,7 @@ public class EditCarPageCommand implements Command {
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

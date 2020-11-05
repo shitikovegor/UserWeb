@@ -38,6 +38,8 @@ public class UserDaoImpl implements UserDao {
             " users ON addresses.user_id_fk = users.user_id SET %s WHERE users.login = ?";
     private static final String SQL_FIND_ADDRESS_BY_LOGIN =
             "SELECT address, city FROM addresses INNER JOIN users ON addresses.user_id_fk = users.user_id WHERE users.login = ?";
+    private static final String SQL_PHONE_BY_APP_ID = "SELECT phone FROM users JOIN applications ON " +
+            "user_id = user_id_fk WHERE applications.application_id = ?";
 
     public UserDaoImpl() {
     }
@@ -210,6 +212,24 @@ public class UserDaoImpl implements UserDao {
             throw new DaoException("Connection error. ", e);
         }
         return Optional.ofNullable(address);
+    }
+
+    @Override
+    public long findPhoneByApplicationId(long applicationId) throws DaoException {
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_PHONE_BY_APP_ID)) {
+
+            statement.setLong(1, applicationId);
+            long phone = 0;
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    phone = resultSet.getLong(ParameterName.PHONE);
+                }
+            }
+            return phone;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
     }
 
     @Override

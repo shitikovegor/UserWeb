@@ -12,7 +12,7 @@
                 <li class="nav-item" role="presentation"><a class="nav-link"
                     href="controller?command=home-page"><fmt:message key="header.home"/></a></li>
                 <li class="nav-item" role="presentation"><a class="nav-link"
-                    href="controller?command=requests-page"><fmt:message key="header.applications"/></a></li>
+                    href="controller?command=applications-page"><fmt:message key="header.applications"/></a></li>
                 <c:if test="${userRole == 'GUEST'}">
                     <li class="nav-item" style="display-role: guest" role="presentation">
                         <a class="nav-link"

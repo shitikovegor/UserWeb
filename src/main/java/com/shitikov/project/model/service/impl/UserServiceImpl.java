@@ -13,6 +13,7 @@ import com.shitikov.project.model.service.UserService;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.PasswordEncoder;
 import com.shitikov.project.util.validator.AddressDateValidator;
+import com.shitikov.project.util.validator.ApplicationValidator;
 import com.shitikov.project.util.validator.UserValidator;
 
 import java.util.HashMap;
@@ -169,39 +170,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public long findPhoneByApplicationId(String applicationId) throws ServiceException {
+        try {
+            long phone = 0;
+            if (ApplicationValidator.checkId(applicationId)) {
+                phone = userDao.findPhoneByApplicationId(Long.parseLong(applicationId));
+            }
+            return phone;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public boolean remove(String login) {
         return false;
     }
 
     @Override
     public boolean update(String login, Map<String, String> parameters) throws ServiceException {
+        boolean isLoginValid;
+        boolean isEmailValid;
         String loginToChange = parameters.get(ParameterName.LOGIN);
-        if (loginToChange != null && !UserValidator.checkLogin(loginToChange)) {
+        if (!(isLoginValid = UserValidator.checkLogin(loginToChange))) {
             parameters.replace(ParameterName.LOGIN, "");
         }
         String nameToChange = parameters.get(ParameterName.NAME);
-        if (nameToChange != null && !UserValidator.checkName(nameToChange)) {
+        if (!UserValidator.checkName(nameToChange)) {
             parameters.replace(ParameterName.NAME, "");
         }
         String surnameToChange = parameters.get(ParameterName.SURNAME);
-        if (surnameToChange != null && !UserValidator.checkSurname(surnameToChange)) {
+        if (!UserValidator.checkName(surnameToChange)) {
             parameters.replace(ParameterName.SURNAME, "");
         }
         String emailToChange = parameters.get(ParameterName.EMAIL);
-        if (emailToChange != null && !UserValidator.checkEmail(emailToChange)) {
+        if (!(isEmailValid = UserValidator.checkEmail(emailToChange))) {
             parameters.replace(ParameterName.EMAIL, "");
         }
 
         try {
-            if (loginToChange != null && userDao.checkLogin(loginToChange)) {
+            if (isLoginValid && userDao.checkLogin(loginToChange)) {
                 parameters.replace(ParameterName.LOGIN, EXISTS);
             }
-            if (emailToChange != null && userDao.checkEmail(emailToChange)) {
+            if (isEmailValid && userDao.checkEmail(emailToChange)) {
                 parameters.replace(ParameterName.EMAIL, EXISTS);
             }
 
             Map<String, String> paramToUpdate = new HashMap<>(parameters);
-
             for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
                 String element = entry.getValue();
                 if (element.isEmpty() || element.equals(EXISTS)) {
@@ -245,7 +260,6 @@ public class UserServiceImpl implements UserService {
                         paramToUpdate.remove(entry.getKey());
                     }
                 }
-
                 if (!paramToUpdate.isEmpty()) {
                     isUpdated = userDao.updateContactParameters(login, paramToUpdate);
                 }

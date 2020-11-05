@@ -42,7 +42,7 @@ public class EditCarCommand implements Command {
         try {
             HttpSession session = request.getSession();
             RequestAttributeHandler handler =
-                    (RequestAttributeHandler) session.getAttribute(REQUEST_ATTRIBUTE_HANDLER);
+                    (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
             Map<String, Object> attributes = handler.getRequestAttributes();
 
             Map<String, String> parameters = new HashMap<>();
@@ -52,7 +52,7 @@ public class EditCarCommand implements Command {
                     parameters.put(parameterName, parameter);
                 }
             }
-            if (!areAllZeros && carService.updateById(request.getParameter(CAR_ID), parameters)) {
+            if (!areAllZeros && carService.update(request.getParameter(CAR_ID), parameters)) {
                 logger.log(Level.INFO, "Car edited successfully.");
 
                 String page = getRedirectPage(request, CommandType.ACCOUNT_PAGE);
@@ -68,7 +68,7 @@ public class EditCarCommand implements Command {
                     } else if (!parameter.isEmpty()) {
                         request.setAttribute(entry.getKey(), parameter);
                     } else {
-                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
+                        request.setAttribute(entry.getKey().concat(AttributeName.ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
                 String page = resourceBundle.getString("path.page.add_edit_car");
@@ -76,7 +76,7 @@ public class EditCarCommand implements Command {
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

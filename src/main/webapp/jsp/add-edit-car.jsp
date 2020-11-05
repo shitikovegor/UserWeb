@@ -5,7 +5,14 @@
 
 <c:import url="baseLayout.jsp">
     <c:param name="title">
-        <fmt:message key="title.addCar"/>
+        <c:choose>
+            <c:when test="${edit_car}">
+                <fmt:message key="title.editCar"/>
+            </c:when>
+            <c:otherwise>
+                <fmt:message key="title.addCar"/>
+            </c:otherwise>
+        </c:choose>
     </c:param>
     <c:param name="page" value="add-edit-car"/>
 </c:import>

@@ -55,6 +55,7 @@
                     <input class="form-control item" type="number" id="passengers_number"
                            placeholder="0" name="passengers_number" value="${passengers_number}">
                 </div>
+                <div class="form-group">
                 <c:choose>
                     <c:when test="${edit_car}">
                         <button class="btn btn-primary btn-block" type="submit" name="car_id" value="${car_id}">
@@ -67,12 +68,13 @@
                         </button>
                     </c:otherwise>
                 </c:choose>
+                </div>
 
                 <c:if test="${adding_error}">
                     <div role="alert" class="alert alert-danger" autofocus>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
                         <span>
-                            <fmt:message key="error.addCar"/>
+                            <strong><fmt:message key="error.addCar"/></strong>
                         </span>
                     </div>
                 </c:if>

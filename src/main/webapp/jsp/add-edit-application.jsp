@@ -5,7 +5,14 @@
 
 <c:import url="baseLayout.jsp">
     <c:param name="title">
-        <fmt:message key="title.addApplication"/>
+        <c:choose>
+            <c:when test="${edit_application}">
+                <fmt:message key="title.editApplication"/>
+            </c:when>
+            <c:otherwise>
+                <fmt:message key="title.addApplication"/>
+            </c:otherwise>
+        </c:choose>
     </c:param>
     <c:param name="page" value="add-edit-application"/>
 </c:import>

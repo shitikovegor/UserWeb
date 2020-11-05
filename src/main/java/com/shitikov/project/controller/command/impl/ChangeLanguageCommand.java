@@ -12,10 +12,9 @@ import java.io.IOException;
 public class ChangeLanguageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) throws IOException, ServletException {
-        String language = request.getParameter("locale");
+        String language = request.getParameter(ParameterName.LOCALE);
         HttpSession session = request.getSession();
         session.setAttribute(ParameterName.LOCALE, language);
         return new Router(session.getAttribute(ParameterName.CURRENT_PAGE).toString());
-        // TODO: 28.09.2020 page from filter
     }
 }

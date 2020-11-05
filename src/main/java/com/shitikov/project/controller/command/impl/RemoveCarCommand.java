@@ -4,10 +4,11 @@ import com.shitikov.project.controller.RequestAttributeHandler;
 import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
+import com.shitikov.project.model.entity.Order;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.CarServiceImpl;
-import com.shitikov.project.util.ParameterName;
+import com.shitikov.project.model.service.impl.OrderServiceImpl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,30 +29,35 @@ public class RemoveCarCommand implements Command {
     public Router execute(HttpServletRequest request) {
         Router router;
 
-        String carNumber = request.getParameter(CAR_NUMBER);
+        String carId = request.getParameter(CAR_ID);
 
         try {
             HttpSession session = request.getSession();
             User user = (User) session.getAttribute(USER);
-            if (CarServiceImpl.getInstance().remove(carNumber)) {
-                logger.log(Level.INFO, "Car removed successfully.");
+            Map<Order, Long> orders = OrderServiceImpl.getInstance().findByUser(user);
 
-                RequestAttributeHandler handler =
-                        (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
-                Map<String, Object> attributes = handler.getRequestAttributes();
-                attributes.replace(AttributeName.CARS, CarServiceImpl.getInstance().findByUser(user));
-
-                for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-                    request.setAttribute(entry.getKey(), entry.getValue());
+            if (orders.isEmpty()) {
+                if (!CarServiceImpl.getInstance().remove(carId)) {
+                    request.setAttribute(AttributeName.CAR_REMOVE_ERROR, true);
+                    logger.log(Level.INFO, "Car didn't remove.");
                 }
             } else {
-                request.setAttribute(AttributeName.REMOVE_ERROR, true);
-                logger.log(Level.INFO, "Car didn't remove.");
+                request.setAttribute(AttributeName.HAVE_ORDERS, true);
+                logger.log(Level.INFO, "Car didn't remove. User has orders to complete.");
+            }
+
+            RequestAttributeHandler handler =
+                    (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
+            Map<String, Object> attributes = handler.getRequestAttributes();
+            attributes.replace(CARS, CarServiceImpl.getInstance().findByUser(user));
+
+            for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+                request.setAttribute(entry.getKey(), entry.getValue());
             }
             router = new Router(resourceBundle.getString("path.page.account"));
         } catch (ServiceException e) {
             logger.log(Level.WARN, e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

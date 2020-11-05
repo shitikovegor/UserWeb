@@ -61,7 +61,7 @@ public class EditApplicationPageCommand implements Command {
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

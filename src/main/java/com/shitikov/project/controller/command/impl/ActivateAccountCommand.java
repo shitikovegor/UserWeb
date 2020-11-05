@@ -1,12 +1,12 @@
 package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.Router;
+import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.UserService;
 import com.shitikov.project.model.service.impl.UserServiceImpl;
-import com.shitikov.project.util.MessageManager;
 import com.shitikov.project.util.ParameterName;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -37,15 +37,15 @@ public class ActivateAccountCommand implements Command {
                 User user = service.findByLogin(login).get();
                 HttpSession session = request.getSession();
                 session.setAttribute(ParameterName.USER, user);
-                request.setAttribute("user", login);
+                request.setAttribute(ParameterName.USER, login);
                 router = new Router(resourceBundle.getString("path.page.home"));
             } else {
-                request.setAttribute("errorLoginPassMessage", MessageManager.getProperty("command.login.error"));
+                request.setAttribute(AttributeName.LOGIN_PASSWORD_INVALID, true);
                 router = new Router(resourceBundle.getString("path.page.login"));
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

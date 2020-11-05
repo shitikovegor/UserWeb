@@ -274,3 +274,20 @@ html, body {
 .container.justify-content-center {
 }
 
+.clean-block.clean-catalog .filters .filter-item {
+  margin-bottom: 25px;
+}
+
+.date-range-name {
+  margin-bottom: 0px;
+}
+
+.app-button {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.app-data {
+  margin-bottom: 10px;
+}
+

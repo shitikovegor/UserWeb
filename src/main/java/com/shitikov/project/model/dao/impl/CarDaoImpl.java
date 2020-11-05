@@ -24,10 +24,10 @@ public class CarDaoImpl implements CarDao {
             ", carrying_volume = ?, passengers_number = ?, user_id_fk = (SELECT user_id FROM users WHERE login = ?)";
     private static final String SQL_FIND_BY_USER_ID = "SELECT car_id, car_number, carrying_weight, carrying_volume, passengers_number " +
             "FROM cars WHERE user_id_fk = ?";
-    private static final String SQL_FIND_BY_CAR_NUMBER = "SELECT car_id, car_number, carrying_weight, " +
-            "carrying_volume, passengers_number FROM cars WHERE car_number = ?";
+    private static final String SQL_FIND_BY_ID = "SELECT car_id, car_number, carrying_weight, " +
+            "carrying_volume, passengers_number FROM cars WHERE car_id = ?";
     private static final String SQL_UPDATE_PARAMETERS = "UPDATE cars SET %s WHERE car_id = ?";
-    private static final String SQL_DELETE_BY_CAR_NUMBER = "DELETE FROM cars WHERE car_number = ?";
+    private static final String SQL_DELETE_BY_ID = "DELETE FROM cars WHERE car_id = ?";
 
     public CarDaoImpl(){}
 
@@ -55,17 +55,25 @@ public class CarDaoImpl implements CarDao {
 
     @Override
     public boolean remove(long id) throws DaoException {
-        return false;
+        boolean isRemoved;
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
+
+            statement.setLong(1, id);
+            int result = statement.executeUpdate();
+            isRemoved = result != 0;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+        return isRemoved;
+
     }
 
     @Override
     public boolean removeByCarNumber(String carNumber) throws DaoException {
         boolean isRemoved;
-        if (carNumber == null) {
-            throw new DaoException("Car number is null. ");
-        }
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_CAR_NUMBER)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
 
             statement.setString(1, carNumber);
             int result = statement.executeUpdate();
@@ -78,34 +86,21 @@ public class CarDaoImpl implements CarDao {
 
     @Override
     public Optional<Car> findById(long id) throws DaoException {
-        return Optional.empty();
-    }
-
-    @Override
-    public List<Car> findAll() throws DaoException {
-        return null;
-    }
-
-    @Override
-    public Optional<Car> findByNumber(String carNumber) throws DaoException {
-        if (carNumber == null) {
-            throw new DaoException("Car number is null.");
-        }
         Car car = null;
 
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_CAR_NUMBER)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_ID)) {
 
-            statement.setString(1, carNumber);
+            statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    long carId = resultSet.getLong(ParameterName.CAR_ID);
+                    String carNumber = resultSet.getString(ParameterName.CAR_NUMBER);
                     double carryingWeight = resultSet.getDouble(ParameterName.CARRYING_WEIGHT);
                     double carryingVolume = resultSet.getDouble(ParameterName.CARRYING_VOLUME);
                     int passengersNumber = resultSet.getInt(ParameterName.PASSENGERS_NUMBER);
 
                     car = new CarBuilder()
-                            .buildCarId(carId)
+                            .buildCarId(id)
                             .buildCarNumber(carNumber)
                             .buildCarryingWeight(carryingWeight)
                             .buildCarryingVolume(carryingVolume)
@@ -117,6 +112,11 @@ public class CarDaoImpl implements CarDao {
             throw new DaoException("Connection error. ", e);
         }
         return Optional.ofNullable(car);
+    }
+
+    @Override
+    public List<Car> findAll() throws DaoException {
+        return null;
     }
 
     @Override
@@ -156,12 +156,7 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
-    public boolean update(String carNumber, Map<String, String> parameters) throws DaoException {
-        return false;
-    }
-
-    @Override
-    public boolean updateById(long carId, Map<String, String> parameters) throws DaoException {
+    public boolean update(Long carId, Map<String, String> parameters) throws DaoException {
         boolean isUpdated;
         if (parameters == null) {
             throw new DaoException("Incorrect data. ");

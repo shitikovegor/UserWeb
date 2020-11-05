@@ -3,6 +3,6 @@
 <html>
 <meta charset="UTF-8">
 <body>
-<jsp:forward page="/jsp/home.jsp"/>
+<jsp:forward page="controller?command=home_page"/>
 </body>
 </html>

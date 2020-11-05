@@ -7,7 +7,6 @@ import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.ApplicationServiceImpl;
-import com.shitikov.project.util.ParameterName;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,25 +32,22 @@ public class RemoveApplicationCommand implements Command {
         try {
             HttpSession session = request.getSession();
             User user = (User) session.getAttribute(USER);
-            if (ApplicationServiceImpl.getInstance().remove(applicationId)) {
-                logger.log(Level.INFO, "Application removed successfully.");
-
-                RequestAttributeHandler handler =
-                        (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
-                Map<String, Object> attributes = handler.getRequestAttributes();
-                attributes.replace(AttributeName.CARS, ApplicationServiceImpl.getInstance().findByUser(user));
-
-                for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-                    request.setAttribute(entry.getKey(), entry.getValue());
-                }
-            } else {
-                request.setAttribute(AttributeName.REMOVE_ERROR, true);
+            if (!ApplicationServiceImpl.getInstance().remove(applicationId)) {
+                request.setAttribute(AttributeName.APP_REMOVE_ERROR, true);
                 logger.log(Level.INFO, "Application didn't remove.");
+            }
+            RequestAttributeHandler handler =
+                    (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
+            Map<String, Object> attributes = handler.getRequestAttributes();
+            attributes.replace(APPLICATIONS, ApplicationServiceImpl.getInstance().findByUser(user));
+
+            for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+                request.setAttribute(entry.getKey(), entry.getValue());
             }
             router = new Router(resourceBundle.getString("path.page.account"));
         } catch (ServiceException e) {
             logger.log(Level.WARN, e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

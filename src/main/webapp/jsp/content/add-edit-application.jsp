@@ -102,8 +102,8 @@
                 <h5 class="mb-0" style="padding-bottom: 10px;padding-top: 5px;"><fmt:message
                         key="application.departureData"/><br></h5>
                 <div class="form-group">
-                    <label for="departure_date"><fmt:message key="application.date"/></label>
-                    <input class="form-control date-input" id="departure_date" name="departure_date"
+                    <label for="date_from"><fmt:message key="application.date"/></label>
+                    <input class="form-control date-input" id="date_from" name="departure_date"
                            required="" value="<ctg:format-date date="${departure_date}" input="true"/>"
                            type="date">
                 </div>
@@ -136,8 +136,8 @@
                 <h5 class="mb-0" style="padding-bottom: 10px;padding-top: 5px;"><fmt:message
                         key="application.arrivalData"/><br></h5>
                 <div class="form-group">
-                    <label for="arrival_date"><fmt:message key="application.date"/></label>
-                    <input class="form-control date-input" id="arrival_date" name="arrival_date"
+                    <label for="date_to"><fmt:message key="application.date"/></label>
+                    <input class="form-control date-input" id="date_to" name="arrival_date"
                            required="" value="<ctg:format-date date="${arrival_date}" input="true"/>"
                            type="date">
                 </div>
@@ -179,6 +179,7 @@
                         <fmt:message key="error.description"/>
                     </sup>
                 </c:if>
+                <div class="form-group">
                 <c:choose>
                     <c:when test="${edit_application}">
                         <button class="btn btn-primary btn-block" type="submit" name="application_id" value="${application_id}">
@@ -190,6 +191,7 @@
                                 type="submit"><fmt:message key="page.addApplication.titleAdd"/></button>
                     </c:otherwise>
                 </c:choose>
+                </div>
                 <c:if test="${adding_error}">
                     <div role="alert" class="alert alert-danger" autofocus>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>

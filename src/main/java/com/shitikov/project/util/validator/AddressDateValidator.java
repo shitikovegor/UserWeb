@@ -1,9 +1,5 @@
 package com.shitikov.project.util.validator;
 
-import java.util.Map;
-
-import static com.shitikov.project.util.ParameterName.*;
-
 public class AddressDateValidator extends Validator {
     private static final String ADDRESS_PATTERN = "[\\p{L}\\p{Digit}\\s-,./]{1,150}";
     private static final String CITY_PATTERN = "[\\p{L}\\s-\\p{Digit}]{1,50}";
@@ -14,28 +10,26 @@ public class AddressDateValidator extends Validator {
     }
 
     public static boolean checkAddress(String address) {
-        return address.matches(ADDRESS_PATTERN);
+        boolean isValid = false;
+        if (address != null && !address.isEmpty()) {
+            isValid = address.matches(ADDRESS_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkCity(String city) {
-        return city.matches(CITY_PATTERN);
+        boolean isValid = false;
+        if (city != null && !city.isEmpty()) {
+            isValid = city.matches(CITY_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkDate(String date) {
-        return date.matches(DATE_PATTERN) || date.matches(DATE_IE_PATTERN);
-    }
-
-    public static boolean checkParameters(Map<String, String> parameters) {
-        boolean areParametersCorrect = true;
-
-        if (!checkAddress(parameters.get(ADDRESS))) {
-            areParametersCorrect = false;
-            parameters.replace(ADDRESS, "");
+        boolean isValid = false;
+        if (date != null && !date.isEmpty()) {
+            isValid = date.matches(DATE_PATTERN) || date.matches(DATE_IE_PATTERN);
         }
-        if (!checkCity(parameters.get(CITY))) {
-            areParametersCorrect = false;
-            parameters.replace(CITY, "");
-        }
-        return areParametersCorrect;
+        return isValid;
     }
 }

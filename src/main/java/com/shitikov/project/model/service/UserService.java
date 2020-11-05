@@ -24,6 +24,8 @@ public interface UserService {
 
     Optional<Address> findAddress(String login) throws ServiceException;
 
+    long findPhoneByApplicationId(String applicationId) throws ServiceException;
+
     boolean checkLogin(String login) throws ServiceException;
 
     boolean checkPassword(String login, String password) throws ServiceException;

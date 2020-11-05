@@ -2,6 +2,7 @@ package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.RequestAttributeHandler;
 import com.shitikov.project.controller.Router;
+import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.Address;
 import com.shitikov.project.model.entity.User;
@@ -46,12 +47,10 @@ public class SaveContactSettingsCommand implements Command {
             String login = user.getLogin();
 
             RequestAttributeHandler handler =
-                    (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
+                    (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
             Map<String, Object> attributes = handler.getRequestAttributes();
 
             Optional<Address> userAddress = service.findAddress(login);
-            String changedStreetHome = "";
-            String changedCity = "";
             boolean isAddressUpdated = false;
             boolean isPhoneUpdated = false;
             if (!phoneToChange.isEmpty() && Long.parseLong(phoneToChange) != user.getPhone()) {
@@ -95,8 +94,6 @@ public class SaveContactSettingsCommand implements Command {
                     if (parameters.get(ParameterName.CITY) != null && parameters.get(ParameterName.CITY).equals("")) {
                         request.setAttribute(CITY_INVALID, true);
                     }
-//                    request.setAttribute(ParameterName.ADDRESS, userAddressPr.getStreetHome());
-//                    request.setAttribute(ParameterName.CITY, userAddressPr.getCity());
                 }
             } else if (streetHomeToChange.isEmpty() || cityToChange.isEmpty()) {
                 request.setAttribute(DATA_INVALID, true);
@@ -113,7 +110,7 @@ public class SaveContactSettingsCommand implements Command {
             router = new Router(resourceBundle.getString("path.page.account"));
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

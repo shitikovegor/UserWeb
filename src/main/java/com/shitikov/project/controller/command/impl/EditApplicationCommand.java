@@ -8,7 +8,6 @@ import com.shitikov.project.controller.command.CommandType;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.ApplicationService;
 import com.shitikov.project.model.service.impl.ApplicationServiceImpl;
-import com.shitikov.project.util.ParameterName;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +37,7 @@ public class EditApplicationCommand implements Command {
         try {
             HttpSession session = request.getSession();
             RequestAttributeHandler handler =
-                    (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
+                    (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
             Map<String, Object> attributes = handler.getRequestAttributes();
 
             Map<String, String> parameters = new HashMap<>();
@@ -57,6 +56,9 @@ public class EditApplicationCommand implements Command {
                     parameters.put(parameterName, parameter);
                 }
             }
+            if (!parameters.containsKey(APPLICATION_TYPE)) {
+                parameters.put(APPLICATION_TYPE, (String) attributes.get(APPLICATION_TYPE));
+            }
 
             if (applicationService.update(request.getParameter(APPLICATION_ID), parameters)) {
                 logger.log(Level.INFO, "Application edited successfully.");
@@ -74,7 +76,7 @@ public class EditApplicationCommand implements Command {
                     } else if (!parameter.isEmpty()) {
                         request.setAttribute(entry.getKey(), parameter);
                     } else {
-                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
+                        request.setAttribute(entry.getKey().concat(AttributeName.ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
                 String page = resourceBundle.getString("path.page.add_edit_application");
@@ -82,11 +84,10 @@ public class EditApplicationCommand implements Command {
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }
-    // TODO: 28.10.2020 repeat in EditCarCommand
 }
 
 

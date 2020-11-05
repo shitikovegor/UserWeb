@@ -10,6 +10,7 @@ import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.CarService;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.validator.CarValidator;
+import com.shitikov.project.util.validator.UserValidator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,17 +32,19 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public boolean add(Map<String, String> parameters, String login) throws ServiceException {
+    public boolean add(Map<String, String> parameters) throws ServiceException {
         boolean isAdded = false;
         String carNumber = parameters.get(ParameterName.CAR_NUMBER);
         String carryingWeight = parameters.get(ParameterName.CARRYING_WEIGHT);
         String carryingVolume = parameters.get(ParameterName.CARRYING_VOLUME);
         String passengersNumber = parameters.get(ParameterName.PASSENGERS_NUMBER);
+        String login = parameters.get(ParameterName.LOGIN);
 
         boolean areParametersValid = CarValidator.checkCarNumber(carNumber)
                 && CarValidator.checkCarrying(carryingWeight)
                 && CarValidator.checkCarrying(carryingVolume)
-                && CarValidator.checkPassenger(passengersNumber);
+                && CarValidator.checkPassenger(passengersNumber)
+                && UserValidator.checkLogin(login);
 
         try {
             if (areParametersValid && !carDao.checkCarNumber(carNumber)) {
@@ -53,7 +56,6 @@ public class CarServiceImpl implements CarService {
                         .buildCar();
 
                 isAdded = carDao.add(carToAdd, login);
-
             }
         } catch (DaoException e) {
             throw new ServiceException("Program error. ", e);
@@ -62,20 +64,24 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public boolean remove(String carNumber) throws ServiceException {
+    public boolean remove(String id) throws ServiceException {
         try {
-            return carDao.removeByCarNumber(carNumber);
+            boolean isRemoved = false;
+            if (CarValidator.checkId(id)) {
+                isRemoved = carDao.remove(Long.parseLong(id));
+            }
+            return isRemoved;
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public Optional<Car> findByNumber(String carNumber) throws ServiceException {
+    public Optional<Car> findById(String id) throws ServiceException {
         Optional<Car> carOptional = Optional.empty();
         try {
-            if (CarValidator.checkCarNumber(carNumber)) {
-                carOptional = carDao.findByNumber(carNumber);
+            if (CarValidator.checkId(id)) {
+                carOptional = carDao.findById(Long.parseLong(id));
             }
         } catch (DaoException e) {
             throw new ServiceException("Program error. ", e);
@@ -99,19 +105,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public boolean update(String carNumber, Map<String, String> parameters) throws ServiceException {
-        return false;
-    }
-
-    @Override
-    public boolean updateById(String id, Map<String, String> parameters) throws ServiceException {
+    public boolean update(String id, Map<String, String> parameters) throws ServiceException {
         if (!CarValidator.checkId(id)) {
             return false;
         }
-
         boolean isUpdated = CarValidator.checkParameters(parameters);
-
-
         try {
             if (isUpdated) {
                 Map<String, String> paramToUpdate = new HashMap<>(parameters);
@@ -123,7 +121,7 @@ public class CarServiceImpl implements CarService {
                     }
                 }
                 if (!paramToUpdate.isEmpty()) {
-                    isUpdated = carDao.updateById(Long.parseLong(id), paramToUpdate);
+                    isUpdated = carDao.update(Long.parseLong(id), paramToUpdate);
                 }
             }
             return isUpdated;

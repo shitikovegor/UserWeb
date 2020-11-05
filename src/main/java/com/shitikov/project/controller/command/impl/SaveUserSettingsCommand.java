@@ -2,6 +2,7 @@ package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.RequestAttributeHandler;
 import com.shitikov.project.controller.Router;
+import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
@@ -90,7 +91,7 @@ public class SaveUserSettingsCommand implements Command {
             request.setAttribute(SHOW_ACCORDION, true);
 
             RequestAttributeHandler handler =
-                    (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
+                    (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
             Map<String, Object> attributes = handler.getRequestAttributes();
             for (Map.Entry<String, Object> entry : attributes.entrySet()) {
                 request.setAttribute(entry.getKey(), entry.getValue());
@@ -99,7 +100,7 @@ public class SaveUserSettingsCommand implements Command {
 
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

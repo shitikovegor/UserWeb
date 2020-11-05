@@ -2,11 +2,12 @@ package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.RequestAttributeHandler;
 import com.shitikov.project.controller.Router;
+import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
+import com.shitikov.project.controller.command.CommandType;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.ApplicationServiceImpl;
-import com.shitikov.project.util.ParameterName;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,29 +59,31 @@ public class AddApplicationCommand implements Command {
         try {
             HttpSession session = request.getSession();
             User user = (User) session.getAttribute(USER);
+            parameters.put(LOGIN, user.getLogin());
 
-            if (ApplicationServiceImpl.getInstance().add(parameters, user.getLogin())) {
+            if (ApplicationServiceImpl.getInstance().add(parameters)) {
                 logger.log(Level.INFO, "Application added successfully.");
 
                 RequestAttributeHandler handler =
-                        (RequestAttributeHandler) session.getAttribute(ParameterName.REQUEST_ATTRIBUTE_HANDLER);
+                        (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
                 Map<String, Object> attributes = handler.getRequestAttributes();
                 for (Map.Entry<String, Object> entry : attributes.entrySet()) {
                     request.setAttribute(entry.getKey(), entry.getValue());
                 }
-                router = new Router(Router.Type.REDIRECT, resourceBundle.getString("path.page.account"));
+                String page = getRedirectPage(request, CommandType.ACCOUNT_PAGE);
+                router = new Router(Router.Type.REDIRECT, page);
             } else {
                 for (Map.Entry<String, String> entry : parameters.entrySet()) {
                     if (!entry.getValue().isEmpty()) {
                         request.setAttribute(entry.getKey(), entry.getValue());
                     } else {
-                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
+                        request.setAttribute(entry.getKey().concat(AttributeName.ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
-                router = new Router(resourceBundle.getString("path.page.add_application"));
+                router = new Router(resourceBundle.getString("path.page.add_edit_application"));
             }
         } catch (ServiceException e) {
-            router = new Router(resourceBundle.getString("path.page.error"));
+            router = new Router(resourceBundle.getString("path.page.error500"));
         }
         return router;
     }

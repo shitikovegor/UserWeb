@@ -3,7 +3,6 @@ package com.shitikov.project.model.dao;
 import com.shitikov.project.model.entity.Entity;
 import com.shitikov.project.model.exception.DaoException;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,8 +11,6 @@ public interface BaseDao<E, T extends Entity> {
     boolean add(T t, String parameter) throws DaoException;
 
     Optional<T> findById(long id) throws DaoException;
-
-    List<T> findAll() throws DaoException;
 
     boolean update(E uniqueField, Map<String, String> parameters) throws DaoException;
 

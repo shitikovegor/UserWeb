@@ -1,15 +1,17 @@
 package com.shitikov.project.tag;
 
+import com.shitikov.project.tag.util.DateFormatUtil;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings("serial")
 public class FormatDateTag extends TagSupport {
+    private static final Logger logger = LogManager.getLogger();
     private long date;
     private boolean input = false;
     public void setDate(long date) {
@@ -24,18 +26,14 @@ public class FormatDateTag extends TagSupport {
 
         try {
             String dateFormatted;
-            LocalDate localDate = Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate();
-            DateTimeFormatter formatterOut = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            DateTimeFormatter formatterIn = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-
-            dateFormatted = input ? localDate.format(formatterIn) : localDate.format(formatterOut);
+            dateFormatted = DateFormatUtil.formatDate(date, input);
             pageContext.getOut().write(dateFormatted);
 
         } catch (IOException e) {
+            logger.log(Level.WARN, "Error while writing data to jsp.");
             throw new JspException(e);
         }
 
-        return super.doStartTag();
+        return SKIP_BODY;
     }
 }

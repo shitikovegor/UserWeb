@@ -12,36 +12,48 @@ public class CarValidator extends Validator {
     private CarValidator() {}
 
     public static boolean checkCarNumber(String carNumber) {
-        return carNumber.matches(CAR_NUMBER_PATTERN);
+        boolean isValid = false;
+        if (carNumber != null && !carNumber.isEmpty()) {
+            isValid = carNumber.matches(CAR_NUMBER_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkCarrying(String cargo) {
-        return cargo.matches(CARRYING_PATTERN);
+        boolean isValid = false;
+        if (cargo != null && !cargo.isEmpty()) {
+            isValid = cargo.matches(CARRYING_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkPassenger(String passengerNumber) {
-        return passengerNumber.matches(PASSENGER_PATTERN);
+        boolean isValid = false;
+        if (passengerNumber != null && !passengerNumber.isEmpty()) {
+            isValid = passengerNumber.matches(PASSENGER_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkParameters(Map<String, String> parameters) {
         boolean areParametersValid = true;
         String carNumber = parameters.get(ParameterName.CAR_NUMBER);
-        if (carNumber != null && !checkCarNumber(carNumber)) {
+        if (parameters.containsKey(ParameterName.CAR_NUMBER) && !checkCarNumber(carNumber)) {
             parameters.replace(ParameterName.CAR_NUMBER, "");
             areParametersValid = false;
         }
         String weight = parameters.get(ParameterName.CARRYING_WEIGHT);
-        if (weight != null && !checkCarrying(weight)) {
+        if (parameters.containsKey(ParameterName.CARRYING_WEIGHT) && !checkCarrying(weight)) {
             parameters.replace(ParameterName.CARRYING_WEIGHT, "");
             areParametersValid = false;
         }
         String volume = parameters.get(ParameterName.CARRYING_VOLUME);
-        if (volume != null && !checkCarrying(volume)) {
+        if (parameters.containsKey(ParameterName.CARRYING_VOLUME) && !checkCarrying(volume)) {
             parameters.replace(ParameterName.CARRYING_VOLUME, "");
             areParametersValid = false;
         }
         String passengerNumber = parameters.get(ParameterName.PASSENGERS_NUMBER);
-        if (passengerNumber != null && !checkPassenger(passengerNumber)) {
+        if (parameters.containsKey(ParameterName.PASSENGERS_NUMBER) && !checkPassenger(passengerNumber)) {
             parameters.replace(ParameterName.PASSENGERS_NUMBER, "");
             areParametersValid = false;
         }

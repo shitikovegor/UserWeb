@@ -16,27 +16,43 @@ public class UserValidator extends Validator {
     }
 
     public static boolean checkLogin(String login) {
-        return login.matches(LOGIN_PATTERN);
+        boolean isValid = false;
+        if (login != null && !login.isEmpty()) {
+            isValid = login.matches(LOGIN_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkPassword(String password) {
-        return password.matches(PASSWORD_PATTERN);
+        boolean isValid = false;
+        if (password != null && !password.isEmpty()) {
+            isValid = password.matches(PASSWORD_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkName(String name) {
-        return name.matches(NAME_SURNAME_PATTERN);
-    }
-
-    public static boolean checkSurname(String surname) {
-        return surname.matches(NAME_SURNAME_PATTERN);
+        boolean isValid = false;
+        if (name != null && !name.isEmpty()) {
+            isValid = name.matches(NAME_SURNAME_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkEmail(String email) {
-        return email.matches(EMAIL_PATTERN);
+        boolean isValid = false;
+        if (email != null && !email.isEmpty()) {
+            isValid = email.matches(EMAIL_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkPhone(String phone) {
-        return phone.matches(PHONE_PATTERN);
+        boolean isValid = false;
+        if (phone != null && !phone.isEmpty()) {
+            isValid = phone.matches(PHONE_PATTERN);
+        }
+        return isValid;
     }
 
     public static boolean checkParameters(Map<String, String> parameters) {
@@ -54,7 +70,7 @@ public class UserValidator extends Validator {
             areParametersCorrect = false;
             parameters.replace(NAME, "");
         }
-        if (!checkSurname(parameters.get(SURNAME))) {
+        if (!checkName(parameters.get(SURNAME))) {
             areParametersCorrect = false;
             parameters.replace(SURNAME, "");
         }

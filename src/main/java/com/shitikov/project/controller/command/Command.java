@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 public interface Command {
-    static final String COMMAND_PARAM = "?command=";
+    String COMMAND_PARAM = "?command=";
 
     Router execute(HttpServletRequest request) throws IOException, ServletException;
 

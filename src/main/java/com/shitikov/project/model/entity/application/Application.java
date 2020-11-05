@@ -3,6 +3,8 @@ package com.shitikov.project.model.entity.application;
 import com.shitikov.project.model.builder.ApplicationBuilder;
 import com.shitikov.project.model.entity.Entity;
 
+import java.util.Comparator;
+
 public abstract class Application extends Entity {
     private long applicationId;
     private String title;
@@ -130,5 +132,31 @@ public abstract class Application extends Entity {
         sb.append(", description='").append(description).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    public static class IdComparator implements Comparator<Application> {
+
+        @Override
+        public int compare(Application o1, Application o2) {
+            long id1 = o1.applicationId;
+            long id2 = o2.applicationId;
+            if (id1 == id2) {
+                return 0;
+            }
+            return id1 > id2 ? 1 : -1;
+        }
+    }
+
+    public static class DepartureDateComparator implements Comparator<Application> {
+
+        @Override
+        public int compare(Application o1, Application o2) {
+            long id1 = o1.addressTimeData.getDepartureDate();
+            long id2 = o2.addressTimeData.getDepartureDate();
+            if (id1 == id2) {
+                return 0;
+            }
+            return id1 > id2 ? 1 : -1;
+        }
     }
 }

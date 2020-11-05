@@ -5,6 +5,7 @@ import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.entity.type.RoleType;
 import com.shitikov.project.model.exception.DaoException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ public interface UserDao extends BaseDao<String, User>{
 
     boolean checkUserAddress(String login) throws DaoException;
 
+    List<User> findAll() throws DaoException;
+
     Optional<User> findByLogin(String login) throws DaoException;
 
     String findPassword(String login) throws DaoException;
@@ -25,6 +28,8 @@ public interface UserDao extends BaseDao<String, User>{
     RoleType findRole(String login) throws DaoException;
 
     Optional<Address> findUserAddress(String login) throws DaoException;
+
+    long findPhoneByApplicationId(long applicationId) throws DaoException;
 
     boolean updateContactParameters(String login, Map<String, String> parameters) throws DaoException;
 
