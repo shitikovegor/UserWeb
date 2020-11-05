@@ -13,8 +13,8 @@ import com.shitikov.project.model.service.UserService;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.PasswordEncoder;
 import com.shitikov.project.util.validator.AddressDateValidator;
-import com.shitikov.project.util.validator.ApplicationValidator;
 import com.shitikov.project.util.validator.UserValidator;
+import com.shitikov.project.util.validator.Validator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
                     parameters.replace(ParameterName.EMAIL, EXISTS);
                 }
             } catch (DaoException e) {
-                throw new ServiceException("Program error of adding user. ", e);
+                throw new ServiceException(e);
             }
         }
         return isUserAdded;
@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
                     isUserAddressAdded = userDao.addAddress(login, parameters);
                 }
             } catch (DaoException e) {
-                throw new ServiceException("Program error of adding user. ", e);
+                throw new ServiceException(e);
             }
         }
         return isUserAddressAdded;
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
             try {
                 isLoginCorrect = userDao.checkLogin(login);
             } catch (DaoException e) {
-                throw new ServiceException("Program exception. ", e);
+                throw new ServiceException(e);
             }
         }
         return isLoginCorrect;
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
                     isPasswordCorrect = new PasswordEncoder().checkPassword(password, hashedPassword);
                 }
             } catch (DaoException e) {
-                throw new ServiceException("Program exception. ", e);
+                throw new ServiceException(e);
             }
         }
         return isPasswordCorrect;
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.checkUserAddress(login);
         } catch (DaoException e) {
-            throw new ServiceException("Program exception. ", e);
+            throw new ServiceException(e);
         }
     }
 
@@ -142,13 +142,17 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.findByLogin(login);
         } catch (DaoException e) {
-            throw new ServiceException("Program error. ", e);
+            throw new ServiceException(e);
         }
     }
 
     @Override
-    public List<User> findAll() {
-        return null;
+    public List<User> findAll() throws ServiceException {
+        try {
+            return userDao.findAll();
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
@@ -156,7 +160,7 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.findRole(login);
         } catch (DaoException e) {
-            throw new ServiceException("Getting role error. ", e);
+            throw new ServiceException(e);
         }
     }
 
@@ -165,7 +169,7 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.findUserAddress(login);
         } catch (DaoException e) {
-            throw new ServiceException("Program error. ", e);
+            throw new ServiceException(e);
         }
     }
 
@@ -173,7 +177,7 @@ public class UserServiceImpl implements UserService {
     public long findPhoneByApplicationId(String applicationId) throws ServiceException {
         try {
             long phone = 0;
-            if (ApplicationValidator.checkId(applicationId)) {
+            if (Validator.checkId(applicationId)) {
                 phone = userDao.findPhoneByApplicationId(Long.parseLong(applicationId));
             }
             return phone;
@@ -183,16 +187,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean remove(String login) {
-        return false;
-    }
-
-    @Override
     public boolean update(String login, Map<String, String> parameters) throws ServiceException {
-        boolean isLoginValid;
-        boolean isEmailValid;
         String loginToChange = parameters.get(ParameterName.LOGIN);
-        if (!(isLoginValid = UserValidator.checkLogin(loginToChange))) {
+        boolean isLoginValid = UserValidator.checkLogin(loginToChange);
+        if (!isLoginValid) {
             parameters.replace(ParameterName.LOGIN, "");
         }
         String nameToChange = parameters.get(ParameterName.NAME);
@@ -204,7 +202,8 @@ public class UserServiceImpl implements UserService {
             parameters.replace(ParameterName.SURNAME, "");
         }
         String emailToChange = parameters.get(ParameterName.EMAIL);
-        if (!(isEmailValid = UserValidator.checkEmail(emailToChange))) {
+        boolean isEmailValid = UserValidator.checkEmail(emailToChange);
+        if (!isEmailValid) {
             parameters.replace(ParameterName.EMAIL, "");
         }
 
@@ -231,7 +230,7 @@ public class UserServiceImpl implements UserService {
             return areParametersUpdated;
 
         } catch (DaoException e) {
-            throw new ServiceException("Program error. ", e);
+            throw new ServiceException(e);
         }
     }
 
@@ -266,7 +265,7 @@ public class UserServiceImpl implements UserService {
             }
             return isUpdated;
         } catch (DaoException e) {
-            throw new ServiceException("Program error. ", e);
+            throw new ServiceException(e);
         }
     }
 
@@ -278,7 +277,7 @@ public class UserServiceImpl implements UserService {
             try {
                 isUpdated = userDao.updatePhone(login, phoneNumber);
             } catch (DaoException e) {
-                throw new ServiceException("Program error. " + e, e);
+                throw new ServiceException(e);
             }
         }
         return isUpdated;
@@ -292,7 +291,7 @@ public class UserServiceImpl implements UserService {
             try {
                 isUpdated = userDao.updatePassword(login, hashedPassword);
             } catch (DaoException e) {
-                throw new ServiceException("Program error. " + e, e);
+                throw new ServiceException(e);
             }
         }
         return isUpdated;
@@ -303,7 +302,7 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.activate(login);
         } catch (DaoException e) {
-            throw new ServiceException("Program error of user's activation. " + e, e);
+            throw new ServiceException(e);
         }
     }
 }

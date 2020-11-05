@@ -18,6 +18,7 @@ import com.shitikov.project.model.service.ApplicationService;
 import com.shitikov.project.util.validator.AddressDateValidator;
 import com.shitikov.project.util.validator.ApplicationValidator;
 import com.shitikov.project.util.validator.OrderValidator;
+import com.shitikov.project.util.validator.Validator;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -109,7 +110,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     public boolean remove(String id) throws ServiceException {
         boolean isRemoved = false;
         try {
-            if (ApplicationValidator.checkId(id)) {
+            if (Validator.checkId(id)) {
                 isRemoved = applicationDao.remove(Long.parseLong(id));
             }
         } catch (DaoException e) {
@@ -120,7 +121,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Optional<Application> findById(String id) throws ServiceException {
-        if (ApplicationValidator.checkId(id)) {
+        if (Validator.checkId(id)) {
             try {
                 Optional<Application> application = applicationDao.findById(Long.parseLong(id));
                 return application;
@@ -164,7 +165,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public boolean update(String id, Map<String, String> parameters) throws ServiceException {
-        if (!ApplicationValidator.checkId(id)) {
+        if (!Validator.checkId(id)) {
             return false;
         }
         boolean isUpdated;

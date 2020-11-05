@@ -14,8 +14,6 @@ public interface UserService {
 
     boolean addUserAddress(String login, Map<String, String> parameters) throws ServiceException;
 
-    boolean remove(String login) throws ServiceException;
-
     Optional<User> findByLogin(String login) throws ServiceException;
 
     List<User> findAll() throws ServiceException;

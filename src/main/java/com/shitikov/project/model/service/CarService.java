@@ -17,7 +17,5 @@ public interface CarService {
 
     List<Car> findByUser(User user) throws ServiceException;
 
-    List<Car> findAll() throws ServiceException;
-
     boolean update(String id, Map<String, String> parameters) throws ServiceException;
 }

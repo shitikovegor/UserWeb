@@ -52,7 +52,6 @@ public class ApplicationsPaginationTag extends TagSupport {
             Map<Application, OrderStatus> applications =
                     (Map<Application, OrderStatus>) request.getAttribute(ParameterName.APPLICATIONS);
             ResourceBundle resourceBundle = ResourceBundle.getBundle(CONTENT_PATH, locale);
-
             List<Application> applicationList = new ArrayList<>(applications.keySet());
             int startIndex = pageNumber * applicationsOnPage - applicationsOnPage;
             int finishIndex = Math.min(applicationList.size(), pageNumber * applicationsOnPage);

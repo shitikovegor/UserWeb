@@ -2,6 +2,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <fmt:setBundle basename="properties.pagecontent"/>
+<fmt:setLocale value="${locale}" scope="session"/>
 <main class="page login-page">
     <section class="clean-block clean-form dark">
         <div class="container">
@@ -15,11 +16,6 @@
                     <input class="form-control item" type="text" name="login" id="login" value="" required></div>
                 <div class="form-group"><label for="password"><fmt:message key="common.password"/></label>
                     <input class="form-control" type="password" name="password" id="password" value="" required></div>
-<%--                <div class="form-group">--%>
-<%--                    <div class="form-check"><input class="form-check-input" type="checkbox" id="checkbox"><label--%>
-<%--                            class="form-check-label" for="checkbox"><fmt:message key="page.login.remember"/></label>--%>
-<%--                    </div>--%>
-<%--                </div>--%>
                 <button class="btn btn-primary btn-block" type="submit">
                     <fmt:message key="page.login.buttonName"/></button>
 

@@ -32,11 +32,7 @@ public class CarDaoImpl implements CarDao {
     public CarDaoImpl(){}
 
     @Override
-    public boolean add(Car car, String login) throws DaoException {
-        if (car == null || login == null) {
-            throw new DaoException("Parameter is null.");
-        }
-        boolean isCarAdded;
+    public boolean add(Car car, String ... login) throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_CAR)) {
 
@@ -44,55 +40,35 @@ public class CarDaoImpl implements CarDao {
             statement.setDouble(2, car.getCarryingWeight());
             statement.setDouble(3, car.getCarryingVolume());
             statement.setInt(4, car.getPassengers());
-            statement.setString(5, login);
+            statement.setString(5, login[0]);
             int result = statement.executeUpdate();
-            isCarAdded = result != 0;
+            return result != 0;
         } catch (SQLException se) {
             throw new DaoException("Connection error. ", se);
         }
-        return isCarAdded;
     }
 
     @Override
     public boolean remove(long id) throws DaoException {
-        boolean isRemoved;
-        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+       try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
 
             statement.setLong(1, id);
             int result = statement.executeUpdate();
-            isRemoved = result != 0;
+            return result != 0;
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return isRemoved;
-
-    }
-
-    @Override
-    public boolean removeByCarNumber(String carNumber) throws DaoException {
-        boolean isRemoved;
-        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
-
-            statement.setString(1, carNumber);
-            int result = statement.executeUpdate();
-            isRemoved = result != 0;
-        } catch (SQLException e) {
-            throw new DaoException("Connection error. ", e);
-        }
-        return isRemoved;
     }
 
     @Override
     public Optional<Car> findById(long id) throws DaoException {
-        Car car = null;
-
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_ID)) {
 
             statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
+                Car car = null;
                 if (resultSet.next()) {
                     String carNumber = resultSet.getString(ParameterName.CAR_NUMBER);
                     double carryingWeight = resultSet.getDouble(ParameterName.CARRYING_WEIGHT);
@@ -107,30 +83,21 @@ public class CarDaoImpl implements CarDao {
                             .buildPassengers(passengersNumber)
                             .buildCar();
                 }
+                return Optional.ofNullable(car);
             }
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return Optional.ofNullable(car);
-    }
-
-    @Override
-    public List<Car> findAll() throws DaoException {
-        return null;
     }
 
     @Override
     public List<Car> findByUser(User user) throws DaoException {
-        if (user == null) {
-            throw new DaoException("User is null.");
-        }
-        List<Car> cars = new ArrayList<>();
-
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_USER_ID)) {
 
             statement.setLong(1, user.getUserId());
             try (ResultSet resultSet = statement.executeQuery()) {
+                List<Car> cars = new ArrayList<>();
                 while (resultSet.next()) {
                     long carId = resultSet.getLong(ParameterName.CAR_ID);
                     String carNumber = resultSet.getString(ParameterName.CAR_NUMBER);
@@ -148,51 +115,44 @@ public class CarDaoImpl implements CarDao {
                             .buildCar();
                     cars.add(car);
                 }
+                return cars;
             }
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return cars;
     }
 
     @Override
     public boolean update(Long carId, Map<String, String> parameters) throws DaoException {
-        boolean isUpdated;
-        if (parameters == null) {
-            throw new DaoException("Incorrect data. ");
-        }
-        String parametersSQL = fillParametersSQL(parameters);
+        StringBuilder parametersSQL = new StringBuilder();
+        List<String> searchValues = fillParametersSQL(parameters, parametersSQL);
         String sqlRequest = String.format(SQL_UPDATE_PARAMETERS, parametersSQL);
 
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
-            statement.setLong(1, carId);
+            for (int i = 0; i < searchValues.size(); i++) {
+                Object value = searchValues.get(i);
+                statement.setString(i + 1, (String) value);
+            }
+            statement.setLong(searchValues.size() + 1, carId);
             int result = statement.executeUpdate();
-            isUpdated = result != 0;
+            return result != 0;
         } catch (SQLException e) {
             throw new DaoException("Connection error. " + e, e);
         }
-        return isUpdated;
     }
 
     @Override
     public boolean checkCarNumber(String carNumber) throws DaoException {
-        if (carNumber == null) {
-            throw new DaoException("Car number is null.");
-        }
-        boolean isNumberInBase;
-
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHECK_BY_CAR_NUMBER)) {
-
             statement.setString(1, carNumber);
             try (ResultSet resultSet = statement.executeQuery()) {
-                isNumberInBase = resultSet.next();
+                return resultSet.next();
             }
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return isNumberInBase;
     }
 }

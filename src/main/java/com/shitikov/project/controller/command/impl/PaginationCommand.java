@@ -5,21 +5,13 @@ import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.util.ParameterName;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
-import java.util.ResourceBundle;
-
-import static com.shitikov.project.util.ParameterName.PAGES_PATH;
 
 
 public class PaginationCommand implements Command {
-    private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
-
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;

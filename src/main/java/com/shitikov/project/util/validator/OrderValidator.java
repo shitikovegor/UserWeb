@@ -11,7 +11,7 @@ public class OrderValidator extends Validator{
         if (status != null && !status.isEmpty()) {
             OrderStatus[] statuses = OrderStatus.values();
             for (OrderStatus orderStatus : statuses) {
-                if (status.toUpperCase().equals(orderStatus.name())) {
+                if (status.equalsIgnoreCase(orderStatus.name())) {
                     isStatusValid = true;
                 }
             }

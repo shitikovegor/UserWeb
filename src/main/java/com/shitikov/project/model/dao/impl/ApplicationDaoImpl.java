@@ -42,30 +42,23 @@ public class ApplicationDaoImpl implements ApplicationDao {
     private static final String WHERE = " WHERE ";
     private static final String OPEN_PARENTHESIS = "(";
     private static final String CLOSED_PARENTHESIS = ") ";
-    private static final String TYPE_FIELD = "app.application_type = ";
-    private static final String APOSTROPHE = "\'";
+    private static final String TYPE_FIELD = "app.application_type = ? ";
     private static final String LOGICAL_AND = " && ";
     private static final String LOGICAL_OR = " || ";
     private static final String DEP_DATE_FIELD = "app.departure_date ";
-    private static final String BETWEEN = "BETWEEN ";
-    private static final String AND = " AND ";
+    private static final String BETWEEN = "BETWEEN ? AND ? ";
     private static final String PASS_NUMBER_FIELD = "app.passengers_number ";
     private static final String WEIGHT_FIELD = "app.cargo_weight ";
     private static final String VOLUME_FIELD = "app.cargo_volume ";
-    private static final String CITY_FIELD = "app.departure_city = ";
+    private static final String CITY_FIELD = "app.departure_city = ? ";
     private static final String STATUS_NULL = "ord.status is null ";
-    private static final String STATUS_FIELD = "ord.status = ";
-
+    private static final String STATUS_FIELD = "ord.status = ? ";
 
     public ApplicationDaoImpl() {
     }
 
     @Override
-    public boolean add(Application application, String login) throws DaoException {
-        if (application == null || login == null) {
-            throw new DaoException("Parameter is null.");
-        }
-        boolean isApplicationAdded = false;
+    public boolean add(Application application, String ... login) throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_APPLICATION)) {
 
@@ -91,14 +84,13 @@ public class ApplicationDaoImpl implements ApplicationDao {
                 statement.setDouble(12, 0);
                 statement.setInt(13, passengerApp.getPassengersNumber());
             }
-            statement.setString(14, login);
-            
+            statement.setString(14, login[0]);
+
             int result = statement.executeUpdate();
-            isApplicationAdded = result != 0;
+            return result != 0;
         } catch (SQLException se) {
             throw new DaoException("Connection error. ", se);
         }
-        return isApplicationAdded;
     }
 
     @Override
@@ -127,13 +119,10 @@ public class ApplicationDaoImpl implements ApplicationDao {
 
     @Override
     public Map<Application, OrderStatus> findByUser(User user) throws DaoException {
-        if (user == null) {
-            throw new DaoException("User is null.");
-        }
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_USER_ID)) {
 
-            Map<Application, OrderStatus> applications = new TreeMap<>(new Application.IdComparator());
+            Map<Application, OrderStatus> applications = new HashMap<>();
             statement.setLong(1, user.getUserId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -159,22 +148,21 @@ public class ApplicationDaoImpl implements ApplicationDao {
     @Override
     public Map<Application, OrderStatus> findAll() throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL);
+             ResultSet resultSet = statement.executeQuery()) {
 
-            Map<Application, OrderStatus> applications = new TreeMap<>(new Application.DepartureDateComparator());
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    ApplicationType applicationType =
-                            ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
-                    String status = resultSet.getString(STATUS);
-                    OrderStatus orderStatus = status != null ? OrderStatus.valueOf(status.toUpperCase()) : OrderStatus.ACTIVE;
-                    if (applicationType == ApplicationType.CARGO) {
-                        CargoApplication cargoApplication = buildCargoApplication(resultSet);
-                        applications.put(cargoApplication, orderStatus);
-                    } else {
-                        PassengerApplication passengerApplication = buildPassengerApplication(resultSet);
-                        applications.put(passengerApplication, orderStatus);
-                    }
+            Map<Application, OrderStatus> applications = new HashMap<>();
+            while (resultSet.next()) {
+                ApplicationType applicationType =
+                        ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
+                String status = resultSet.getString(STATUS);
+                OrderStatus orderStatus = status != null ? OrderStatus.valueOf(status.toUpperCase()) : OrderStatus.ACTIVE;
+                if (applicationType == ApplicationType.CARGO) {
+                    CargoApplication cargoApplication = buildCargoApplication(resultSet);
+                    applications.put(cargoApplication, orderStatus);
+                } else {
+                    PassengerApplication passengerApplication = buildPassengerApplication(resultSet);
+                    applications.put(passengerApplication, orderStatus);
                 }
             }
             return applications;
@@ -189,10 +177,22 @@ public class ApplicationDaoImpl implements ApplicationDao {
             return findAll();
         }
         StringBuilder sqlRequest = new StringBuilder(SQL_FIND_ALL);
-        fillSearchParameters(sqlRequest, parameters);
+        List<Object> searchValues = fillSearchParameters(sqlRequest, parameters);
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlRequest.toString())) {
 
+            for (int i = 0; i < searchValues.size(); i++) {
+                Object value = searchValues.get(i);
+                if (value instanceof Long) {
+                    statement.setLong(i + 1, (Long) value);
+                } else if (value instanceof Integer) {
+                    statement.setInt(i + 1, (Integer) value);
+                } else if (value instanceof Double) {
+                    statement.setDouble(i + 1, (Double) value);
+                } else {
+                    statement.setString(i + 1, (String) value);
+                }
+            }
             Map<Application, OrderStatus> applications = new TreeMap<>(new Application.DepartureDateComparator());
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -217,51 +217,39 @@ public class ApplicationDaoImpl implements ApplicationDao {
 
     @Override
     public boolean update(Long applicationId, Map<String, String> parameters) throws DaoException {
-        boolean isUpdated;
-        if (parameters == null) {
-            throw new DaoException("Incorrect data. ");
-        }
-        String parametersSQL = fillParametersSQL(parameters);
+        StringBuilder parametersSQL = new StringBuilder();
+        List<String> searchValues = fillParametersSQL(parameters, parametersSQL);
         String sqlRequest = String.format(SQL_UPDATE_PARAMETERS, parametersSQL);
 
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
-            statement.setLong(1, applicationId);
+            for (int i = 0; i < searchValues.size(); i++) {
+                Object value = searchValues.get(i);
+                statement.setString(i + 1, (String) value);
+            }
+            statement.setLong(searchValues.size() + 1, applicationId);
             int result = statement.executeUpdate();
-            isUpdated = result != 0;
+            return result != 0;
         } catch (SQLException e) {
             throw new DaoException("Connection error. " + e, e);
         }
-        return isUpdated;
     }
 
     @Override
     public boolean remove(long id) throws DaoException {
-        boolean isRemoved;
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
 
             statement.setLong(1, id);
             int result = statement.executeUpdate();
-            isRemoved = result != 0;
+            return result != 0;
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return isRemoved;
     }
 
-    @Override
-    public List<Application> findByUserLogin(String login) throws DaoException {
-        return null;
-    }
-
-    @Override
-    public boolean checkByApplicationId(long applicationId) throws DaoException {
-        return false;
-    }
-
-    private CargoApplication buildCargoApplication(ResultSet resultSet) throws SQLException {
+    static CargoApplication buildCargoApplication(ResultSet resultSet) throws SQLException {
         CargoApplication application = new CargoApplicationBuilder()
                 .buildCargoWeight(resultSet.getDouble(CARGO_WEIGHT))
                 .buildCargoVolume(resultSet.getDouble(CARGO_VOLUME))
@@ -287,7 +275,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
         return application;
     }
 
-    private PassengerApplication buildPassengerApplication(ResultSet resultSet) throws SQLException {
+    static PassengerApplication buildPassengerApplication(ResultSet resultSet) throws SQLException {
         PassengerApplication application = new PassengerApplicationBuilder()
                 .buildPassengersNumber(resultSet.getInt(PASSENGERS_NUMBER))
                 .buildApplicationId(resultSet.getLong(APPLICATION_ID))
@@ -312,59 +300,56 @@ public class ApplicationDaoImpl implements ApplicationDao {
         return application;
     }
 
-    private void fillSearchParameters(StringBuilder sqlRequest, Map<String, Object> parameters) {
+    private List<Object> fillSearchParameters(StringBuilder sqlRequest, Map<String, Object> parameters) {
+        List<Object> searchValues = new ArrayList<>();
         sqlRequest.append(WHERE);
         if (parameters.containsKey(CARGO) && parameters.containsKey(PASSENGER)) {
-            sqlRequest.append(OPEN_PARENTHESIS);
-            sqlRequest.append(TYPE_FIELD);
-            sqlRequest.append(APOSTROPHE + parameters.get(CARGO) + APOSTROPHE);
-            sqlRequest.append(LOGICAL_OR);
-            sqlRequest.append(TYPE_FIELD);
-            sqlRequest.append(APOSTROPHE + parameters.get(PASSENGER) + APOSTROPHE);
-            sqlRequest.append(CLOSED_PARENTHESIS);
+            sqlRequest.append(OPEN_PARENTHESIS)
+                    .append(TYPE_FIELD)
+                    .append(LOGICAL_OR)
+                    .append(TYPE_FIELD)
+                    .append(CLOSED_PARENTHESIS);
+            searchValues.add(parameters.get(CARGO));
+            searchValues.add(parameters.get(PASSENGER));
         } else if (parameters.containsKey(CARGO)) {
             sqlRequest.append(TYPE_FIELD);
-            sqlRequest.append(APOSTROPHE + parameters.get(CARGO) + APOSTROPHE);
+            searchValues.add(parameters.get(CARGO));
         } else if (parameters.containsKey(PASSENGER)) {
             sqlRequest.append(TYPE_FIELD);
-            sqlRequest.append(APOSTROPHE + parameters.get(PASSENGER) + APOSTROPHE);
+            searchValues.add(parameters.get(PASSENGER));
         }
         if (parameters.containsKey(DEPARTURE_DATE_FROM)) {
             checkWhere(sqlRequest);
-            sqlRequest.append(DEP_DATE_FIELD);
-            sqlRequest.append(BETWEEN);
-            sqlRequest.append(parameters.get(DEPARTURE_DATE_FROM));
-            sqlRequest.append(AND);
-            sqlRequest.append(parameters.get(DEPARTURE_DATE_TO));
+            sqlRequest.append(DEP_DATE_FIELD)
+                    .append(BETWEEN);
+            searchValues.add(parameters.get(DEPARTURE_DATE_FROM));
+            searchValues.add(parameters.get(DEPARTURE_DATE_TO));
         }
         if (parameters.containsKey(PASSENGER_NUMBER_FROM)) {
             checkWhere(sqlRequest);
-            sqlRequest.append(PASS_NUMBER_FIELD);
-            sqlRequest.append(BETWEEN);
-            sqlRequest.append(parameters.get(PASSENGER_NUMBER_FROM));
-            sqlRequest.append(AND);
-            sqlRequest.append(parameters.get(PASSENGER_NUMBER_TO));
+            sqlRequest.append(PASS_NUMBER_FIELD)
+                    .append(BETWEEN);
+            searchValues.add(parameters.get(PASSENGER_NUMBER_FROM));
+            searchValues.add(parameters.get(PASSENGER_NUMBER_TO));
         }
         if (parameters.containsKey(CARGO_WEIGHT_FROM)) {
             checkWhere(sqlRequest);
-            sqlRequest.append(WEIGHT_FIELD);
-            sqlRequest.append(BETWEEN);
-            sqlRequest.append(parameters.get(CARGO_WEIGHT_FROM));
-            sqlRequest.append(AND);
-            sqlRequest.append(parameters.get(CARGO_WEIGHT_TO));
+            sqlRequest.append(WEIGHT_FIELD)
+                    .append(BETWEEN);
+            searchValues.add(parameters.get(CARGO_WEIGHT_FROM));
+            searchValues.add(parameters.get(CARGO_WEIGHT_TO));
         }
         if (parameters.containsKey(CARGO_VOLUME_FROM)) {
             checkWhere(sqlRequest);
-            sqlRequest.append(VOLUME_FIELD);
-            sqlRequest.append(BETWEEN);
-            sqlRequest.append(parameters.get(CARGO_VOLUME_FROM));
-            sqlRequest.append(AND);
-            sqlRequest.append(parameters.get(CARGO_VOLUME_TO));
+            sqlRequest.append(VOLUME_FIELD)
+                    .append(BETWEEN);
+            searchValues.add(parameters.get(CARGO_VOLUME_FROM));
+            searchValues.add(parameters.get(CARGO_VOLUME_TO));
         }
         if (parameters.containsKey(CITY)) {
             checkWhere(sqlRequest);
             sqlRequest.append(CITY_FIELD);
-            sqlRequest.append(APOSTROPHE + parameters.get(CITY) + APOSTROPHE);
+            searchValues.add(parameters.get(CITY));
         }
         List<String> statuses = new ArrayList<>();
         if (parameters.containsKey(ACTIVE)) {
@@ -387,17 +372,18 @@ public class ApplicationDaoImpl implements ApplicationDao {
                     sqlRequest.append(STATUS_NULL);
                 } else {
                     sqlRequest.append(STATUS_FIELD);
-                    sqlRequest.append(APOSTROPHE + status + APOSTROPHE);
+                    searchValues.add(status);
                 }
                 sqlRequest.append(LOGICAL_OR);
             }
             sqlRequest.delete(sqlRequest.length() - 4, sqlRequest.length());
             sqlRequest.append(CLOSED_PARENTHESIS);
         }
+        return searchValues;
     }
 
     private void checkWhere(StringBuilder sqlRequest) {
-        if (!sqlRequest.substring(sqlRequest.length() - 6).equals(WHERE)) {
+        if (!sqlRequest.substring(sqlRequest.length() - 7).equals(WHERE)) {
             sqlRequest.append(LOGICAL_AND);
         }
     }

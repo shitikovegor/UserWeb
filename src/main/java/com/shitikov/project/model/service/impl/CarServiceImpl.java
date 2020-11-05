@@ -9,8 +9,10 @@ import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.CarService;
 import com.shitikov.project.util.ParameterName;
+import com.shitikov.project.util.validator.ApplicationValidator;
 import com.shitikov.project.util.validator.CarValidator;
 import com.shitikov.project.util.validator.UserValidator;
+import com.shitikov.project.util.validator.Validator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +43,9 @@ public class CarServiceImpl implements CarService {
         String login = parameters.get(ParameterName.LOGIN);
 
         boolean areParametersValid = CarValidator.checkCarNumber(carNumber)
-                && CarValidator.checkCarrying(carryingWeight)
-                && CarValidator.checkCarrying(carryingVolume)
-                && CarValidator.checkPassenger(passengersNumber)
+                && ApplicationValidator.checkCargo(carryingWeight)
+                && ApplicationValidator.checkCargo(carryingVolume)
+                && ApplicationValidator.checkPassenger(passengersNumber)
                 && UserValidator.checkLogin(login);
 
         try {
@@ -58,7 +60,7 @@ public class CarServiceImpl implements CarService {
                 isAdded = carDao.add(carToAdd, login);
             }
         } catch (DaoException e) {
-            throw new ServiceException("Program error. ", e);
+            throw new ServiceException(e);
         }
         return isAdded;
     }
@@ -67,7 +69,7 @@ public class CarServiceImpl implements CarService {
     public boolean remove(String id) throws ServiceException {
         try {
             boolean isRemoved = false;
-            if (CarValidator.checkId(id)) {
+            if (Validator.checkId(id)) {
                 isRemoved = carDao.remove(Long.parseLong(id));
             }
             return isRemoved;
@@ -80,11 +82,11 @@ public class CarServiceImpl implements CarService {
     public Optional<Car> findById(String id) throws ServiceException {
         Optional<Car> carOptional = Optional.empty();
         try {
-            if (CarValidator.checkId(id)) {
+            if (Validator.checkId(id)) {
                 carOptional = carDao.findById(Long.parseLong(id));
             }
         } catch (DaoException e) {
-            throw new ServiceException("Program error. ", e);
+            throw new ServiceException(e);
         }
         return carOptional;
     }
@@ -100,13 +102,8 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<Car> findAll() throws ServiceException {
-        return null;
-    }
-
-    @Override
     public boolean update(String id, Map<String, String> parameters) throws ServiceException {
-        if (!CarValidator.checkId(id)) {
+        if (!Validator.checkId(id)) {
             return false;
         }
         boolean isUpdated = CarValidator.checkParameters(parameters);
@@ -126,7 +123,7 @@ public class CarServiceImpl implements CarService {
             }
             return isUpdated;
         } catch (DaoException e) {
-            throw new ServiceException("Program error. ", e);
+            throw new ServiceException(e);
         }
     }
 }

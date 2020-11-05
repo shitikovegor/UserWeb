@@ -13,10 +13,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -31,7 +29,7 @@ public class SaveUserSettingsCommand implements Command {
 
 
     @Override
-    public Router execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) {
         UserService service = UserServiceImpl.getInstance();
         Router router;
         String loginToChange = request.getParameter(ParameterName.LOGIN);

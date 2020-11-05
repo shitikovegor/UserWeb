@@ -17,10 +17,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +31,7 @@ public class OfferHelpCommand implements Command {
     private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
 
     @Override
-    public Router execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) {
         Router router;
         OrderService orderService = OrderServiceImpl.getInstance();
         ApplicationService applicationService = ApplicationServiceImpl.getInstance();

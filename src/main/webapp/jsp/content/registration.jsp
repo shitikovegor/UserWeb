@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <fmt:setBundle basename="properties.pagecontent"/>
+ <fmt:setLocale value="${locale}" scope="session"/>
 <main class="page registration-page">
     <section class="clean-block clean-form dark">
         <div class="container">
@@ -115,10 +116,10 @@
                 </div>
 
                 <c:choose>
-                    <c:when test="${role == 'driver'}">
+                    <c:when test="${role == 'DRIVER'}">
                         <c:set var="driverSelect" value="true"/>
                     </c:when>
-                    <c:when test="${role == 'client'}">
+                    <c:when test="${role == 'CLIENT'}">
                         <c:set var="clientSelect" value="true"/>
                     </c:when>
                     <c:otherwise>

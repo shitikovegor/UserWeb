@@ -54,11 +54,13 @@ public class SearchCommand implements Command {
             Map<Application, OrderStatus> applications = ApplicationServiceImpl.getInstance().findByParameters(searchParameters);
             Map<Application, OrderStatus> sorted = applications.entrySet()
                     .stream()
+                    .sorted(Map.Entry.comparingByKey(new Application.DepartureDateComparator()))
                     .sorted(Map.Entry.comparingByValue())
                     .collect(
                             Collectors.toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,
                                     LinkedHashMap::new));
 
+            logger.log(Level.INFO, "Applications found: {}", sorted);
             RequestAttributeHandler handler =
                     (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
             Map<String, Object> attributes = handler.getRequestAttributes();

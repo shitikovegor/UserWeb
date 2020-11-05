@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -20,19 +19,19 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import static com.shitikov.project.controller.command.AttributeName.*;
+import static com.shitikov.project.controller.command.AttributeName.ACCOUNT_ACTIVATED;
+import static com.shitikov.project.controller.command.AttributeName.LOGIN_PASSWORD_INVALID;
 import static com.shitikov.project.util.ParameterName.*;
 
 
 public class LoginCommand implements Command {
-    private static Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
     private static final String EMAIL_SUBJECT = "HelpByCar. Reactivate your account";
     private static final String MAIL_PROPERTIES = "config/mail.properties";
-
+    private static Logger logger = LogManager.getLogger();
+    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
     @Override
-    public Router execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) {
         UserService service = UserServiceImpl.getInstance();
         Router router;
 
@@ -66,7 +65,7 @@ public class LoginCommand implements Command {
                 request.setAttribute(LOGIN_PASSWORD_INVALID, true);
                 router = new Router(resourceBundle.getString("path.page.login"));
             }
-        } catch (ServiceException e) {
+        } catch (ServiceException | IOException e) {
             logger.log(Level.WARN, "Application error. ", e);
             router = new Router(resourceBundle.getString("path.page.error500"));
         }

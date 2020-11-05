@@ -7,10 +7,8 @@ import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.CommandType;
 import com.shitikov.project.util.ParameterName;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -23,7 +21,7 @@ public class BackCommand implements Command {
     private static final String PAGE_INDICATOR = "_page";
 
     @Override
-    public Router execute(HttpServletRequest request) throws IOException, ServletException {
+    public Router execute(HttpServletRequest request) {
         Router router;
         HttpSession session = request.getSession();
         String previousPage = request.getParameter(ParameterName.PREVIOUS_PAGE);

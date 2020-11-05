@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -30,12 +29,12 @@ public class ApplicationsPageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) {
         ApplicationService applicationService = ApplicationServiceImpl.getInstance();
-        HttpSession session = request.getSession();
         Router router;
         try {
             Map<Application, OrderStatus> applications = applicationService.findAll();
             Map<Application, OrderStatus> sorted = applications.entrySet()
                     .stream()
+                    .sorted(Map.Entry.comparingByKey(new Application.DepartureDateComparator()))
                     .sorted(Map.Entry.comparingByValue())
                     .collect(
                             Collectors.toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,

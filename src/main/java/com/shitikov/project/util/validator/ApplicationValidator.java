@@ -9,7 +9,7 @@ import static com.shitikov.project.util.ParameterName.*;
 
 public class ApplicationValidator extends Validator {
     private static final String CARGO_PATTERN = "\\d+\\.*\\d*";
-    private static final String PASSENGER_PATTERN = "\\d+"; // TODO: 05.11.2020 repeat in CarValidator.
+    private static final String PASSENGER_PATTERN = "\\d+";
     private static final String TITLE_PATTERN = "[\\p{L}0-9\\s-,._!?%#&*+]{1,100}";
     private static final String DESCRIPTION_PATTERN = "[\\p{L}0-9\\s-,._!?%#&*+\n]+";
 
@@ -53,7 +53,7 @@ public class ApplicationValidator extends Validator {
         if (type != null && !type.isEmpty()) {
             ApplicationType[] types = ApplicationType.values();
             for (ApplicationType applicationType : types) {
-                if (type.toUpperCase().equals(applicationType.name())) {
+                if (type.equalsIgnoreCase(applicationType.name())) {
                     isTypeValid = true;
                 }
             }
@@ -130,6 +130,4 @@ public class ApplicationValidator extends Validator {
         }
         return areParametersValid;
     }
-
-    // TODO: 28.10.2020 can I use methods from other validator class in this?
 }

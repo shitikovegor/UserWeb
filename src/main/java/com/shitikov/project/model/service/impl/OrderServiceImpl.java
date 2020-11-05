@@ -14,14 +14,13 @@ import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.OrderService;
 import com.shitikov.project.util.ParameterName;
-import com.shitikov.project.util.validator.OrderValidator;
+import com.shitikov.project.util.validator.Validator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class OrderServiceImpl implements OrderService {
-    private static final String EMPTY_PARAMETER = "";
     private static OrderServiceImpl instance;
     private final OrderDao orderDao = new OrderDaoImpl();
 
@@ -45,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
                     .buildStatus(OrderStatus.CONFIRMED)
                     .buildOrder();
 
-            return orderDao.add(order, EMPTY_PARAMETER); // TODO: 02.11.2020 may be with null parameter?
+            return orderDao.add(order);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
@@ -80,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
     public Optional<Order> findByAppId(String applicationId) throws ServiceException {
         try {
             Optional<Order> order = Optional.empty();
-            if (OrderValidator.checkId(applicationId)) {
+            if (Validator.checkId(applicationId)) {
                 order = orderDao.findByAppId(Long.parseLong(applicationId));
             }
             return order;
@@ -107,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean update(String id, Map<String, String> parameters) throws ServiceException {
-        if (!OrderValidator.checkId(id)) {
+        if (!Validator.checkId(id)) {
             return false;
         }
         try {

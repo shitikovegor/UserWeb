@@ -1,13 +1,11 @@
 package com.shitikov.project.model.dao.impl;
 
-import com.shitikov.project.model.builder.*;
+import com.shitikov.project.model.builder.OrderBuilder;
 import com.shitikov.project.model.dao.OrderDao;
 import com.shitikov.project.model.entity.Order;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.entity.application.Application;
 import com.shitikov.project.model.entity.application.ApplicationType;
-import com.shitikov.project.model.entity.application.CargoApplication;
-import com.shitikov.project.model.entity.application.PassengerApplication;
 import com.shitikov.project.model.entity.type.OrderStatus;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.pool.ConnectionPool;
@@ -17,12 +15,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import static com.shitikov.project.util.ParameterName.*;
+import static com.shitikov.project.util.ParameterName.PHONE;
+import static com.shitikov.project.util.ParameterName.STATUS;
 
 public class OrderDaoImpl implements OrderDao {
     private static final String SQL_FIND_BY_USER_ID = "SELECT ord.order_id, ord.car_id_fk, ord.user_id_fk, ord.status, " +
@@ -40,15 +38,10 @@ public class OrderDaoImpl implements OrderDao {
     private static final String SQL_INSERT_ORDER = "INSERT INTO orders(application_id_fk, car_id_fk, user_id_fk, " +
             "status) VALUES (?,?,?,?)";
     private static final String SQL_DELETE_BY_ID = "DELETE FROM orders WHERE order_id = ?";
-    private static final String SQL_DELETE_BY_CAR_ID = "DELETE FROM orders WHERE car_id_fk = ?";
-    private static final String SQL_UPDATE_PARAMETERS = "UPDATE orders SET %s WHERE order_id = ?";
+    private static final String SQL_UPDATE_STATUS = "UPDATE orders SET status = ? WHERE order_id = ?";
 
     @Override
-    public boolean add(Order order, String parameter) throws DaoException {
-        if (order == null) {
-            throw new DaoException("Order is null.");
-        }
-        boolean isOrderAdded;
+    public boolean add(Order order, String ... parameter) throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_ORDER)) {
 
@@ -58,8 +51,7 @@ public class OrderDaoImpl implements OrderDao {
             statement.setString(4, order.getStatus().getName());
 
             int result = statement.executeUpdate();
-            isOrderAdded = result != 0;
-            return isOrderAdded;
+            return result != 0;
         } catch (SQLException se) {
             throw new DaoException("Connection error. ", se);
         }
@@ -67,66 +59,39 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public Optional<Order> findById(long id) throws DaoException {
-        return Optional.empty();
+        throw new UnsupportedOperationException("this class doesn't support this method");
     }
 
     @Override
     public boolean update(Long id, Map<String, String> parameters) throws DaoException {
-        boolean isUpdated;
-        if (parameters == null) {
-            throw new DaoException("Incorrect data. ");
-        }
-        String parametersSQL = fillParametersSQL(parameters);
-        String sqlRequest = String.format(SQL_UPDATE_PARAMETERS, parametersSQL);
-
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_STATUS)) {
 
-            statement.setLong(1, id);
+            statement.setString(1, parameters.get(STATUS));
+            statement.setLong(2, id);
             int result = statement.executeUpdate();
-            isUpdated = result != 0;
+            return result != 0;
         } catch (SQLException e) {
             throw new DaoException("Connection error. " + e, e);
         }
-        return isUpdated;
     }
 
     @Override
     public boolean remove(long id) throws DaoException {
-        boolean isRemoved;
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
 
             statement.setLong(1, id);
             int result = statement.executeUpdate();
-            isRemoved = result != 0;
+            return result != 0;
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-        return isRemoved;
-    }
-
-    @Override
-    public boolean removeByCarId(long carId) throws DaoException {
-        boolean isRemoved;
-        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_ID)) {
-
-            statement.setLong(1, carId);
-            int result = statement.executeUpdate();
-            isRemoved = result != 0;
-        } catch (SQLException e) {
-            throw new DaoException("Connection error. ", e);
-        }
-        return isRemoved;
     }
 
     @Override
     public Map<Order, Long> findByUser(User user) throws DaoException {
-        if (user == null) {
-            throw new DaoException("User is null.");
-        }
-        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+       try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_USER_ID)) {
 
             Map<Order, Long> orders = new TreeMap<>(new Order.StatusComparator());
@@ -142,9 +107,9 @@ public class OrderDaoImpl implements OrderDao {
                             ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
                     Application application;
                     if (applicationType == ApplicationType.CARGO) {
-                        application = buildCargoApplication(resultSet);
+                        application = ApplicationDaoImpl.buildCargoApplication(resultSet);
                     } else {
-                        application = buildPassengerApplication(resultSet);
+                        application = ApplicationDaoImpl.buildPassengerApplication(resultSet);
                     }
                     Order order = new OrderBuilder()
                             .buildOrderId(orderId)
@@ -178,9 +143,9 @@ public class OrderDaoImpl implements OrderDao {
                             ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
                     Application application;
                     if (applicationType == ApplicationType.CARGO) {
-                        application = buildCargoApplication(resultSet);
+                        application = ApplicationDaoImpl.buildCargoApplication(resultSet);
                     } else {
-                        application = buildPassengerApplication(resultSet);
+                        application = ApplicationDaoImpl.buildPassengerApplication(resultSet);
                     }
                     order = new OrderBuilder()
                             .buildOrderId(orderId)
@@ -194,61 +159,5 @@ public class OrderDaoImpl implements OrderDao {
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }
-    }
-
-    @Override
-    public List<Order> findAll() throws DaoException {
-        return null;
-    }
-
-    private CargoApplication buildCargoApplication(ResultSet resultSet) throws SQLException {
-        CargoApplication application = new CargoApplicationBuilder()
-                .buildCargoWeight(resultSet.getDouble(CARGO_WEIGHT))
-                .buildCargoVolume(resultSet.getDouble(CARGO_VOLUME))
-                .buildApplicationId(resultSet.getLong(APPLICATION_ID))
-                .buildTitle(resultSet.getString(TITLE))
-                .buildApplicationType(ApplicationType.CARGO)
-                .buildDate(resultSet.getLong(DATE))
-                .buildAddressTimeData(new AddressTimeDataBuilder()
-                        .buildDepartureDate(resultSet.getLong(DEPARTURE_DATE))
-                        .buildDepartureAddress(new AddressBuilder()
-                                .buildStreetHome(resultSet.getString(DEPARTURE_ADDRESS))
-                                .buildCity(resultSet.getString(DEPARTURE_CITY))
-                                .buildAddress())
-                        .buildArrivalDate(resultSet.getLong(ARRIVAL_DATE))
-                        .buildArrivalAddress(new AddressBuilder()
-                                .buildStreetHome(resultSet.getString(ARRIVAL_ADDRESS))
-                                .buildCity(resultSet.getString(ARRIVAL_CITY))
-                                .buildAddress())
-                        .buildAddressTimeData())
-                .buildDescription(resultSet.getString(DESCRIPTION))
-                .buildApplication();
-
-        return application;
-    }
-
-    private PassengerApplication buildPassengerApplication(ResultSet resultSet) throws SQLException {
-        PassengerApplication application = new PassengerApplicationBuilder()
-                .buildPassengersNumber(resultSet.getInt(PASSENGERS_NUMBER))
-                .buildApplicationId(resultSet.getLong(APPLICATION_ID))
-                .buildTitle(resultSet.getString(TITLE))
-                .buildApplicationType(ApplicationType.PASSENGER)
-                .buildDate(resultSet.getLong(DATE))
-                .buildAddressTimeData(new AddressTimeDataBuilder()
-                        .buildDepartureDate(resultSet.getLong(DEPARTURE_DATE))
-                        .buildDepartureAddress(new AddressBuilder()
-                                .buildStreetHome(resultSet.getString(DEPARTURE_ADDRESS))
-                                .buildCity(resultSet.getString(DEPARTURE_CITY))
-                                .buildAddress())
-                        .buildArrivalDate(resultSet.getLong(ARRIVAL_DATE))
-                        .buildArrivalAddress(new AddressBuilder()
-                                .buildStreetHome(resultSet.getString(ARRIVAL_ADDRESS))
-                                .buildCity(resultSet.getString(ARRIVAL_CITY))
-                                .buildAddress())
-                        .buildAddressTimeData())
-                .buildDescription(resultSet.getString(DESCRIPTION))
-                .buildApplication();
-
-        return application;
     }
 }
