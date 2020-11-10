@@ -215,11 +215,11 @@
                                             ${phone}</p>
                                     <div class="float-right" style="margin-bottom: 5px;">
                                         <c:if test="${order.status == 'CONFIRMED' && sessionScope.role == 'DRIVER'}">
-                                            <form class="float-right app-button" id="cancel-order${order.orderId}"
+                                            <form class="float-right app-button" id="remove-order${order.orderId}"
                                                   action="controller" method="post" style="padding-left: 20px;">
                                                 <input type="hidden" name="command" value="remove-order">
                                                 <input type="hidden" name="order_id" value="${order.orderId}">
-                                                <a href="javascript:document.getElementById('cancel-order${order.orderId}').submit()">
+                                                <a href="javascript:document.getElementById('remove-order${order.orderId}').submit()">
                                                     <fmt:message key="page.account.cancelOrder"/></a>
                                             </form>
                                         </c:if>
@@ -258,7 +258,7 @@
                         </p>
                     </c:if>
                     <c:forEach var="car" items="${cars}">
-                        <div class="border rounded shadow-sm"
+                        <div class="card-body border rounded shadow-sm"
                              style="padding: 8px; margin-bottom: 10px; margin-top: 5px;">
                             <div>
                                 <p class="d-inline" style="margin-bottom: 5px;">

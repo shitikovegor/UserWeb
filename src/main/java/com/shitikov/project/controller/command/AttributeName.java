@@ -1,5 +1,11 @@
 package com.shitikov.project.controller.command;
 
+/**
+ * The type Attribute name.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class AttributeName {
     public static final String REQUEST_ATTRIBUTE_HANDLER = "attribute_handler";
     public static final String PAGE_PARAMETERS = "page_parameters";
@@ -42,6 +48,8 @@ public class AttributeName {
     public static final String TOTAL_PAGES = "total_pages";
 
     public static final String OBJECTS_ON_PAGE = "objects_on_page";
+    public static final String EMPTY_LINE = "";
+    public static final String XSS_PATTERN = "</?script>";
 
     private AttributeName() {
     }

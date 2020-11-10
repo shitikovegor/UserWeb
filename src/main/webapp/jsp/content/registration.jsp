@@ -13,7 +13,7 @@
             <form action="controller" method="post">
                 <input type="hidden" name="command" value="registration"/>
                 <div class="form-group">
-                    <label for="login"><fmt:message key="common.login"/></label>
+                    <label for="login"><fmt:message key="common.login"/> *</label>
                     <input class="form-control item" type="text" id="login"
                            required="<fmt:message key="required.login"/>"
                            pattern="^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]+" minlength="4" maxlength="20"
@@ -30,7 +30,7 @@
                     </small>
                 </div>
                 <div class="form-group">
-                    <label for="password"><fmt:message key="common.password"/></label>
+                    <label for="password"><fmt:message key="common.password"/> *</label>
                     <input class="form-control item" type="password" id="password"
                            required="<fmt:message key="required.password"/>"
                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]+" minlength="6" maxlength="20"
@@ -44,7 +44,7 @@
                     </small>
                 </div>
                 <div class="form-group">
-                    <label for="email"><fmt:message key="common.email"/></label>
+                    <label for="email"><fmt:message key="common.email"/> *</label>
                     <input class="form-control item" type="email" id="email" required="" name="email"
                            value="${email}">
                     <small class="text-danger">
@@ -79,7 +79,7 @@
                         <fmt:message key="page.registration.organization"/></p>
                 </div>
                 <div class="form-group">
-                    <label for="name"><fmt:message key="common.name"/></label>
+                    <label for="name"><fmt:message key="common.name"/> *</label>
                     <input class="form-control item" type="text" id="name" required="" name="name"
                            pattern="[\p{L}\s-]{1,50}" minlength="1" maxlength="50"
                            value="${name}">
@@ -90,7 +90,7 @@
                     </small>
                 </div>
                 <div class="form-group">
-                    <label for="surname"><fmt:message key="common.surname"/></label>
+                    <label for="surname"><fmt:message key="common.surname"/> *</label>
                     <input class="form-control item" type="text" id="surname" name="surname"
                            pattern="[\p{L}\s-]{1,50}" minlength="1" maxlength="50"
                            value="${surname}">
@@ -101,7 +101,7 @@
                     </small>
                 </div>
                 <div class="form-group">
-                    <label for="phone"><fmt:message key="common.phone"/></label>
+                    <label for="phone"><fmt:message key="common.phone"/> *</label>
                     <input class="form-control item" type="tel" id="phone"
                            required="<fmt:message key="required.phone"/>"
                            pattern="^\+?\d{12}" minlength="12" maxlength="13"

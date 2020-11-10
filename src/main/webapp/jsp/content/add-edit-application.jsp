@@ -28,7 +28,7 @@
                     </c:otherwise>
                 </c:choose>
                 <div class="form-group">
-                    <label for="title"><fmt:message key="application.appTitle"/></label>
+                    <label for="title"><fmt:message key="application.appTitle"/> *</label>
                     <input class="form-control item" type="text" id="title"
                            pattern="[\p{L}0-9\s-,._!?%#&*+]{1,100}" minlength="1" maxlength="100"
                            name="title" value="${title}"
@@ -52,7 +52,7 @@
                     </c:otherwise>
                 </c:choose>
                 <div class="form-group">
-                    <label><fmt:message key="application.applicationType"/></label>
+                    <label><fmt:message key="application.applicationType"/> *</label>
                     <div>
                         <input type="radio" id="cargo" name="application_type" value="cargo" required="" onclick="toggleSet()"
                                ${cargoSelect ? 'checked' : ''}>
@@ -66,7 +66,7 @@
                 </div>
                 <fieldset id="cargo_set" class="item" style="display: none;">
                     <div class="form-group">
-                        <label for="cargo_weight"><fmt:message key="application.cargoWeight"/></label>
+                        <label for="cargo_weight"><fmt:message key="application.cargoWeight"/> *</label>
                         <input class="form-control item" type="text" id="cargo_weight"
                                pattern="\d+\.*\d*" name="cargo_weight" value="${cargo_weight}" placeholder="0">
                     </div>
@@ -76,7 +76,7 @@
                         </sup>
                     </c:if>
                     <div class="form-group">
-                        <label for="cargo_volume"><fmt:message key="application.cargoVolume"/><br></label>
+                        <label for="cargo_volume"><fmt:message key="application.cargoVolume"/> *<br></label>
                         <input class="form-control item" type="text" id="cargo_volume"
                                name="cargo_volume" value="${cargo_volume}" pattern="\d+\.*\d*" placeholder="0"
                                inputmode="numeric">
@@ -89,7 +89,7 @@
                 </fieldset>
                 <fieldset id="passenger_set" class="application_type_item" style="display: none;">
                     <div class="form-group">
-                        <label for="passengers_number"><fmt:message key="application.passengersNumber"/></label>
+                        <label for="passengers_number"><fmt:message key="application.passengersNumber"/> *</label>
                         <input class="form-control item" type="number" id="passengers_number"
                                name="passengers_number" value="${passengers_number}" pattern="\d+" placeholder="0">
                         <c:if test="${passengers_number_invalid}">
@@ -102,13 +102,13 @@
                 <h5 class="mb-0" style="padding-bottom: 10px;padding-top: 5px;"><fmt:message
                         key="application.departureData"/><br></h5>
                 <div class="form-group">
-                    <label for="date_from"><fmt:message key="application.date"/></label>
+                    <label for="date_from"><fmt:message key="application.date"/> *</label>
                     <input class="form-control date-input" id="date_from" name="departure_date"
                            required="" value="<ctg:format-date date="${departure_date}" input="true"/>"
                            type="date">
                 </div>
                 <div class="form-group">
-                    <label for="departure_address"><fmt:message key="application.address"/></label>
+                    <label for="departure_address"><fmt:message key="application.address"/> *</label>
                     <input class="form-control item" type="text" id="departure_address" placeholder=""
                            name="departure_address" pattern="[\p{L}0-9\s-,.]{1,150}" minlength="1" maxlength="150"
                            title="<fmt:message key="required.address"/>"
@@ -121,7 +121,7 @@
                     </c:if>
                 </div>
                 <div class="form-group">
-                    <label for="departure_city"><fmt:message key="application.city"/></label>
+                    <label for="departure_city"><fmt:message key="application.city"/> *</label>
                     <input class="form-control item" type="text" id="departure_city" placeholder=""
                            name="departure_city" minlength="1" maxlength="50"
                            pattern="[\p{L}0-9\s\-]{1,50}" value="${departure_city}"
@@ -136,13 +136,13 @@
                 <h5 class="mb-0" style="padding-bottom: 10px;padding-top: 5px;"><fmt:message
                         key="application.arrivalData"/><br></h5>
                 <div class="form-group">
-                    <label for="date_to"><fmt:message key="application.date"/></label>
+                    <label for="date_to"><fmt:message key="application.date"/> *</label>
                     <input class="form-control date-input" id="date_to" name="arrival_date"
                            required="" value="<ctg:format-date date="${arrival_date}" input="true"/>"
                            type="date">
                 </div>
                 <div class="form-group">
-                    <label for="arrival_address"><fmt:message key="application.address"/></label>
+                    <label for="arrival_address"><fmt:message key="application.address"/> *</label>
                     <input class="form-control item" type="text" id="arrival_address" placeholder=""
                            name="arrival_address" pattern="[\p{L}0-9\s-,./]{1,150}"
                            minlength="1" maxlength="150" value="${arrival_address}"
@@ -155,7 +155,7 @@
                     </c:if>
                 </div>
                 <div class="form-group">
-                    <label for="arrival_city"><fmt:message key="application.city"/></label>
+                    <label for="arrival_city"><fmt:message key="application.city"/> *</label>
                     <input class="form-control item" type="text" id="arrival_city" placeholder=""
                            name="arrival_city" minlength="1" maxlength="50"
                            pattern="[\p{L}0-9\s\-]{1,50}" value="${arrival_city}"
@@ -168,9 +168,9 @@
                     </c:if>
                 </div>
                 <div class="form-group">
-                    <label for="description"><fmt:message key="application.description"/></label>
+                    <label for="description"><fmt:message key="application.description"/> *</label>
                     <textarea class="form-control item" id="description" name="description" required=""
-                              value="${description}" pattern="[\p{L}0-9\s-,._!?%#&*+\n]+"
+                              value="${description}" pattern="[\p{L}0-9\s-,._!?%#&*+():%№\n]+"
                               title="<fmt:message key="required.text"/>">${description}
                     </textarea>
                 </div>

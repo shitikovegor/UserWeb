@@ -1,7 +1,6 @@
 package com.shitikov.project.model.service.impl;
 
 import com.shitikov.project.model.builder.CarBuilder;
-import com.shitikov.project.model.dao.CarDao;
 import com.shitikov.project.model.dao.impl.CarDaoImpl;
 import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.User;
@@ -9,19 +8,24 @@ import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.CarService;
 import com.shitikov.project.util.ParameterName;
-import com.shitikov.project.util.validator.ApplicationValidator;
-import com.shitikov.project.util.validator.CarValidator;
-import com.shitikov.project.util.validator.UserValidator;
-import com.shitikov.project.util.validator.Validator;
+import com.shitikov.project.validator.ApplicationValidator;
+import com.shitikov.project.validator.CarValidator;
+import com.shitikov.project.validator.UserValidator;
+import com.shitikov.project.validator.Validator;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * The type Car service.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class CarServiceImpl implements CarService {
     private static CarServiceImpl instance;
-    private CarDao carDao = new CarDaoImpl();
 
     private CarServiceImpl() {
     }
@@ -35,6 +39,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean add(Map<String, String> parameters) throws ServiceException {
+        CarDaoImpl carDao = CarDaoImpl.getInstance();
         boolean isAdded = false;
         String carNumber = parameters.get(ParameterName.CAR_NUMBER);
         String carryingWeight = parameters.get(ParameterName.CARRYING_WEIGHT);
@@ -67,6 +72,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean remove(String id) throws ServiceException {
+        CarDaoImpl carDao = CarDaoImpl.getInstance();
         try {
             boolean isRemoved = false;
             if (Validator.checkId(id)) {
@@ -80,6 +86,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Optional<Car> findById(String id) throws ServiceException {
+        CarDaoImpl carDao = CarDaoImpl.getInstance();
         Optional<Car> carOptional = Optional.empty();
         try {
             if (Validator.checkId(id)) {
@@ -93,6 +100,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<Car> findByUser(User user) throws ServiceException {
+        CarDaoImpl carDao = CarDaoImpl.getInstance();
         try {
             List<Car> cars = carDao.findByUser(user);
             return cars;
@@ -103,6 +111,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean update(String id, Map<String, String> parameters) throws ServiceException {
+        CarDaoImpl carDao = CarDaoImpl.getInstance();
         if (!Validator.checkId(id)) {
             return false;
         }
@@ -110,18 +119,38 @@ public class CarServiceImpl implements CarService {
         try {
             if (isUpdated) {
                 Map<String, String> paramToUpdate = new HashMap<>(parameters);
+                paramToUpdate.entrySet().removeIf(e -> e.getValue().isEmpty());
 
-                for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
-                    String element = entry.getValue();
-                    if (element.isEmpty()) {
-                        paramToUpdate.remove(entry.getKey());
-                    }
-                }
                 if (!paramToUpdate.isEmpty()) {
                     isUpdated = carDao.update(Long.parseLong(id), paramToUpdate);
                 }
             }
             return isUpdated;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean removeUsed(String id) throws ServiceException {
+        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        try {
+            boolean isRemoved = false;
+            if (Validator.checkId(id)) {
+                isRemoved = carDao.removeUsed(Long.parseLong(id));
+            }
+            return isRemoved;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public List<Car> findAvailableByUser(User user) throws ServiceException {
+        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        try {
+            List<Car> cars = carDao.findAvailableByUser(user);
+            return cars;
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

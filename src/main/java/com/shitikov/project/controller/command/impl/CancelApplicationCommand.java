@@ -25,10 +25,16 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Cancel application command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class CancelApplicationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
-    private OrderService orderService = OrderServiceImpl.getInstance();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request) {

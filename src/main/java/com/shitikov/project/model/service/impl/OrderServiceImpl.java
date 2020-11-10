@@ -1,7 +1,6 @@
 package com.shitikov.project.model.service.impl;
 
 import com.shitikov.project.model.builder.OrderBuilder;
-import com.shitikov.project.model.dao.OrderDao;
 import com.shitikov.project.model.dao.impl.OrderDaoImpl;
 import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.Order;
@@ -14,29 +13,32 @@ import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.OrderService;
 import com.shitikov.project.util.ParameterName;
-import com.shitikov.project.util.validator.Validator;
+import com.shitikov.project.validator.Validator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * The type Order service.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class OrderServiceImpl implements OrderService {
-    private static OrderServiceImpl instance;
-    private final OrderDao orderDao = new OrderDaoImpl();
+    private static final OrderServiceImpl instance = new OrderServiceImpl();
 
     private OrderServiceImpl() {
     }
 
     public static OrderServiceImpl getInstance() {
-        if (instance == null) {
-            instance = new OrderServiceImpl();
-        }
         return instance;
     }
 
     @Override
     public boolean add(Map<String, Object> parameters) throws ServiceException {
         try {
+            OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
             Order order = new OrderBuilder()
                     .buildApplication((Application) parameters.get(ParameterName.APPLICATION))
                     .buildCarId((Long) parameters.get(ParameterName.CAR_ID))
@@ -54,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean remove(String id) throws ServiceException {
         try {
+            OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
             return orderDao.remove(Long.parseLong(id));
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -61,13 +64,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> findById(String id) throws ServiceException {
-        return Optional.empty();
-    }
-
-    @Override
     public Map<Order, Long> findByUser(User user) throws ServiceException {
         try {
+            OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
             Map<Order, Long> orders = orderDao.findByUser(user);
             return orders;
         } catch (DaoException e) {
@@ -78,6 +77,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Order> findByAppId(String applicationId) throws ServiceException {
         try {
+            OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
             Optional<Order> order = Optional.empty();
             if (Validator.checkId(applicationId)) {
                 order = orderDao.findByAppId(Long.parseLong(applicationId));
@@ -110,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
         try {
+            OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
             boolean isUpdated = orderDao.update(Long.parseLong(id), parameters);
             return isUpdated;
         } catch (DaoException e) {

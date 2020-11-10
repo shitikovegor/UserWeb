@@ -26,9 +26,15 @@ import java.util.ResourceBundle;
 
 import static com.shitikov.project.util.ParameterName.*;
 
+/**
+ * The type Offer help command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class OfferHelpCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {

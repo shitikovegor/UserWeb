@@ -20,18 +20,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * The type User dao.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class UserDaoImpl implements UserDao {
+    private static UserDaoImpl instance;
     private static final String SQL_INSERT_USER
-            = "INSERT INTO users(login, password, name, surname, email, phone, role, subject, blocked, active)" +
+            = "INSERT INTO users(login, password, name, surname, email, phone, role, subject, blocked, activated)" +
             " VALUES(?,?,?,?,?,?,?,?,?,?)";
     private static final String SQL_INSERT_ADDRESS = "INSERT INTO addresses SET address = ?, city = ?, " +
             "user_id_fk = (SELECT user_id FROM users WHERE login = ?)";
     private static final String SQL_CHECK_BY_LOGIN
             = "SELECT user_id, login, password, role FROM users WHERE login = ?";
     private static final String SQL_FIND_BY_PARAMETER
-            = "SELECT user_id, login, name, surname, email, phone, role, subject, blocked, active FROM users WHERE %s" +
+            = "SELECT user_id, login, name, surname, email, phone, role, subject, blocked, activated FROM users WHERE %s" +
             " = ?";
-    private static final String SQL_ACTIVATE_ACCOUNT = "UPDATE users SET active = 1 WHERE login = ?";
+    private static final String SQL_UPDATE_ACTIVATION = "UPDATE users SET activated = ? WHERE login = ?";
     private static final String SQL_UPDATE_PARAMETERS = "UPDATE users SET %s WHERE login = ?";
     private static final String SQL_UPDATE_PASSWORD = "UPDATE users SET password = ? WHERE login = ?";
     private static final String SQL_UPDATE_PHONE = "UPDATE users SET phone = ? WHERE login = ?";
@@ -42,13 +49,21 @@ public class UserDaoImpl implements UserDao {
     private static final String SQL_PHONE_BY_APP_ID = "SELECT phone FROM users JOIN applications ON " +
             "user_id = user_id_fk WHERE applications.application_id = ?";
     private static final String SQL_FIND_ALL = "SELECT user_id, login, password, name, surname, email, phone, role, " +
-            "subject, blocked, active FROM users";
+            "subject, blocked, activated FROM users WHERE role != 'administrator'";
+    private static final String SQL_UPDATE_BLOCK = "UPDATE users SET blocked = ? WHERE login = ?";
 
-    public UserDaoImpl() {
+    private UserDaoImpl() {
+    }
+
+    public static UserDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new UserDaoImpl();
+        }
+        return instance;
     }
 
     @Override
-    public boolean add(User user, String ... password) throws DaoException {
+    public boolean add(User user, String... password) throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_USER)) {
 
@@ -58,10 +73,10 @@ public class UserDaoImpl implements UserDao {
             statement.setString(4, user.getSurname());
             statement.setString(5, user.getEmail());
             statement.setLong(6, user.getPhone());
-            statement.setString(7, user.getRoleType().getRoleName());
+            statement.setString(7, user.getRoleType().getName());
             statement.setString(8, user.getSubjectType().getSubjectName());
             statement.setBoolean(9, user.isBlocked());
-            statement.setBoolean(10, user.isActive());
+            statement.setBoolean(10, user.isActivated());
             int result = statement.executeUpdate();
             return result != 0;
         } catch (SQLException se) {
@@ -93,7 +108,7 @@ public class UserDaoImpl implements UserDao {
                     SubjectType subjectType =
                             SubjectType.valueOf(resultSet.getString(ParameterName.SUBJECT_TYPE).toUpperCase());
                     boolean blocked = resultSet.getBoolean(ParameterName.BLOCKED);
-                    boolean active = resultSet.getBoolean(ParameterName.ACTIVE);
+                    boolean activated = resultSet.getBoolean(ParameterName.ACTIVATED);
 
                     user = new UserBuilder()
                             .buildUserId(userId)
@@ -105,7 +120,7 @@ public class UserDaoImpl implements UserDao {
                             .buildSubjectType(subjectType)
                             .buildRoleType(roleType)
                             .buildBlocked(blocked)
-                            .buildActive(active)
+                            .buildActivated(activated)
                             .buildUser();
                 }
                 return Optional.ofNullable(user);
@@ -134,7 +149,7 @@ public class UserDaoImpl implements UserDao {
                     SubjectType subjectType =
                             SubjectType.valueOf(resultSet.getString(ParameterName.SUBJECT_TYPE).toUpperCase());
                     boolean blocked = resultSet.getBoolean(ParameterName.BLOCKED);
-                    boolean active = resultSet.getBoolean(ParameterName.ACTIVE);
+                    boolean activated = resultSet.getBoolean(ParameterName.ACTIVATED);
 
                     user = new UserBuilder()
                             .buildUserId(userId)
@@ -146,7 +161,7 @@ public class UserDaoImpl implements UserDao {
                             .buildSubjectType(subjectType)
                             .buildRoleType(roleType)
                             .buildBlocked(blocked)
-                            .buildActive(active)
+                            .buildActivated(activated)
                             .buildUser();
                 }
                 return Optional.ofNullable(user);
@@ -194,7 +209,7 @@ public class UserDaoImpl implements UserDao {
                 SubjectType subjectType =
                         SubjectType.valueOf(resultSet.getString(ParameterName.SUBJECT_TYPE).toUpperCase());
                 boolean blocked = resultSet.getBoolean(ParameterName.BLOCKED);
-                boolean active = resultSet.getBoolean(ParameterName.ACTIVE);
+                boolean activated = resultSet.getBoolean(ParameterName.ACTIVATED);
 
                 User user = new UserBuilder()
                         .buildUserId(userId)
@@ -206,7 +221,7 @@ public class UserDaoImpl implements UserDao {
                         .buildSubjectType(subjectType)
                         .buildRoleType(roleType)
                         .buildBlocked(blocked)
-                        .buildActive(active)
+                        .buildActivated(activated)
                         .buildUser();
                 users.add(user);
             }
@@ -303,20 +318,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean checkUserAddress(String login) throws DaoException {
-        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_FIND_ADDRESS_BY_LOGIN)) {
-
-            statement.setString(1, login);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                return resultSet.next();
-            }
-        } catch (SQLException e) {
-            throw new DaoException("Connection error. ", e);
-        }
-    }
-
-    @Override
     public RoleType findRole(String login) throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHECK_BY_LOGIN)) {
@@ -345,8 +346,8 @@ public class UserDaoImpl implements UserDao {
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
             for (int i = 0; i < searchValues.size(); i++) {
-                Object value = searchValues.get(i);
-                statement.setString(i + 1, (String) value);
+                String value = searchValues.get(i);
+                statement.setString(i + 1, value);
             }
             statement.setString(searchValues.size() + 1, login);
             int result = statement.executeUpdate();
@@ -365,8 +366,8 @@ public class UserDaoImpl implements UserDao {
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
             for (int i = 0; i < searchValues.size(); i++) {
-                Object value = searchValues.get(i);
-                statement.setString(i + 1, (String) value);
+                String value = searchValues.get(i);
+                statement.setString(i + 1, value);
             }
             statement.setString(searchValues.size() + 1, login);
             int result = statement.executeUpdate();
@@ -405,15 +406,30 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean activate(String login) throws DaoException {
+    public boolean updateActivation(String login, int status) throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_ACTIVATE_ACCOUNT)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_ACTIVATION)) {
 
-            statement.setString(1, login);
+            statement.setInt(1, status);
+            statement.setString(2, login);
             int result = statement.executeUpdate();
-            return  result != 0;
+            return result != 0;
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
+        }
+    }
+
+    @Override
+    public boolean updateBlock(String login, int status) throws DaoException {
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_BLOCK)) {
+
+            statement.setInt(1, status);
+            statement.setString(2, login);
+            int result = statement.executeUpdate();
+            return result != 0;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. " + e, e);
         }
     }
 }

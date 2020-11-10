@@ -12,9 +12,12 @@
     <title>${param.title}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}assets/fonts/fontawesome-all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}assets/fonts/simple-line-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}assets/css/smoothproducts.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}assets/css/untitled.css">
 </head>
 <body>
 <header><c:import url="header.jsp"/></header>

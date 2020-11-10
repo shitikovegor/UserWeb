@@ -24,18 +24,24 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.controller.command.AttributeName.*;
 
 
+/**
+ * The type Save contact settings command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class SaveContactSettingsCommand implements Command {
-    private static Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private static final Logger logger = LogManager.getLogger();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
 
     @Override
     public Router execute(HttpServletRequest request) {
         UserService service = UserServiceImpl.getInstance();
         Router router;
-        String streetHomeToChange = request.getParameter(ParameterName.ADDRESS).replaceAll("</?script>", "");
-        String cityToChange = request.getParameter(ParameterName.CITY).replaceAll("</?script>", "");
-        String phoneToChange = request.getParameter(ParameterName.PHONE).replaceAll("</?script>", "");
+        String streetHomeToChange = request.getParameter(ParameterName.ADDRESS).replaceAll(XSS_PATTERN, EMPTY_LINE);
+        String cityToChange = request.getParameter(ParameterName.CITY).replaceAll(XSS_PATTERN, EMPTY_LINE);
+        String phoneToChange = request.getParameter(ParameterName.PHONE).replaceAll(XSS_PATTERN, EMPTY_LINE);
 
         try {
             HttpSession session = request.getSession();
@@ -84,10 +90,10 @@ public class SaveContactSettingsCommand implements Command {
                     attributes.replace(ParameterName.CITY, cityToChange);
                     logger.log(Level.INFO, "Contact updated");
                 } else {
-                    if (parameters.get(ParameterName.ADDRESS) != null && parameters.get(ParameterName.ADDRESS).equals("")) {
+                    if (parameters.get(ParameterName.ADDRESS) != null && parameters.get(ParameterName.ADDRESS).equals(EMPTY_LINE)) {
                         request.setAttribute(ADDRESS_INVALID, true);
                     }
-                    if (parameters.get(ParameterName.CITY) != null && parameters.get(ParameterName.CITY).equals("")) {
+                    if (parameters.get(ParameterName.CITY) != null && parameters.get(ParameterName.CITY).equals(EMPTY_LINE)) {
                         request.setAttribute(CITY_INVALID, true);
                     }
                 }

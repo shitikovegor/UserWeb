@@ -17,19 +17,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * The type Car dao.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class CarDaoImpl implements CarDao {
-
+    private static CarDaoImpl instance;
     private static final String SQL_CHECK_BY_CAR_NUMBER = "SELECT car_id FROM cars WHERE car_number = ?";
     private static final String SQL_INSERT_CAR = "INSERT INTO cars SET car_number = ?, carrying_weight = ?" +
             ", carrying_volume = ?, passengers_number = ?, user_id_fk = (SELECT user_id FROM users WHERE login = ?)";
-    private static final String SQL_FIND_BY_USER_ID = "SELECT car_id, car_number, carrying_weight, carrying_volume, passengers_number " +
-            "FROM cars WHERE user_id_fk = ?";
+    private static final String SQL_FIND_BY_USER_ID = "SELECT car_id, car_number, carrying_weight, carrying_volume, " +
+            "passengers_number, removed FROM cars WHERE user_id_fk = ?";
+    private static final String SQL_FIND_AVAILABLE_BY_USER_ID = "SELECT car_id, car_number, carrying_weight, " +
+            "carrying_volume, passengers_number FROM cars WHERE user_id_fk = ? && removed = 0";
     private static final String SQL_FIND_BY_ID = "SELECT car_id, car_number, carrying_weight, " +
             "carrying_volume, passengers_number FROM cars WHERE car_id = ?";
     private static final String SQL_UPDATE_PARAMETERS = "UPDATE cars SET %s WHERE car_id = ?";
     private static final String SQL_DELETE_BY_ID = "DELETE FROM cars WHERE car_id = ?";
+    private static final String SQL_REMOVE_USED = "UPDATE cars SET removed = 1 WHERE car_id = ?";
 
-    public CarDaoImpl(){}
+
+    private CarDaoImpl(){
+    }
+
+    public static CarDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new CarDaoImpl();
+        }
+        return instance;
+    }
 
     @Override
     public boolean add(Car car, String ... login) throws DaoException {
@@ -104,6 +122,7 @@ public class CarDaoImpl implements CarDao {
                     double carryingWeight = resultSet.getDouble(ParameterName.CARRYING_WEIGHT);
                     double carryingVolume = resultSet.getDouble(ParameterName.CARRYING_VOLUME);
                     int passengersNumber = resultSet.getInt(ParameterName.PASSENGERS_NUMBER);
+                    boolean removed = resultSet.getBoolean(ParameterName.REMOVED);
 
                     Car car = new CarBuilder()
                             .buildCarId(carId)
@@ -111,7 +130,7 @@ public class CarDaoImpl implements CarDao {
                             .buildCarryingWeight(carryingWeight)
                             .buildCarryingVolume(carryingVolume)
                             .buildPassengers(passengersNumber)
-                            .buildOwner(user)
+                            .buildRemoved(removed)
                             .buildCar();
                     cars.add(car);
                 }
@@ -132,8 +151,8 @@ public class CarDaoImpl implements CarDao {
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
             for (int i = 0; i < searchValues.size(); i++) {
-                Object value = searchValues.get(i);
-                statement.setString(i + 1, (String) value);
+                String value = searchValues.get(i);
+                statement.setString(i + 1, value);
             }
             statement.setLong(searchValues.size() + 1, carId);
             int result = statement.executeUpdate();
@@ -150,6 +169,50 @@ public class CarDaoImpl implements CarDao {
             statement.setString(1, carNumber);
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next();
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+    }
+
+    @Override
+    public boolean removeUsed(long id) throws DaoException {
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_REMOVE_USED)) {
+
+            statement.setLong(1, id);
+            int result = statement.executeUpdate();
+            return result != 0;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+    }
+
+    @Override
+    public List<Car> findAvailableByUser(User user) throws DaoException {
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_AVAILABLE_BY_USER_ID)) {
+
+            statement.setLong(1, user.getUserId());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Car> cars = new ArrayList<>();
+                while (resultSet.next()) {
+                    long carId = resultSet.getLong(ParameterName.CAR_ID);
+                    String carNumber = resultSet.getString(ParameterName.CAR_NUMBER);
+                    double carryingWeight = resultSet.getDouble(ParameterName.CARRYING_WEIGHT);
+                    double carryingVolume = resultSet.getDouble(ParameterName.CARRYING_VOLUME);
+                    int passengersNumber = resultSet.getInt(ParameterName.PASSENGERS_NUMBER);
+
+                    Car car = new CarBuilder()
+                            .buildCarId(carId)
+                            .buildCarNumber(carNumber)
+                            .buildCarryingWeight(carryingWeight)
+                            .buildCarryingVolume(carryingVolume)
+                            .buildPassengers(passengersNumber)
+                            .buildCar();
+                    cars.add(car);
+                }
+                return cars;
             }
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);

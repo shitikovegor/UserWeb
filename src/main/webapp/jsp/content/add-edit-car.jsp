@@ -26,7 +26,7 @@
                     </c:otherwise>
                 </c:choose>
                 <div class="form-group">
-                    <label for="car_number"><fmt:message key="car.carNumber"/></label>
+                    <label for="car_number"><fmt:message key="car.carNumber"/> *</label>
                     <input class="form-control car_number" type="text" id="car_number"
                            pattern="\d{4}\p{Alpha}{2}[1-7]" minlength="7" maxlength="7"
                            name="car_number" title="<fmt:message key="required.carNumber"/>" required="<fmt:message key="required.carNumber"/>"

@@ -3,6 +3,12 @@ package com.shitikov.project.controller.command;
 import com.shitikov.project.controller.command.impl.*;
 import com.shitikov.project.controller.command.impl.page.*;
 
+/**
+ * The enum Command type.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public enum CommandType {
     LOGIN(new LoginCommand()),
     LOGOUT(new LogoutCommand()),
@@ -24,6 +30,8 @@ public enum CommandType {
     OFFER_HELP(new OfferHelpCommand()),
     REMOVE_ORDER(new RemoveOrderCommand()),
     SEARCH(new SearchCommand()),
+    BLOCK_USER(new BlockUserCommand()),
+    UNBLOCK_USER(new UnblockUserCommand()),
     //pages
     HOME_PAGE(new HomePageCommand()),
     REGISTRATION_PAGE(new RegistrationPageCommand()),
@@ -35,16 +43,23 @@ public enum CommandType {
     EDIT_APPLICATION_PAGE(new EditApplicationPageCommand()),
     APPLICATIONS_PAGE(new ApplicationsPageCommand()),
     APPLICATION_PAGE(new ApplicationPageCommand()),
+    USERS_PAGE(new UsersPageCommand()),
+    ACCOUNT_FOR_ADMIN_PAGE(new AccountForAdminPageCommand()),
     BACK(new BackCommand()),
     PAGINATION(new PaginationCommand());
 
 
-    private Command command;
+    private final Command command;
 
     CommandType(Command command) {
         this.command = command;
     }
 
+    /**
+     * Gets command.
+     *
+     * @return the command
+     */
     public Command getCommand() {
         return command;
     }

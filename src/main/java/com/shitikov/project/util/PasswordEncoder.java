@@ -2,18 +2,37 @@ package com.shitikov.project.util;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * The type Password encoder.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class PasswordEncoder {
 
-    public PasswordEncoder() {
+    private PasswordEncoder() {
     }
 
-    public String hashPassword(String password) {
+    /**
+     * Hash password string.
+     *
+     * @param password the password
+     * @return the string
+     */
+    public static String hashPassword(String password) {
         String salt = BCrypt.gensalt(10);
         String hashPassword = BCrypt.hashpw(password, salt);
         return hashPassword;
     }
 
-    public boolean checkPassword(String password, String hashedPassword) {
+    /**
+     * Check password boolean.
+     *
+     * @param password       the password
+     * @param hashedPassword the hashed password
+     * @return the boolean
+     */
+    public static boolean checkPassword(String password, String hashedPassword) {
         return BCrypt.checkpw(password, hashedPassword);
     }
 }

@@ -23,9 +23,15 @@ import java.util.stream.Collectors;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Search command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class SearchCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
     private static final int OBJECTS_ON_PAGE = 5;
     private static final int FIRST_PAGE = 1;
 

@@ -8,6 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ResourceBundle;
 
 
+/**
+ * The type Registration page command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class RegistrationPageCommand implements Command {
 
     @Override

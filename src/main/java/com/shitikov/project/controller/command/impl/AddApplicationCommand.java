@@ -18,29 +18,36 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static com.shitikov.project.controller.command.AttributeName.*;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Add application command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class AddApplicationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
 
-        String title = request.getParameter(TITLE).replaceAll("</?script>", "");
+        String title = request.getParameter(TITLE).replaceAll(XSS_PATTERN, EMPTY_LINE);
         String applicationType = request.getParameter(APPLICATION_TYPE);
         String cargoWeight = request.getParameter(CARGO_WEIGHT);
         String cargoVolume = request.getParameter(CARGO_VOLUME);
         String passengerNumber = request.getParameter(PASSENGERS_NUMBER);
         String departureDate = request.getParameter(DEPARTURE_DATE);
-        String departureAddress = request.getParameter(DEPARTURE_ADDRESS).replaceAll("</?script>", "");
-        String departureCity = request.getParameter(DEPARTURE_CITY).replaceAll("</?script>", "");
+        String departureAddress = request.getParameter(DEPARTURE_ADDRESS).replaceAll(XSS_PATTERN, EMPTY_LINE);
+        String departureCity = request.getParameter(DEPARTURE_CITY).replaceAll(XSS_PATTERN, EMPTY_LINE);
         String arrivalDate = request.getParameter(ARRIVAL_DATE);
-        String arrivalAddress = request.getParameter(ARRIVAL_ADDRESS).replaceAll("</?script>", "");
-        String arrivalCity = request.getParameter(ARRIVAL_CITY).replaceAll("</?script>", "");
-        String description = request.getParameter(DESCRIPTION).replaceAll("</?script>", "").trim();
+        String arrivalAddress = request.getParameter(ARRIVAL_ADDRESS).replaceAll(XSS_PATTERN, EMPTY_LINE);
+        String arrivalCity = request.getParameter(ARRIVAL_CITY).replaceAll(XSS_PATTERN, EMPTY_LINE);
+        String description = request.getParameter(DESCRIPTION).replaceAll(XSS_PATTERN, EMPTY_LINE).trim();
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(TITLE, title);

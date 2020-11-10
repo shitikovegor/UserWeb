@@ -30,9 +30,15 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 
+/**
+ * The type Account page command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class AccountPageCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {
@@ -54,7 +60,7 @@ public class AccountPageCommand implements Command {
             }
             if (user.getRoleType() == RoleType.DRIVER) {
                 request.setAttribute(ParameterName.ORDERS, orderService.findByUser(user));
-                request.setAttribute(ParameterName.CARS, carService.findByUser(user));
+                request.setAttribute(ParameterName.CARS, carService.findAvailableByUser(user));
             } else {
                 Map<Application, OrderStatus> applications = applicationService.findByUser(user);
                 Map<Application, OrderStatus> sorted = applications.entrySet()

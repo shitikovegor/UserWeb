@@ -17,9 +17,15 @@ import javax.servlet.http.HttpSession;
 import java.util.ResourceBundle;
 
 
+/**
+ * The type Activate account command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class ActivateAccountCommand implements Command {
-    private static Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private static final Logger logger = LogManager.getLogger();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
 
     @Override
@@ -35,11 +41,14 @@ public class ActivateAccountCommand implements Command {
                 User user = service.findByLogin(login).get();
                 HttpSession session = request.getSession();
                 session.setAttribute(ParameterName.USER, user);
+                session.setAttribute(ParameterName.ROLE_TYPE, user.getRoleType());
                 request.setAttribute(ParameterName.USER, login);
-                router = new Router(resourceBundle.getString("path.page.home"));
+                router = new Router(resourceBundle.getString("path.page.index"));
+                logger.log(Level.INFO, "Account {} activated", login);
             } else {
                 request.setAttribute(AttributeName.LOGIN_PASSWORD_INVALID, true);
                 router = new Router(resourceBundle.getString("path.page.login"));
+                logger.log(Level.INFO, "Account {} didn't activate", login);
             }
         } catch (ServiceException e) {
             logger.log(Level.WARN, "Application error. ", e);

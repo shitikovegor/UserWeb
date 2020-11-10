@@ -2,9 +2,16 @@ package com.shitikov.project.model.entity.application;
 
 import com.shitikov.project.model.builder.ApplicationBuilder;
 import com.shitikov.project.model.entity.Entity;
+import com.shitikov.project.model.entity.type.ApplicationType;
 
 import java.util.Comparator;
 
+/**
+ * The type Application.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public abstract class Application extends Entity {
     private long applicationId;
     private String title;
@@ -13,6 +20,16 @@ public abstract class Application extends Entity {
     private AddressTimeData addressTimeData;
     private String description;
 
+    /**
+     * Instantiates a new Application.
+     *
+     * @param applicationId   the application id
+     * @param title           the title
+     * @param applicationType the application type
+     * @param date            the date
+     * @param addressTimeData the address time data
+     * @param description     the description
+     */
     public Application(long applicationId, String title, ApplicationType applicationType
             , long date, AddressTimeData addressTimeData, String description) {
         this.applicationId = applicationId;
@@ -23,6 +40,11 @@ public abstract class Application extends Entity {
         this.description = description;
     }
 
+    /**
+     * Instantiates a new Application.
+     *
+     * @param builder the builder
+     */
     protected Application(ApplicationBuilder builder) {
         this.applicationId = builder.getApplicationId();
         this.title = builder.getTitle();
@@ -32,50 +54,110 @@ public abstract class Application extends Entity {
         this.description = builder.getDescription();
     }
 
+    /**
+     * Gets application id.
+     *
+     * @return the application id
+     */
     public long getApplicationId() {
         return applicationId;
     }
 
+    /**
+     * Sets application id.
+     *
+     * @param applicationId the application id
+     */
     public void setApplicationId(long applicationId) {
         this.applicationId = applicationId;
     }
 
+    /**
+     * Gets title.
+     *
+     * @return the title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Sets title.
+     *
+     * @param title the title
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Gets application type.
+     *
+     * @return the application type
+     */
     public ApplicationType getApplicationType() {
         return applicationType;
     }
 
+    /**
+     * Sets application type.
+     *
+     * @param applicationType the application type
+     */
     public void setApplicationType(ApplicationType applicationType) {
         this.applicationType = applicationType;
     }
 
+    /**
+     * Gets date.
+     *
+     * @return the date
+     */
     public long getDate() {
         return date;
     }
 
+    /**
+     * Sets date.
+     *
+     * @param date the date
+     */
     public void setDate(long date) {
         this.date = date;
     }
 
+    /**
+     * Gets address time data.
+     *
+     * @return the address time data
+     */
     public AddressTimeData getAddressTimeData() {
         return addressTimeData;
     }
 
+    /**
+     * Sets address time data.
+     *
+     * @param addressTimeData the address time data
+     */
     public void setAddressTimeData(AddressTimeData addressTimeData) {
         this.addressTimeData = addressTimeData;
     }
 
+    /**
+     * Gets description.
+     *
+     * @return the description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets description.
+     *
+     * @param description the description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
@@ -88,13 +170,10 @@ public abstract class Application extends Entity {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
         Application other = (Application) obj;
-
         if (applicationId != other.applicationId) {
             return false;
         }
-
         if (date != other.date) {
             return false;
         }
@@ -134,6 +213,12 @@ public abstract class Application extends Entity {
         return sb.toString();
     }
 
+    /**
+     * The type Id comparator.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
     public static class IdComparator implements Comparator<Application> {
 
         @Override
@@ -147,6 +232,12 @@ public abstract class Application extends Entity {
         }
     }
 
+    /**
+     * The type Departure date comparator.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
     public static class DepartureDateComparator implements Comparator<Application> {
 
         @Override

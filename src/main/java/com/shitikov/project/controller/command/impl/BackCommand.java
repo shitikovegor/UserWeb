@@ -16,6 +16,12 @@ import java.util.regex.Pattern;
 
 import static com.shitikov.project.util.ParameterName.PAGES_PATH;
 
+/**
+ * The type Back command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class BackCommand implements Command {
     private static final String PAGE_PATTERN = "jsp\\/([a-z-]+)\\.jsp";
     private static final String PAGE_INDICATOR = "_page";

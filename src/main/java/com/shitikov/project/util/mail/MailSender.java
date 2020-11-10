@@ -13,14 +13,28 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+/**
+ * The type Mail sender.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class MailSender {
-    private static Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     private MimeMessage message;
-    private String sendToEmail;
-    private String mailSubject;
-    private String mailText;
-    private Properties properties;
+    private final String sendToEmail;
+    private final String mailSubject;
+    private final String mailText;
+    private final Properties properties;
 
+    /**
+     * Instantiates a new Mail sender.
+     *
+     * @param sendToEmail the send to email
+     * @param mailSubject the mail subject
+     * @param mailText    the mail text
+     * @param properties  the properties
+     */
     public MailSender(String sendToEmail, String mailSubject, String mailText,
                       Properties properties) {
         this.sendToEmail = sendToEmail;
@@ -38,6 +52,9 @@ public class MailSender {
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(sendToEmail));
     }
 
+    /**
+     * Send.
+     */
     public void send() {
         try {
             initMessage();

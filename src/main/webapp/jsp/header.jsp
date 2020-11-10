@@ -5,7 +5,11 @@
 <c:set var="userRole" value="${sessionScope.user == null ? 'GUEST' : sessionScope.user.roleType}"/>
 
 <nav class="navbar navbar-light navbar-expand-lg shadow bg-white clean-navbar">
-    <div class="container"><a class="navbar-brand logo" href="controller?command=home-page">HelpByCar</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+    <div class="container">
+        <a class="navbar-brand logo" href="controller?command=home-page">
+            <img src="${pageContext.request.contextPath}assets/img/logo.png" style="max-width: 220px;"/>
+        </a>
+        <button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse"
              id="navcol-1">
             <ul class="nav navbar-nav ml-auto">
@@ -23,7 +27,17 @@
                             <fmt:message key="header.register"/></a>
                     </li>
                 </c:if>
-                <c:if test="${userRole != 'GUEST'}">
+                <c:if test="${userRole == 'ADMINISTRATOR'}">
+                    <li class="nav-item" style="display-role: driver, client, administrator" role="presentation"><a
+                            class="nav-link" href="controller?command=users-page">
+                        <fmt:message key="title.users"/></a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="controller?command=logout">
+                            <fmt:message key="header.logout"/></a>
+                    </li>
+                </c:if>
+                <c:if test="${userRole != 'GUEST' && userRole != 'ADMINISTRATOR'}">
                     <li class="nav-item" style="display-role: driver, client, administrator" role="presentation"><a
                             class="nav-link" href="controller?command=account-page">
                         <fmt:message key="header.account"/></a>
@@ -33,6 +47,7 @@
                             <fmt:message key="header.logout"/></a>
                     </li>
                 </c:if>
+
             </ul>
         </div>
     </div>

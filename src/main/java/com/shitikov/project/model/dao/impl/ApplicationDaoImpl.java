@@ -6,7 +6,11 @@ import com.shitikov.project.model.builder.CargoApplicationBuilder;
 import com.shitikov.project.model.builder.PassengerApplicationBuilder;
 import com.shitikov.project.model.dao.ApplicationDao;
 import com.shitikov.project.model.entity.User;
-import com.shitikov.project.model.entity.application.*;
+import com.shitikov.project.model.entity.application.AddressTimeData;
+import com.shitikov.project.model.entity.application.Application;
+import com.shitikov.project.model.entity.application.CargoApplication;
+import com.shitikov.project.model.entity.application.PassengerApplication;
+import com.shitikov.project.model.entity.type.ApplicationType;
 import com.shitikov.project.model.entity.type.OrderStatus;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.pool.ConnectionPool;
@@ -20,7 +24,14 @@ import java.util.*;
 
 import static com.shitikov.project.util.ParameterName.*;
 
+/**
+ * The type Application dao.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class ApplicationDaoImpl implements ApplicationDao {
+    private static ApplicationDaoImpl instance;
     private static final String SQL_FIND_BY_ID = "SELECT application_id, title, application_type, date, " +
             "cargo_weight, cargo_volume, passengers_number, departure_date, departure_address, " +
             "departure_city, arrival_date, arrival_address, arrival_city, description FROM applications WHERE application_id = ?";
@@ -38,6 +49,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
             "FROM applications app LEFT JOIN orders ord ON app.application_id = ord.application_id_fk WHERE " +
             "app.user_id_fk = ?";
     private static final String SQL_DELETE_BY_ID = "DELETE FROM applications WHERE application_id = ?";
+    private static final String LAST_SOME_ELEMENTS = " WHERE ord.status IS NULL ORDER BY app.date DESC LIMIT ";
     private static final String SQL_UPDATE_PARAMETERS = "UPDATE applications SET %s WHERE application_id = ?";
     private static final String WHERE = " WHERE ";
     private static final String OPEN_PARENTHESIS = "(";
@@ -54,7 +66,14 @@ public class ApplicationDaoImpl implements ApplicationDao {
     private static final String STATUS_NULL = "ord.status is null ";
     private static final String STATUS_FIELD = "ord.status = ? ";
 
-    public ApplicationDaoImpl() {
+    private ApplicationDaoImpl() {
+    }
+
+    public static ApplicationDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new ApplicationDaoImpl();
+        }
+        return instance;
     }
 
     @Override
@@ -225,8 +244,8 @@ public class ApplicationDaoImpl implements ApplicationDao {
              PreparedStatement statement = connection.prepareStatement(sqlRequest)) {
 
             for (int i = 0; i < searchValues.size(); i++) {
-                Object value = searchValues.get(i);
-                statement.setString(i + 1, (String) value);
+                String value = searchValues.get(i);
+                statement.setString(i + 1, value);
             }
             statement.setLong(searchValues.size() + 1, applicationId);
             int result = statement.executeUpdate();
@@ -244,6 +263,33 @@ public class ApplicationDaoImpl implements ApplicationDao {
             statement.setLong(1, id);
             int result = statement.executeUpdate();
             return result != 0;
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+    }
+
+    @Override
+    public Map<Application, OrderStatus> findRecentActiveApps(int numberOfApps) throws DaoException {
+        String lastSomeSql = SQL_FIND_ALL + LAST_SOME_ELEMENTS + numberOfApps;
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(lastSomeSql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            Map<Application, OrderStatus> applications = new HashMap<>();
+            while (resultSet.next()) {
+                ApplicationType applicationType =
+                        ApplicationType.valueOf(resultSet.getString(ParameterName.APPLICATION_TYPE).toUpperCase());
+                String status = resultSet.getString(STATUS);
+                OrderStatus orderStatus = status != null ? OrderStatus.valueOf(status.toUpperCase()) : OrderStatus.ACTIVE;
+                if (applicationType == ApplicationType.CARGO) {
+                    CargoApplication cargoApplication = buildCargoApplication(resultSet);
+                    applications.put(cargoApplication, orderStatus);
+                } else {
+                    PassengerApplication passengerApplication = buildPassengerApplication(resultSet);
+                    applications.put(passengerApplication, orderStatus);
+                }
+            }
+            return applications;
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);
         }

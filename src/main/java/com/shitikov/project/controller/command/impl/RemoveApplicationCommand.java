@@ -19,9 +19,15 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Remove application command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class RemoveApplicationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {
@@ -34,7 +40,7 @@ public class RemoveApplicationCommand implements Command {
             User user = (User) session.getAttribute(USER);
             if (!ApplicationServiceImpl.getInstance().remove(applicationId)) {
                 request.setAttribute(AttributeName.APP_REMOVE_ERROR, true);
-                logger.log(Level.INFO, "Application didn't remove.");
+                logger.log(Level.INFO, "Application {} didn't remove.", applicationId);
             }
             RequestAttributeHandler handler =
                     (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);

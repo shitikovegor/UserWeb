@@ -4,21 +4,20 @@ import com.shitikov.project.model.builder.AddressBuilder;
 import com.shitikov.project.model.builder.AddressTimeDataBuilder;
 import com.shitikov.project.model.builder.CargoApplicationBuilder;
 import com.shitikov.project.model.builder.PassengerApplicationBuilder;
-import com.shitikov.project.model.dao.ApplicationDao;
 import com.shitikov.project.model.dao.impl.ApplicationDaoImpl;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.entity.application.Application;
-import com.shitikov.project.model.entity.application.ApplicationType;
 import com.shitikov.project.model.entity.application.CargoApplication;
 import com.shitikov.project.model.entity.application.PassengerApplication;
+import com.shitikov.project.model.entity.type.ApplicationType;
 import com.shitikov.project.model.entity.type.OrderStatus;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.ApplicationService;
-import com.shitikov.project.util.validator.AddressDateValidator;
-import com.shitikov.project.util.validator.ApplicationValidator;
-import com.shitikov.project.util.validator.OrderValidator;
-import com.shitikov.project.util.validator.Validator;
+import com.shitikov.project.validator.AddressDateValidator;
+import com.shitikov.project.validator.ApplicationValidator;
+import com.shitikov.project.validator.OrderValidator;
+import com.shitikov.project.validator.Validator;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -26,11 +25,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.shitikov.project.controller.command.AttributeName.EMPTY_LINE;
 import static com.shitikov.project.util.ParameterName.*;
 
+/**
+ * The type Application service.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class ApplicationServiceImpl implements ApplicationService {
     private static ApplicationServiceImpl instance;
-    private ApplicationDao applicationDao = new ApplicationDaoImpl();
 
     private ApplicationServiceImpl() {
     }
@@ -44,31 +49,48 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public boolean add(Map<String, String> parameters) throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         boolean isAdded = false;
         boolean areTextDateFieldsValid = true;
         String login = parameters.get(LOGIN);
 
         if (!ApplicationValidator.checkTitle(parameters.get(TITLE))) {
             areTextDateFieldsValid = false;
-            parameters.replace(TITLE, "");
+            parameters.replace(TITLE, EMPTY_LINE);
         }
         if (!ApplicationValidator.checkDescription(parameters.get(DESCRIPTION))) {
             areTextDateFieldsValid = false;
-            parameters.replace(DESCRIPTION, "");
+            parameters.replace(DESCRIPTION, EMPTY_LINE);
         }
         if (!AddressDateValidator.checkDate(parameters.get(DEPARTURE_DATE))) {
             areTextDateFieldsValid = false;
-            parameters.replace(DEPARTURE_DATE, "");
+            parameters.replace(DEPARTURE_DATE, EMPTY_LINE);
         } else {
             String departureDate = parameters.get(DEPARTURE_DATE);
             parameters.replace(DEPARTURE_DATE, dateToLong(departureDate).toString());
         }
         if (!AddressDateValidator.checkDate(parameters.get(ARRIVAL_DATE))) {
             areTextDateFieldsValid = false;
-            parameters.replace(ARRIVAL_DATE, "");
+            parameters.replace(ARRIVAL_DATE, EMPTY_LINE);
         } else {
             String departureDate = parameters.get(ARRIVAL_DATE);
             parameters.replace(ARRIVAL_DATE, dateToLong(departureDate).toString());
+        }
+        if (!AddressDateValidator.checkAddress(parameters.get(DEPARTURE_ADDRESS))) {
+            areTextDateFieldsValid = false;
+            parameters.replace(DEPARTURE_ADDRESS, EMPTY_LINE);
+        }
+        if (!AddressDateValidator.checkCity(parameters.get(DEPARTURE_CITY))) {
+            areTextDateFieldsValid = false;
+            parameters.replace(DEPARTURE_CITY, EMPTY_LINE);
+        }
+        if (!AddressDateValidator.checkAddress(parameters.get(ARRIVAL_ADDRESS))) {
+            areTextDateFieldsValid = false;
+            parameters.replace(ARRIVAL_ADDRESS, EMPTY_LINE);
+        }
+        if (!AddressDateValidator.checkCity(parameters.get(ARRIVAL_CITY))) {
+            areTextDateFieldsValid = false;
+            parameters.replace(ARRIVAL_CITY, EMPTY_LINE);
         }
 
         try {
@@ -79,11 +101,11 @@ public class ApplicationServiceImpl implements ApplicationService {
                     boolean isCargoValid = true;
                     if (!ApplicationValidator.checkCargo(parameters.get(CARGO_WEIGHT))) {
                         isCargoValid = false;
-                        parameters.replace(CARGO_WEIGHT, "");
+                        parameters.replace(CARGO_WEIGHT, EMPTY_LINE);
                     }
                     if (!ApplicationValidator.checkCargo(parameters.get(CARGO_VOLUME))) {
                         isCargoValid = false;
-                        parameters.replace(CARGO_VOLUME, "");
+                        parameters.replace(CARGO_VOLUME, EMPTY_LINE);
                     }
 
                     if (isCargoValid) {
@@ -96,7 +118,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                         PassengerApplication passengerApplication = buildPassengerApplication(parameters);
                         isAdded = applicationDao.add(passengerApplication, login);
                     } else {
-                        parameters.replace(PASSENGERS_NUMBER, "");
+                        parameters.replace(PASSENGERS_NUMBER, EMPTY_LINE);
                     }
                 }
             }
@@ -108,6 +130,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public boolean remove(String id) throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         boolean isRemoved = false;
         try {
             if (Validator.checkId(id)) {
@@ -121,6 +144,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Optional<Application> findById(String id) throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         if (Validator.checkId(id)) {
             try {
                 Optional<Application> application = applicationDao.findById(Long.parseLong(id));
@@ -134,6 +158,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Map<Application, OrderStatus> findByUser(User user) throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         try {
             Map<Application, OrderStatus> applications = applicationDao.findByUser(user);
             return applications;
@@ -144,6 +169,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Map<Application, OrderStatus> findAll() throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         try {
             Map<Application, OrderStatus> applications = applicationDao.findAll();
             return applications;
@@ -154,6 +180,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Map<Application, OrderStatus> findByParameters(Map<String, String> parameters) throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         try {
             Map<String, Object> validParameters = fillValidParameters(parameters);
             Map<Application, OrderStatus> applications = applicationDao.findByParameters(validParameters);
@@ -165,6 +192,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public boolean update(String id, Map<String, String> parameters) throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         if (!Validator.checkId(id)) {
             return false;
         }
@@ -177,12 +205,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         try {
             if (isUpdated) {
                 Map<String, String> paramToUpdate = new HashMap<>(parameters);
-                for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
-                    String element = entry.getValue();
-                    if (element.isEmpty()) {
-                        paramToUpdate.remove(entry.getKey());
-                    }
-                }
+                paramToUpdate.entrySet().removeIf(e -> e.getValue().isEmpty());
                 if (!paramToUpdate.isEmpty()) {
                     if (paramToUpdate.containsKey(DEPARTURE_DATE)) {
                         String departureDate = paramToUpdate.get(DEPARTURE_DATE);
@@ -199,6 +222,17 @@ public class ApplicationServiceImpl implements ApplicationService {
             return isUpdated;
         } catch (DaoException e) {
             throw new ServiceException("Program error. ", e);
+        }
+    }
+
+    @Override
+    public Map<Application, OrderStatus> findRecentActiveApps(int numberOfApps) throws ServiceException {
+        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        try {
+            Map<Application, OrderStatus> applications = applicationDao.findRecentActiveApps(numberOfApps);
+            return applications;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
         }
     }
 

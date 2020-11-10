@@ -5,7 +5,7 @@ import com.shitikov.project.model.dao.OrderDao;
 import com.shitikov.project.model.entity.Order;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.entity.application.Application;
-import com.shitikov.project.model.entity.application.ApplicationType;
+import com.shitikov.project.model.entity.type.ApplicationType;
 import com.shitikov.project.model.entity.type.OrderStatus;
 import com.shitikov.project.model.exception.DaoException;
 import com.shitikov.project.model.pool.ConnectionPool;
@@ -22,7 +22,15 @@ import java.util.TreeMap;
 import static com.shitikov.project.util.ParameterName.PHONE;
 import static com.shitikov.project.util.ParameterName.STATUS;
 
+/**
+ * The type Order dao.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class OrderDaoImpl implements OrderDao {
+    private static final OrderDaoImpl instance = new OrderDaoImpl();
+    private static final String CAR_ID_FK = "car_id_fk";
     private static final String SQL_FIND_BY_USER_ID = "SELECT ord.order_id, ord.car_id_fk, ord.user_id_fk, ord.status, " +
             "app.application_id, app.title, app.application_type, app.date, app.cargo_weight, app.cargo_volume, " +
             "app.passengers_number, app.departure_date, app.departure_address, " +
@@ -39,6 +47,13 @@ public class OrderDaoImpl implements OrderDao {
             "status) VALUES (?,?,?,?)";
     private static final String SQL_DELETE_BY_ID = "DELETE FROM orders WHERE order_id = ?";
     private static final String SQL_UPDATE_STATUS = "UPDATE orders SET status = ? WHERE order_id = ?";
+
+    private OrderDaoImpl(){
+    }
+
+    public static OrderDaoImpl getInstance() {
+        return instance;
+    }
 
     @Override
     public boolean add(Order order, String ... parameter) throws DaoException {
@@ -58,7 +73,7 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public Optional<Order> findById(long id) throws DaoException {
+    public Optional<Order> findById(long id) {
         throw new UnsupportedOperationException("this class doesn't support this method");
     }
 
@@ -99,7 +114,7 @@ public class OrderDaoImpl implements OrderDao {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     long orderId = resultSet.getLong(ParameterName.ORDER_ID);
-                    long carId = resultSet.getLong(ForeignKey.CAR_ID_FK);
+                    long carId = resultSet.getLong(CAR_ID_FK);
                     OrderStatus status = OrderStatus.valueOf(resultSet.getString(STATUS).toUpperCase());
                     long phone = resultSet.getLong(PHONE);
 
@@ -136,7 +151,7 @@ public class OrderDaoImpl implements OrderDao {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     long orderId = resultSet.getLong(ParameterName.ORDER_ID);
-                    long carId = resultSet.getLong(ForeignKey.CAR_ID_FK);
+                    long carId = resultSet.getLong(CAR_ID_FK);
                     OrderStatus status = OrderStatus.valueOf(resultSet.getString(STATUS).toUpperCase());
 
                     ApplicationType applicationType =

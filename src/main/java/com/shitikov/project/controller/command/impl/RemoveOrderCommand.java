@@ -20,10 +20,16 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Remove order command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class RemoveOrderCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
-    private OrderService orderService = OrderServiceImpl.getInstance();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request) {
@@ -33,7 +39,7 @@ public class RemoveOrderCommand implements Command {
             HttpSession session = request.getSession();
             User user = (User) session.getAttribute(USER);
             if (orderService.remove(orderId)) {
-                logger.log(Level.INFO, "Order removed successfully.");
+                logger.log(Level.INFO, "Order {} removed successfully.", orderId);
 
                 RequestAttributeHandler handler =
                         (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
@@ -45,7 +51,7 @@ public class RemoveOrderCommand implements Command {
                 }
             } else {
                 request.setAttribute(AttributeName.ORDER_REMOVE_ERROR, true);
-                logger.log(Level.INFO, "Order didn't remove.");
+                logger.log(Level.INFO, "Order {} didn't remove.", orderId);
             }
             router = new Router(resourceBundle.getString("path.page.account"));
         } catch (ServiceException e) {

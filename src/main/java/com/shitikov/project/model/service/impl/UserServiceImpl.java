@@ -1,7 +1,6 @@
 package com.shitikov.project.model.service.impl;
 
 import com.shitikov.project.model.builder.UserBuilder;
-import com.shitikov.project.model.dao.UserDao;
 import com.shitikov.project.model.dao.impl.UserDaoImpl;
 import com.shitikov.project.model.entity.Address;
 import com.shitikov.project.model.entity.User;
@@ -12,19 +11,27 @@ import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.UserService;
 import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.PasswordEncoder;
-import com.shitikov.project.util.validator.AddressDateValidator;
-import com.shitikov.project.util.validator.UserValidator;
-import com.shitikov.project.util.validator.Validator;
+import com.shitikov.project.validator.AddressDateValidator;
+import com.shitikov.project.validator.UserValidator;
+import com.shitikov.project.validator.Validator;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.shitikov.project.controller.command.AttributeName.EMPTY_LINE;
+import static com.shitikov.project.controller.command.AttributeName.XSS_PATTERN;
+
+/**
+ * The type User service.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class UserServiceImpl implements UserService {
     private static final String EXISTS = "exists";
     private static UserServiceImpl instance;
-    UserDao userDao = new UserDaoImpl();
 
     private UserServiceImpl() {
     }
@@ -38,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean add(Map<String, String> parameters) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         boolean isUserAdded = false;
         String login = parameters.get(ParameterName.LOGIN);
         String email = parameters.get(ParameterName.EMAIL);
@@ -50,10 +58,12 @@ public class UserServiceImpl implements UserService {
                 if (!isUserInBase && !isEmailInBase) {
                     RoleType roleType = RoleType.valueOf(parameters.get(ParameterName.ROLE_TYPE).toUpperCase());
                     SubjectType subjectType = SubjectType.valueOf(parameters.get(ParameterName.SUBJECT_TYPE).toUpperCase());
-                    String name = parameters.get(ParameterName.NAME).replaceAll("</?script>", "");
-                    String surname = parameters.get(ParameterName.SURNAME).replaceAll("</?script>", "");
+                    String name = parameters.get(ParameterName.NAME)
+                            .replaceAll(XSS_PATTERN, EMPTY_LINE);
+                    String surname = parameters.get(ParameterName.SURNAME)
+                            .replaceAll(XSS_PATTERN, EMPTY_LINE);
 
-                    String hashedPassword = new PasswordEncoder().hashPassword(parameters.get(ParameterName.PASSWORD));
+                    String hashedPassword = PasswordEncoder.hashPassword(parameters.get(ParameterName.PASSWORD));
                     User user = new UserBuilder()
                             .buildLogin(login)
                             .buildName(name)
@@ -81,6 +91,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addUserAddress(String login, Map<String, String> parameters) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         boolean isUserAddressAdded = false;
 
         boolean areParametersValid = UserValidator.checkLogin(login)
@@ -101,6 +112,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkLogin(String login) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         boolean isLoginCorrect = false;
         if (UserValidator.checkLogin(login)) {
             try {
@@ -114,12 +126,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkPassword(String login, String password) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         boolean isPasswordCorrect = false;
         if (UserValidator.checkPassword(password)) {
             try {
                 String hashedPassword = userDao.findPassword(login);
                 if (!hashedPassword.isEmpty()) {
-                    isPasswordCorrect = new PasswordEncoder().checkPassword(password, hashedPassword);
+                    isPasswordCorrect = PasswordEncoder.checkPassword(password, hashedPassword);
                 }
             } catch (DaoException e) {
                 throw new ServiceException(e);
@@ -129,16 +142,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkUserAddress(String login) throws ServiceException {
-        try {
-            return userDao.checkUserAddress(login);
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
     public Optional<User> findByLogin(String login) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         try {
             return userDao.findByLogin(login);
         } catch (DaoException e) {
@@ -148,6 +153,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAll() throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         try {
             return userDao.findAll();
         } catch (DaoException e) {
@@ -157,6 +163,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RoleType findRole(String login) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         try {
             return userDao.findRole(login);
         } catch (DaoException e) {
@@ -166,6 +173,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<Address> findAddress(String login) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         try {
             return userDao.findUserAddress(login);
         } catch (DaoException e) {
@@ -175,6 +183,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long findPhoneByApplicationId(String applicationId) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         try {
             long phone = 0;
             if (Validator.checkId(applicationId)) {
@@ -188,23 +197,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean update(String login, Map<String, String> parameters) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         String loginToChange = parameters.get(ParameterName.LOGIN);
         boolean isLoginValid = UserValidator.checkLogin(loginToChange);
         if (!isLoginValid) {
-            parameters.replace(ParameterName.LOGIN, "");
+            parameters.replace(ParameterName.LOGIN, EMPTY_LINE);
         }
         String nameToChange = parameters.get(ParameterName.NAME);
         if (!UserValidator.checkName(nameToChange)) {
-            parameters.replace(ParameterName.NAME, "");
+            parameters.replace(ParameterName.NAME, EMPTY_LINE);
         }
         String surnameToChange = parameters.get(ParameterName.SURNAME);
         if (!UserValidator.checkName(surnameToChange)) {
-            parameters.replace(ParameterName.SURNAME, "");
+            parameters.replace(ParameterName.SURNAME, EMPTY_LINE);
         }
         String emailToChange = parameters.get(ParameterName.EMAIL);
         boolean isEmailValid = UserValidator.checkEmail(emailToChange);
         if (!isEmailValid) {
-            parameters.replace(ParameterName.EMAIL, "");
+            parameters.replace(ParameterName.EMAIL, EMPTY_LINE);
         }
 
         try {
@@ -216,13 +226,8 @@ public class UserServiceImpl implements UserService {
             }
 
             Map<String, String> paramToUpdate = new HashMap<>(parameters);
-            for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
-                String element = entry.getValue();
-                if (element.isEmpty() || element.equals(EXISTS)) {
-                    paramToUpdate.remove(entry.getKey());
-                }
-            }
-
+            paramToUpdate.entrySet().removeIf(
+                    e -> (e.getValue().isEmpty() || e.getValue().equals(EXISTS)));
             boolean areParametersUpdated = false;
             if (!paramToUpdate.isEmpty()) {
                 areParametersUpdated = userDao.update(login, paramToUpdate);
@@ -236,15 +241,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateContactParameters(String login, Map<String, String> parameters) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         boolean areParametersCorrect = true;
         String streetHomeToChange = parameters.get(ParameterName.ADDRESS);
         if (streetHomeToChange != null && !AddressDateValidator.checkAddress(streetHomeToChange)) {
-            parameters.replace(ParameterName.ADDRESS, "");
+            parameters.replace(ParameterName.ADDRESS, EMPTY_LINE);
             areParametersCorrect = false;
         }
         String cityToChange = parameters.get(ParameterName.CITY);
         if (cityToChange != null && !AddressDateValidator.checkCity(cityToChange)) {
-            parameters.replace(ParameterName.CITY, "");
+            parameters.replace(ParameterName.CITY, EMPTY_LINE);
             areParametersCorrect = false;
         }
 
@@ -252,13 +258,8 @@ public class UserServiceImpl implements UserService {
             boolean isUpdated = false;
             if (areParametersCorrect) {
                 Map<String, String> paramToUpdate = new HashMap<>(parameters);
-
-                for (Map.Entry<String, String> entry : paramToUpdate.entrySet()) {
-                    String element = entry.getValue();
-                    if (element.isEmpty() || element.equals(EXISTS)) {
-                        paramToUpdate.remove(entry.getKey());
-                    }
-                }
+                paramToUpdate.entrySet().removeIf(
+                        e -> (e.getValue().isEmpty() || e.getValue().equals(EXISTS)));
                 if (!paramToUpdate.isEmpty()) {
                     isUpdated = userDao.updateContactParameters(login, paramToUpdate);
                 }
@@ -271,6 +272,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updatePhone(String login, String phone) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         boolean isUpdated = false;
         if (UserValidator.checkPhone(phone)) {
             long phoneNumber = Long.parseLong(phone);
@@ -285,9 +287,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updatePassword(String login, String newPassword) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         boolean isUpdated = false;
         if (UserValidator.checkPassword(newPassword)) {
-            String hashedPassword = new PasswordEncoder().hashPassword(newPassword);
+            String hashedPassword = PasswordEncoder.hashPassword(newPassword);
             try {
                 isUpdated = userDao.updatePassword(login, hashedPassword);
             } catch (DaoException e) {
@@ -299,8 +302,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean activate(String login) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
         try {
-            return userDao.activate(login);
+            return userDao.updateActivation(login, 1);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean block(String login) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
+        try {
+            return userDao.updateBlock(login, 1);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean unblock(String login) throws ServiceException {
+        UserDaoImpl userDao = UserDaoImpl.getInstance();
+        try {
+            return userDao.updateBlock(login, 0);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

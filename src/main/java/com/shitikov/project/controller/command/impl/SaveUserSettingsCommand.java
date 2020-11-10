@@ -22,10 +22,16 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.controller.command.AttributeName.*;
 
 
+/**
+ * The type Save user settings command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class SaveUserSettingsCommand implements Command {
     private static final String EXISTS = "exists";
-    private static Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private static final Logger logger = LogManager.getLogger();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
 
     @Override

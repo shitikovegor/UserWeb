@@ -3,6 +3,12 @@ package com.shitikov.project.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Parameter name.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class ParameterName {
 
     //properties paths
@@ -12,9 +18,11 @@ public class ParameterName {
     public static final String LOCALE = "locale";
     public static final String CURRENT_PAGE = "current_page";
     public static final String PREVIOUS_PAGE = "previous_page";
+    public static final String COMMAND = "command";
 
     //user
     public static final String USER = "user";
+    public static final String USERS = "users";
     public static final String USER_ID = "user_id";
     public static final String LOGIN = "login";
     public static final String PASSWORD = "password";
@@ -25,7 +33,7 @@ public class ParameterName {
     public static final String SUBJECT_TYPE = "subject";
     public static final String ROLE_TYPE = "role";
     public static final String BLOCKED = "blocked";
-    public static final String ACTIVE = "active";
+    public static final String ACTIVATED = "activated";
     public static final String NEW_PASSWORD = "new_password";
 
     //address and city
@@ -36,12 +44,12 @@ public class ParameterName {
     public static final String EMAIL_BODY = "%s?command=activate-account&login=%s";
 
     //car
-    public static final String CAR = "car";
     public static final String CARS = "cars";
     public static final String CAR_ID = "car_id";
     public static final String CAR_NUMBER = "car_number";
     public static final String CARRYING_WEIGHT = "carrying_weight";
     public static final String CARRYING_VOLUME = "carrying_volume";
+    public static final String REMOVED = "removed";
 
     //car & application
     public static final String PASSENGERS_NUMBER = "passengers_number";
@@ -71,6 +79,7 @@ public class ParameterName {
     public static final String PASSENGER = "passenger";
 
     //order status values
+    public static final String ACTIVE = "active";
     public static final String CONFIRMED = "confirmed";
     public static final String COMPLETED = "completed";
     public static final String CANCELED = "canceled";

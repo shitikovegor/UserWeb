@@ -49,9 +49,11 @@ $(document).ready(function () {
     let footerHeight = $('#footer').height();
     let footerTop = $('#footer').position().top + footerHeight;
 
-    if (footerTop < docHeight)
+    if (footerTop < docHeight) {
         $('#footer').css('margin-top', 0 + (docHeight - footerTop) + 'px');
-
+        $('#footer').css('position', 'fixed');
+        $('#footer').css('bottom', 0);
+    }
     dateValidation();
     toggleSet();
 });

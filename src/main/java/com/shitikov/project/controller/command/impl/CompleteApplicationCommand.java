@@ -25,10 +25,16 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Complete application command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class CompleteApplicationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
-    private OrderService orderService = OrderServiceImpl.getInstance();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request) {
@@ -45,7 +51,7 @@ public class CompleteApplicationCommand implements Command {
 
                 if (!orderService.update(orderId, parameters)) {
                     request.setAttribute(AttributeName.APP_COMPLETE_ERROR, true);
-                    logger.log(Level.INFO, "Application didn't remove.");
+                    logger.log(Level.INFO, "Order {} didn't complete.", order);
                 }
                 RequestAttributeHandler handler =
                         (RequestAttributeHandler) session.getAttribute(AttributeName.REQUEST_ATTRIBUTE_HANDLER);
@@ -57,7 +63,7 @@ public class CompleteApplicationCommand implements Command {
                 }
                 router = new Router(resourceBundle.getString("path.page.account"));
             } else {
-                logger.log(Level.INFO, "Order not found");
+                logger.log(Level.INFO, "Order {} not found", order);
                 router = new Router(resourceBundle.getString("path.page.error404"));
             }
         } catch (ServiceException e) {

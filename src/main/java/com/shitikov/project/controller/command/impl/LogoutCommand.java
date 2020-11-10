@@ -9,8 +9,14 @@ import javax.servlet.http.HttpSession;
 import java.util.ResourceBundle;
 
 
+/**
+ * The type Logout command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class LogoutCommand implements Command {
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {

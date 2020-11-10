@@ -10,6 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
+/**
+ * The type Change language command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class ChangeLanguageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) {

@@ -11,6 +11,12 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 
+/**
+ * The type Pagination command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class PaginationCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) {

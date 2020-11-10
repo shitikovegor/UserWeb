@@ -6,6 +6,12 @@ import com.shitikov.project.model.entity.type.OrderStatus;
 
 import java.util.Comparator;
 
+/**
+ * The type Order.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class Order extends Entity {
     private long orderId;
     private Application application;
@@ -13,6 +19,15 @@ public class Order extends Entity {
     private long userId;
     private OrderStatus status;
 
+    /**
+     * Instantiates a new Order.
+     *
+     * @param orderId     the order id
+     * @param application the application
+     * @param carId       the car id
+     * @param userId      the user id
+     * @param status      the status
+     */
     public Order(long orderId, Application application, long carId, long userId, OrderStatus status) {
         this.orderId = orderId;
         this.application = application;
@@ -21,6 +36,11 @@ public class Order extends Entity {
         this.status = status;
     }
 
+    /**
+     * Instantiates a new Order.
+     *
+     * @param builder the builder
+     */
     public Order(OrderBuilder builder) {
         this.orderId = builder.getOrderId();
         this.application = builder.getApplication();
@@ -29,42 +49,92 @@ public class Order extends Entity {
         this.status = builder.getStatus();
     }
 
+    /**
+     * Gets order id.
+     *
+     * @return the order id
+     */
     public long getOrderId() {
         return orderId;
     }
 
+    /**
+     * Sets order id.
+     *
+     * @param orderId the order id
+     */
     public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
 
+    /**
+     * Gets application.
+     *
+     * @return the application
+     */
     public Application getApplication() {
         return application;
     }
 
+    /**
+     * Sets application.
+     *
+     * @param application the application
+     */
     public void setApplication(Application application) {
         this.application = application;
     }
 
+    /**
+     * Gets car id.
+     *
+     * @return the car id
+     */
     public long getCarId() {
         return carId;
     }
 
+    /**
+     * Sets car id.
+     *
+     * @param carId the car id
+     */
     public void setCarId(long carId) {
         this.carId = carId;
     }
 
+    /**
+     * Gets user id.
+     *
+     * @return the user id
+     */
     public long getUserId() {
         return userId;
     }
 
+    /**
+     * Sets user id.
+     *
+     * @param userId the user id
+     */
     public void setUserId(long userId) {
         this.userId = userId;
     }
 
+    /**
+     * Gets status.
+     *
+     * @return the status
+     */
     public OrderStatus getStatus() {
         return status;
     }
 
+    /**
+     * Sets status.
+     *
+     * @param status the status
+     */
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
@@ -77,21 +147,16 @@ public class Order extends Entity {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
         Order other = (Order) obj;
-
         if (orderId != other.orderId) {
             return false;
         }
-
         if (application != null ? !application.equals(other.application) : other.application != null) {
             return false;
         }
-
         if (carId != other.carId) {
             return false;
         }
-
         if (userId != other.userId) {
             return false;
         }
@@ -120,19 +185,12 @@ public class Order extends Entity {
         return sb.toString();
     }
 
-    public static class IdComparator implements Comparator<Order> {
-
-        @Override
-        public int compare(Order o1, Order o2) {
-            long id1 = o1.orderId;
-            long id2 = o2.orderId;
-            if (id1 == id2) {
-                return 0;
-            }
-            return id1 > id2 ? 1 : -1;
-        }
-    }
-
+    /**
+     * The type Status comparator.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
     public static class StatusComparator implements Comparator<Order> {
 
         @Override

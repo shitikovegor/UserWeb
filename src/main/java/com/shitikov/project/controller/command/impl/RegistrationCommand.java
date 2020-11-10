@@ -12,28 +12,39 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.shitikov.project.controller.command.AttributeName.EMAIL_EXISTS;
 import static com.shitikov.project.controller.command.AttributeName.LOGIN_EXISTS;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Registration command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class RegistrationCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final String EXISTS = "exists";
-    private static final String EMAIL_SUBJECT = "HelpByCar. Activate your account"; // TODO: 09.10.2020 from properties
     private static final String EMAIL_PROPERTIES = "config/mail.properties";
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private static final String CONTENT_PATH = "properties/pagecontent";
+    private static final String BUNDLE_ACTIVATION = "mail.activation";
+    private static final String UNDERSCORE = "_";
+    private static final String HYPHEN = "-";
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
+        HttpSession session = request.getSession();
+        String attrLocale = (String) session.getAttribute(ParameterName.LOCALE);
+        Locale locale = Locale.forLanguageTag(attrLocale.replace(UNDERSCORE, HYPHEN));
+        ResourceBundle mailBundle = ResourceBundle.getBundle(CONTENT_PATH, locale);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(LOGIN, request.getParameter(LOGIN));
@@ -52,8 +63,8 @@ public class RegistrationCommand implements Command {
                 properties.load(inputStream);
                 String emailBody = String.format(EMAIL_BODY,
                         request.getRequestURL(), request.getParameter(LOGIN));
-                MailSender sender = new MailSender(request.getParameter(EMAIL)
-                        , EMAIL_SUBJECT, emailBody, properties);
+                MailSender sender = new MailSender(request.getParameter(EMAIL),
+                        mailBundle.getString(BUNDLE_ACTIVATION), emailBody, properties);
                 sender.send();
                 router = new Router(resourceBundle.getString("path.page.activation"));
                 logger.log(Level.INFO, "User added");

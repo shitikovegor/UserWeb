@@ -23,9 +23,15 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Application page command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class ApplicationPageCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {
@@ -37,8 +43,8 @@ public class ApplicationPageCommand implements Command {
         try {
             Optional<Application> applicationOptional = ApplicationServiceImpl.getInstance().findById(applicationId);
             if (applicationOptional.isPresent()) {
-                Application application = applicationOptional.get();
                 logger.log(Level.INFO, "Application found successfully.");
+                Application application = applicationOptional.get();
                 request.setAttribute(APPLICATION_ID, application.getApplicationId());
                 request.setAttribute(TITLE, application.getTitle());
                 request.setAttribute(DATE, application.getDate());

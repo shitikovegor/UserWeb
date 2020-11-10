@@ -21,23 +21,30 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.util.ParameterName.*;
 
 
+/**
+ * The type Add car command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class AddCarCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
+    private static final String ZERO = "0";
 
     @Override
     public Router execute(HttpServletRequest request) {
         CarService carService = CarServiceImpl.getInstance();
         Router router;
 
-        String weight = request.getParameter(CARRYING_WEIGHT).isEmpty() ? "0" : request.getParameter(CARRYING_WEIGHT);
-        String volume = request.getParameter(CARRYING_VOLUME).isEmpty() ? "0" : request.getParameter(CARRYING_VOLUME);
-        String passengers = request.getParameter(PASSENGERS_NUMBER).isEmpty() ? "0"
+        String weight = request.getParameter(CARRYING_WEIGHT).isEmpty() ? ZERO : request.getParameter(CARRYING_WEIGHT);
+        String volume = request.getParameter(CARRYING_VOLUME).isEmpty() ? ZERO : request.getParameter(CARRYING_VOLUME);
+        String passengers = request.getParameter(PASSENGERS_NUMBER).isEmpty() ? ZERO
                 : request.getParameter(PASSENGERS_NUMBER);
 
         boolean areAllZeros = weight.equals(volume)
                 && volume.equals(passengers)
-                && passengers.equals("0");
+                && passengers.equals(ZERO);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(CAR_NUMBER, request.getParameter(CAR_NUMBER));

@@ -21,9 +21,15 @@ import java.util.ResourceBundle;
 import static com.shitikov.project.controller.command.AttributeName.*;
 
 
+/**
+ * The type Save password command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class SavePasswordCommand implements Command {
-    private static Logger logger = LogManager.getLogger();
-    private ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private static final Logger logger = LogManager.getLogger();
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
 
     @Override
@@ -40,13 +46,13 @@ public class SavePasswordCommand implements Command {
             if (service.checkPassword(user.getLogin(), password)) {
                 if (!service.updatePassword(user.getLogin(), newPassword)) {
                     request.setAttribute(NEW_PASSWORD_INVALID, true);
-                    logger.log(Level.DEBUG, "New password is invalid.");
+                    logger.log(Level.INFO, "New password is invalid.");
                 }
                 request.setAttribute(PASSWORD_UPDATED, true);
-                logger.log(Level.DEBUG, "Password updated.");
+                logger.log(Level.INFO, "Password updated.");
             } else {
                 request.setAttribute(PASSWORD_INVALID, true);
-                logger.log(Level.DEBUG, "Password is invalid.");
+                logger.log(Level.INFO, "Password is invalid.");
             }
             request.setAttribute(SHOW_ACCORDION, true);
 

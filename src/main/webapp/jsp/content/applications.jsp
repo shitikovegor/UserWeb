@@ -147,7 +147,7 @@
                         <div class="products">
                             <ctg:app-pagination pageNumber="${current_number}" applicationsOnPage="${objects_on_page}"/>
                             <nav>
-                                <ul class="pagination">
+                                <ul class="pagination" style="margin-top: 40px;">
                                     <c:if test="${current_number > 1}">
                                     <li class="page-item">
                                         <a class="page-link"

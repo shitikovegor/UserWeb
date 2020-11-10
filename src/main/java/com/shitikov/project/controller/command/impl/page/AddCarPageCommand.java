@@ -8,6 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ResourceBundle;
 
 
+/**
+ * The type Add car page command.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class AddCarPageCommand implements Command {
 
     @Override

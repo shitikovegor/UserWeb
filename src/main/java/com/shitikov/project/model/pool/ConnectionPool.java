@@ -16,33 +16,56 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+/**
+ * The enum Connection pool.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public enum  ConnectionPool {
+    /**
+     * Instance connection pool.
+     */
     INSTANCE;
 
     private static final int POOL_SIZE = 10;
-    private Logger logger = LogManager.getLogger();
-    private BlockingQueue<ProxyConnection> freeConnections;
-    private Queue<ProxyConnection> givenAwayConnections;
+    private static final String BASE_PROPERTIES = "config/database.properties";
+    private static final String DRIVER = "driver";
+    private static final String URL = "url";
+    private final Logger logger = LogManager.getLogger();
+    private final BlockingQueue<ProxyConnection> freeConnections;
+    private final Queue<ProxyConnection> givenAwayConnections;
 
     ConnectionPool() {
         freeConnections = new LinkedBlockingDeque<>(POOL_SIZE);
         givenAwayConnections = new ArrayDeque<>();
 
         Properties properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config/database.properties");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(BASE_PROPERTIES);
+
         try {
             properties.load(inputStream);
-            Class.forName(properties.getProperty("driver"));
+            Class.forName(properties.getProperty(DRIVER));
+        } catch (ClassNotFoundException | IOException e) {
+            logger.log(Level.ERROR, "Driver loading error.", e);
+            throw new RuntimeException("Driver loading error", e);
+        }
+        try {
             for (int i = 0; i < POOL_SIZE; i++) {
                 freeConnections.offer(new ProxyConnection(DriverManager.getConnection(
-                        properties.getProperty("url"), properties)));
+                        properties.getProperty(URL), properties)));
             }
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+        } catch (SQLException e) {
             logger.log(Level.ERROR, "Connection creating error.", e);
-            throw new RuntimeException("Connection creating error", e); // TODO: 23.09.2020  is need to throw exception?!
+            throw new RuntimeException("Connection creating error", e);
         }
     }
 
+    /**
+     * Gets connection.
+     *
+     * @return the connection
+     */
     public Connection getConnection() {
         Connection connection = null;
         try {
@@ -54,6 +77,11 @@ public enum  ConnectionPool {
         return connection;
     }
 
+    /**
+     * Release connection.
+     *
+     * @param connection the connection
+     */
     public void releaseConnection(Connection connection) {
         if (connection instanceof ProxyConnection && givenAwayConnections.remove(connection)) {
             freeConnections.offer((ProxyConnection) connection);
@@ -62,6 +90,9 @@ public enum  ConnectionPool {
         }
     }
 
+    /**
+     * Destroy pool.
+     */
     public void destroyPool() {
         try {
             for (int i = 0; i < POOL_SIZE; i++) {

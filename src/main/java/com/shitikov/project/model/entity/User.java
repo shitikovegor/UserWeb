@@ -4,6 +4,12 @@ import com.shitikov.project.model.builder.UserBuilder;
 import com.shitikov.project.model.entity.type.RoleType;
 import com.shitikov.project.model.entity.type.SubjectType;
 
+/**
+ * The type User.
+ *
+ * @author Shitikov Egor
+ * @version 1.0
+ */
 public class User extends Entity {
     private long userId;
     private String login;
@@ -14,8 +20,20 @@ public class User extends Entity {
     private RoleType roleType;
     private SubjectType subjectType;
     private boolean blocked;
-    private boolean active;
+    private boolean activated;
 
+    /**
+     * Instantiates a new User.
+     *
+     * @param userId      the user id
+     * @param login       the login
+     * @param name        the name
+     * @param surname     the surname
+     * @param email       the email
+     * @param phone       the phone
+     * @param roleType    the role type
+     * @param subjectType the subject type
+     */
     public User(long userId, String login, String name, String surname, String email,
                 long phone, RoleType roleType, SubjectType subjectType) {
         this.userId = userId;
@@ -27,10 +45,14 @@ public class User extends Entity {
         this.roleType = roleType;
         this.subjectType = subjectType;
         this.blocked = false;
-        this.active = false;
+        this.activated = false;
     }
-    // TODO: 14.10.2020 is need to do constructor for class or need be only builder constructor?
 
+    /**
+     * Instantiates a new User.
+     *
+     * @param builder the builder
+     */
     public User(UserBuilder builder) {
         this.userId = builder.getUserId();
         this.login = builder.getLogin();
@@ -41,87 +63,187 @@ public class User extends Entity {
         this.roleType = builder.getRoleType();
         this.subjectType = builder.getSubjectType();
         this.blocked = builder.isBlocked();
-        this.active = builder.isActive();
+        this.activated = builder.isActivated();
     }
 
+    /**
+     * Gets user id.
+     *
+     * @return the user id
+     */
     public long getUserId() {
         return userId;
     }
 
+    /**
+     * Sets user id.
+     *
+     * @param userId the user id
+     */
     public void setUserId(long userId) {
         this.userId = userId;
     }
 
+    /**
+     * Gets login.
+     *
+     * @return the login
+     */
     public String getLogin() {
         return login;
     }
 
+    /**
+     * Sets login.
+     *
+     * @param login the login
+     */
     public void setLogin(String login) {
         this.login = login;
     }
 
+    /**
+     * Gets name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets name.
+     *
+     * @param name the name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets surname.
+     *
+     * @return the surname
+     */
     public String getSurname() {
         return surname;
     }
 
+    /**
+     * Sets surname.
+     *
+     * @param surname the surname
+     */
     public void setSurname(String surname) {
         this.surname = surname;
     }
 
+    /**
+     * Gets email.
+     *
+     * @return the email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Sets email.
+     *
+     * @param email the email
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Gets phone.
+     *
+     * @return the phone
+     */
     public long getPhone() {
         return phone;
     }
 
+    /**
+     * Sets phone.
+     *
+     * @param phone the phone
+     */
     public void setPhone(long phone) {
         this.phone = phone;
     }
 
+    /**
+     * Gets role type.
+     *
+     * @return the role type
+     */
     public RoleType getRoleType() {
         return roleType;
     }
 
+    /**
+     * Sets role type.
+     *
+     * @param roleType the role type
+     */
     public void setRoleType(RoleType roleType) {
         this.roleType = roleType;
     }
 
+    /**
+     * Gets subject type.
+     *
+     * @return the subject type
+     */
     public SubjectType getSubjectType() {
         return subjectType;
     }
 
+    /**
+     * Sets subject type.
+     *
+     * @param subjectType the subject type
+     */
     public void setSubjectType(SubjectType subjectType) {
         this.subjectType = subjectType;
     }
 
+    /**
+     * Is blocked boolean.
+     *
+     * @return the boolean
+     */
     public boolean isBlocked() {
         return blocked;
     }
 
+    /**
+     * Sets blocked.
+     *
+     * @param blocked the blocked
+     */
     public void setBlocked(boolean blocked) {
         this.blocked = blocked;
     }
 
-    public boolean isActive() {
-        return active;
+    /**
+     * Is activated boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isActivated() {
+        return activated;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    /**
+     * Sets activated.
+     *
+     * @param activated the activated
+     */
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 
     @Override
@@ -132,20 +254,17 @@ public class User extends Entity {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
         User other = (User) obj;
-
         if (userId != other.userId) {
             return false;
         }
-
         if (phone != other.phone) {
             return false;
         }
         if (blocked != other.blocked) {
             return false;
         }
-        if (active != other.active) {
+        if (activated != other.activated) {
             return false;
         }
         if (login != null ? !login.equals(other.login) : other.login != null) {
@@ -178,7 +297,7 @@ public class User extends Entity {
         result = prime * result + (roleType != null ? roleType.hashCode() : 0);
         result = prime * result + (subjectType != null ? subjectType.hashCode() : 0);
         result = prime * result + (blocked ? 1 : 0);
-        result = prime * result + (active ? 1 : 0);
+        result = prime * result + (activated ? 1 : 0);
         return result;
     }
 
@@ -194,7 +313,7 @@ public class User extends Entity {
         sb.append(", roleType=").append(roleType);
         sb.append(", subjectType=").append(subjectType);
         sb.append(", blocked=").append(blocked);
-        sb.append(", active=").append(active);
+        sb.append(", active=").append(activated);
         sb.append('}');
         return sb.toString();
     }
