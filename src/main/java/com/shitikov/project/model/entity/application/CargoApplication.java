@@ -1,8 +1,5 @@
 package com.shitikov.project.model.entity.application;
 
-import com.shitikov.project.model.builder.CargoApplicationBuilder;
-import com.shitikov.project.model.entity.type.ApplicationType;
-
 /**
  * The type Cargo application.
  *
@@ -13,35 +10,7 @@ public class CargoApplication extends Application {
     private double cargoWeight;
     private double cargoVolume;
 
-    /**
-     * Instantiates a new Cargo application.
-     *
-     * @param applicationId   the application id
-     * @param title           the title
-     * @param applicationType the application type
-     * @param date            the date
-     * @param addressTimeData the address time data
-     * @param description     the description
-     * @param cargoWeight     the cargo weight
-     * @param cargoVolume     the cargo volume
-     */
-    public CargoApplication(long applicationId, String title, ApplicationType applicationType, long date
-            , AddressTimeData addressTimeData, String description
-            , double cargoWeight, double cargoVolume) {
-        super(applicationId, title, applicationType, date, addressTimeData, description);
-        this.cargoWeight = cargoWeight;
-        this.cargoVolume = cargoVolume;
-    }
-
-    /**
-     * Instantiates a new Cargo application.
-     *
-     * @param builder the builder
-     */
-    public CargoApplication(CargoApplicationBuilder builder) {
-        super(builder);
-        this.cargoWeight = builder.getCargoWeight();
-        this.cargoVolume = builder.getCargoVolume();
+    private CargoApplication() {
     }
 
     /**
@@ -117,5 +86,53 @@ public class CargoApplication extends Application {
         sb.append(", cargoVolume=").append(cargoVolume);
         sb.append('}');
         return sb.toString();
+    }
+
+    /**
+     * New builder cargo application . builder.
+     *
+     * @return the cargo application . builder
+     */
+    public static CargoApplication.Builder newBuilder() {
+        return new CargoApplication().new Builder();
+    }
+
+    /**
+     * The type Builder.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
+    public class Builder extends Application.Builder<CargoApplication> {
+
+        private Builder() {
+        }
+
+        /**
+         * Build cargo weight builder.
+         *
+         * @param cargoWeight the cargo weight
+         * @return the builder
+         */
+        public Builder buildCargoWeight(double cargoWeight) {
+            CargoApplication.this.cargoWeight = cargoWeight;
+            return this;
+        }
+
+        /**
+         * Build cargo volume builder.
+         *
+         * @param cargoVolume the cargo volume
+         * @return the builder
+         */
+        public Builder buildCargoVolume(double cargoVolume) {
+            CargoApplication.this.cargoVolume = cargoVolume;
+            return this;
+        }
+
+        @Override
+        public CargoApplication buildApplication() {
+            return CargoApplication.this;
+        }
     }
 }

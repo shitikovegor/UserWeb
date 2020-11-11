@@ -1,6 +1,5 @@
 package com.shitikov.project.model.dao.impl;
 
-import com.shitikov.project.model.builder.OrderBuilder;
 import com.shitikov.project.model.dao.OrderDao;
 import com.shitikov.project.model.entity.Order;
 import com.shitikov.project.model.entity.User;
@@ -126,7 +125,7 @@ public class OrderDaoImpl implements OrderDao {
                     } else {
                         application = ApplicationDaoImpl.buildPassengerApplication(resultSet);
                     }
-                    Order order = new OrderBuilder()
+                    Order order = Order.newBuilder()
                             .buildOrderId(orderId)
                             .buildCarId(carId)
                             .buildApplication(application)
@@ -162,7 +161,7 @@ public class OrderDaoImpl implements OrderDao {
                     } else {
                         application = ApplicationDaoImpl.buildPassengerApplication(resultSet);
                     }
-                    order = new OrderBuilder()
+                    order = Order.newBuilder()
                             .buildOrderId(orderId)
                             .buildCarId(carId)
                             .buildApplication(application)

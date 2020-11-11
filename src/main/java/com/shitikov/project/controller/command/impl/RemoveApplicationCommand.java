@@ -32,7 +32,6 @@ public class RemoveApplicationCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
-
         String applicationId = request.getParameter(APPLICATION_ID);
 
         try {

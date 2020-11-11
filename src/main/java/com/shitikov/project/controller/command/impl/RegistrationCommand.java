@@ -1,11 +1,9 @@
 package com.shitikov.project.controller.command.impl;
 
 import com.shitikov.project.controller.Router;
-import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.model.exception.ServiceException;
 import com.shitikov.project.model.service.impl.UserServiceImpl;
-import com.shitikov.project.util.ParameterName;
 import com.shitikov.project.util.mail.MailSender;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -17,8 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static com.shitikov.project.controller.command.AttributeName.EMAIL_EXISTS;
-import static com.shitikov.project.controller.command.AttributeName.LOGIN_EXISTS;
+import static com.shitikov.project.controller.command.AttributeName.*;
 import static com.shitikov.project.util.ParameterName.*;
 
 
@@ -36,13 +33,13 @@ public class RegistrationCommand implements Command {
     private static final String BUNDLE_ACTIVATION = "mail.activation";
     private static final String UNDERSCORE = "_";
     private static final String HYPHEN = "-";
-    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
+    private final ResourceBundle resourceBundle = ResourceBundle.getBundle(PAGES_PATH);
 
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
         HttpSession session = request.getSession();
-        String attrLocale = (String) session.getAttribute(ParameterName.LOCALE);
+        String attrLocale = (String) session.getAttribute(LOCALE);
         Locale locale = Locale.forLanguageTag(attrLocale.replace(UNDERSCORE, HYPHEN));
         ResourceBundle mailBundle = ResourceBundle.getBundle(CONTENT_PATH, locale);
 
@@ -82,7 +79,7 @@ public class RegistrationCommand implements Command {
                     if (!entry.getValue().isEmpty()) {
                         request.setAttribute(entry.getKey(), entry.getValue());
                     } else {
-                        request.setAttribute(entry.getKey().concat(AttributeName.ATTRIBUTE_SUBSTRING_INVALID), true);
+                        request.setAttribute(entry.getKey().concat(ATTRIBUTE_SUBSTRING_INVALID), true);
                     }
                 }
                 router = new Router(resourceBundle.getString("path.page.registration"));

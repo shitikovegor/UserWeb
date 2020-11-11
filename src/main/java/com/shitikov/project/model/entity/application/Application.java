@@ -1,10 +1,7 @@
 package com.shitikov.project.model.entity.application;
 
-import com.shitikov.project.model.builder.ApplicationBuilder;
 import com.shitikov.project.model.entity.Entity;
 import com.shitikov.project.model.entity.type.ApplicationType;
-
-import java.util.Comparator;
 
 /**
  * The type Application.
@@ -19,6 +16,12 @@ public abstract class Application extends Entity {
     private long date;
     private AddressTimeData addressTimeData;
     private String description;
+
+    /**
+     * Instantiates a new Application.
+     */
+    protected Application() {
+    }
 
     /**
      * Instantiates a new Application.
@@ -38,20 +41,6 @@ public abstract class Application extends Entity {
         this.date = date;
         this.addressTimeData = addressTimeData;
         this.description = description;
-    }
-
-    /**
-     * Instantiates a new Application.
-     *
-     * @param builder the builder
-     */
-    protected Application(ApplicationBuilder builder) {
-        this.applicationId = builder.getApplicationId();
-        this.title = builder.getTitle();
-        this.applicationType = builder.getApplicationType();
-        this.date = builder.getDate();
-        this.addressTimeData = builder.getAddressTimeData();
-        this.description = builder.getDescription();
     }
 
     /**
@@ -214,40 +203,91 @@ public abstract class Application extends Entity {
     }
 
     /**
-     * The type Id comparator.
+     * The type Builder.
      *
+     * @param <T> the type parameter
      * @author Shitikov Egor
      * @version 1.0
      */
-    public static class IdComparator implements Comparator<Application> {
+    public abstract class Builder<T extends Application> {
 
-        @Override
-        public int compare(Application o1, Application o2) {
-            long id1 = o1.applicationId;
-            long id2 = o2.applicationId;
-            if (id1 == id2) {
-                return 0;
-            }
-            return id1 > id2 ? 1 : -1;
+        /**
+         * Instantiates a new Builder.
+         */
+        protected Builder() {
         }
-    }
 
-    /**
-     * The type Departure date comparator.
-     *
-     * @author Shitikov Egor
-     * @version 1.0
-     */
-    public static class DepartureDateComparator implements Comparator<Application> {
-
-        @Override
-        public int compare(Application o1, Application o2) {
-            long id1 = o1.addressTimeData.getDepartureDate();
-            long id2 = o2.addressTimeData.getDepartureDate();
-            if (id1 == id2) {
-                return 0;
-            }
-            return id1 > id2 ? 1 : -1;
+        /**
+         * Build application id builder.
+         *
+         * @param applicationId the application id
+         * @return the builder
+         */
+        public Builder<T> buildApplicationId(long applicationId) {
+            Application.this.applicationId = applicationId;
+            return this;
         }
+
+        /**
+         * Build title builder.
+         *
+         * @param title the title
+         * @return the builder
+         */
+        public Builder<T> buildTitle(String title) {
+            Application.this.title = title;
+            return this;
+        }
+
+        /**
+         * Build application type builder.
+         *
+         * @param applicationType the application type
+         * @return the builder
+         */
+        public Builder<T> buildApplicationType(ApplicationType applicationType) {
+            Application.this.applicationType = applicationType;
+            return this;
+        }
+
+        /**
+         * Build date builder.
+         *
+         * @param date the date
+         * @return the builder
+         */
+        public Builder<T> buildDate(long date) {
+            Application.this.date = date;
+            return this;
+        }
+
+        /**
+         * Build address time data builder.
+         *
+         * @param addressTimeData the address time data
+         * @return the builder
+         */
+        public Builder<T> buildAddressTimeData(AddressTimeData addressTimeData) {
+            Application.this.addressTimeData = addressTimeData;
+            return this;
+        }
+
+        /**
+         * Build description builder.
+         *
+         * @param description the description
+         * @return the builder
+         */
+        public Builder<T> buildDescription(String description) {
+            Application.this.description = description;
+            return this;
+        }
+
+        /**
+         * Build application t.
+         *
+         * @return the t
+         */
+        public abstract T buildApplication();
     }
 }

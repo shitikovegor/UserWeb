@@ -5,6 +5,7 @@ import com.shitikov.project.util.ParameterName;
 
 import java.util.Map;
 
+import static com.shitikov.project.controller.command.AttributeName.EMPTY_LINE;
 import static com.shitikov.project.util.ParameterName.*;
 
 /**
@@ -108,42 +109,42 @@ public class ApplicationValidator extends Validator {
         boolean areParametersValid = true;
         String title = parameters.get(TITLE);
         if (parameters.containsKey(TITLE) && !checkTitle(title)) {
-            parameters.replace(ParameterName.TITLE, "");
+            parameters.replace(TITLE, EMPTY_LINE);
             areParametersValid = false;
         }
         String departureDate = parameters.get(DEPARTURE_DATE);
         if (parameters.containsKey(DEPARTURE_DATE) && !AddressDateValidator.checkDate(departureDate)) {
-            parameters.replace(ParameterName.DEPARTURE_DATE, "");
+            parameters.replace(DEPARTURE_DATE, EMPTY_LINE);
             areParametersValid = false;
         }
         String departureAddress = parameters.get(DEPARTURE_ADDRESS);
         if (parameters.containsKey(DEPARTURE_ADDRESS) && !AddressDateValidator.checkAddress(departureAddress)) {
-            parameters.replace(ParameterName.DEPARTURE_ADDRESS, "");
+            parameters.replace(DEPARTURE_ADDRESS, EMPTY_LINE);
             areParametersValid = false;
         }
         String departureCity = parameters.get(DEPARTURE_CITY);
         if (parameters.containsKey(DEPARTURE_CITY) && !AddressDateValidator.checkCity(departureCity)) {
-            parameters.replace(ParameterName.DEPARTURE_CITY, "");
+            parameters.replace(DEPARTURE_CITY, EMPTY_LINE);
             areParametersValid = false;
         }
         String arrivalDate = parameters.get(ARRIVAL_DATE);
         if (parameters.containsKey(ARRIVAL_DATE) && !AddressDateValidator.checkDate(arrivalDate)) {
-            parameters.replace(ParameterName.ARRIVAL_DATE, "");
+            parameters.replace(ARRIVAL_DATE, EMPTY_LINE);
             areParametersValid = false;
         }
         String arrivalAddress = parameters.get(ARRIVAL_ADDRESS);
         if (parameters.containsKey(ARRIVAL_ADDRESS) && !AddressDateValidator.checkAddress(arrivalAddress)) {
-            parameters.replace(ParameterName.ARRIVAL_ADDRESS, "");
+            parameters.replace(ARRIVAL_ADDRESS, EMPTY_LINE);
             areParametersValid = false;
         }
         String arrivalCity = parameters.get(ARRIVAL_CITY);
         if (parameters.containsKey(ARRIVAL_CITY) && !AddressDateValidator.checkCity(arrivalCity)) {
-            parameters.replace(ParameterName.ARRIVAL_CITY, "");
+            parameters.replace(ARRIVAL_CITY, EMPTY_LINE);
             areParametersValid = false;
         }
         String description = parameters.get(DESCRIPTION);
         if (parameters.containsKey(DESCRIPTION) && !checkDescription(description)) {
-            parameters.replace(ParameterName.DESCRIPTION, "");
+            parameters.replace(DESCRIPTION, EMPTY_LINE);
             areParametersValid = false;
         }
         return areParametersValid;
@@ -159,12 +160,12 @@ public class ApplicationValidator extends Validator {
         boolean areParametersValid = checkParameters(parameters);
         String cargoWeight = parameters.get(CARGO_WEIGHT);
         if (parameters.containsKey(CARGO_WEIGHT) && !checkCargo(cargoWeight)) {
-            parameters.replace(ParameterName.CARGO_WEIGHT, "");
+            parameters.replace(CARGO_WEIGHT, EMPTY_LINE);
             areParametersValid = false;
         }
         String cargoVolume = parameters.get(CARGO_VOLUME);
         if (parameters.containsKey(CARGO_VOLUME) && !checkCargo(cargoVolume)) {
-            parameters.replace(ParameterName.CARGO_VOLUME, "");
+            parameters.replace(CARGO_VOLUME, EMPTY_LINE);
             areParametersValid = false;
         }
         return areParametersValid;

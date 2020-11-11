@@ -52,10 +52,6 @@ public class AddApplicationPageCommand implements Command {
             logger.log(Level.WARN, e);
             router = new Router(resourceBundle.getString("path.page.error500"));
         }
-
-
-
-
         return router;
     }
 }

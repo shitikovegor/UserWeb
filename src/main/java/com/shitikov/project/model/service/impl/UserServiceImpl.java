@@ -1,6 +1,5 @@
 package com.shitikov.project.model.service.impl;
 
-import com.shitikov.project.model.builder.UserBuilder;
 import com.shitikov.project.model.dao.impl.UserDaoImpl;
 import com.shitikov.project.model.entity.Address;
 import com.shitikov.project.model.entity.User;
@@ -64,7 +63,7 @@ public class UserServiceImpl implements UserService {
                             .replaceAll(XSS_PATTERN, EMPTY_LINE);
 
                     String hashedPassword = PasswordEncoder.hashPassword(parameters.get(ParameterName.PASSWORD));
-                    User user = new UserBuilder()
+                    User user = User.newBuilder()
                             .buildLogin(login)
                             .buildName(name)
                             .buildSurname(surname)

@@ -1,11 +1,9 @@
 package com.shitikov.project.model.service.impl;
 
-import com.shitikov.project.model.builder.AddressBuilder;
-import com.shitikov.project.model.builder.AddressTimeDataBuilder;
-import com.shitikov.project.model.builder.CargoApplicationBuilder;
-import com.shitikov.project.model.builder.PassengerApplicationBuilder;
 import com.shitikov.project.model.dao.impl.ApplicationDaoImpl;
+import com.shitikov.project.model.entity.Address;
 import com.shitikov.project.model.entity.User;
+import com.shitikov.project.model.entity.application.AddressTimeData;
 import com.shitikov.project.model.entity.application.Application;
 import com.shitikov.project.model.entity.application.CargoApplication;
 import com.shitikov.project.model.entity.application.PassengerApplication;
@@ -54,43 +52,14 @@ public class ApplicationServiceImpl implements ApplicationService {
         boolean areTextDateFieldsValid = true;
         String login = parameters.get(LOGIN);
 
-        if (!ApplicationValidator.checkTitle(parameters.get(TITLE))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(TITLE, EMPTY_LINE);
-        }
-        if (!ApplicationValidator.checkDescription(parameters.get(DESCRIPTION))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(DESCRIPTION, EMPTY_LINE);
-        }
-        if (!AddressDateValidator.checkDate(parameters.get(DEPARTURE_DATE))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(DEPARTURE_DATE, EMPTY_LINE);
-        } else {
+        areTextDateFieldsValid = ApplicationValidator.checkParameters(parameters);
+        if (parameters.containsKey(DEPARTURE_DATE)) {
             String departureDate = parameters.get(DEPARTURE_DATE);
             parameters.replace(DEPARTURE_DATE, dateToLong(departureDate).toString());
         }
-        if (!AddressDateValidator.checkDate(parameters.get(ARRIVAL_DATE))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(ARRIVAL_DATE, EMPTY_LINE);
-        } else {
+        if (parameters.containsKey(ARRIVAL_DATE)) {
             String departureDate = parameters.get(ARRIVAL_DATE);
             parameters.replace(ARRIVAL_DATE, dateToLong(departureDate).toString());
-        }
-        if (!AddressDateValidator.checkAddress(parameters.get(DEPARTURE_ADDRESS))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(DEPARTURE_ADDRESS, EMPTY_LINE);
-        }
-        if (!AddressDateValidator.checkCity(parameters.get(DEPARTURE_CITY))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(DEPARTURE_CITY, EMPTY_LINE);
-        }
-        if (!AddressDateValidator.checkAddress(parameters.get(ARRIVAL_ADDRESS))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(ARRIVAL_ADDRESS, EMPTY_LINE);
-        }
-        if (!AddressDateValidator.checkCity(parameters.get(ARRIVAL_CITY))) {
-            areTextDateFieldsValid = false;
-            parameters.replace(ARRIVAL_CITY, EMPTY_LINE);
         }
 
         try {
@@ -237,20 +206,20 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     private CargoApplication buildCargoApplication(Map<String, String> parameters) {
-        CargoApplication application = new CargoApplicationBuilder()
+        CargoApplication application = CargoApplication.newBuilder()
                 .buildCargoWeight(Double.parseDouble(parameters.get(CARGO_WEIGHT)))
                 .buildCargoVolume(Double.parseDouble(parameters.get(CARGO_VOLUME)))
                 .buildTitle(parameters.get(TITLE))
                 .buildApplicationType(ApplicationType.CARGO)
                 .buildDate(System.currentTimeMillis())
-                .buildAddressTimeData(new AddressTimeDataBuilder()
+                .buildAddressTimeData(AddressTimeData.newBuilder()
                         .buildDepartureDate(Long.parseLong(parameters.get(DEPARTURE_DATE)))
-                        .buildDepartureAddress(new AddressBuilder()
+                        .buildDepartureAddress(Address.newBuilder()
                                 .buildStreetHome(parameters.get(DEPARTURE_ADDRESS))
                                 .buildCity(parameters.get(DEPARTURE_CITY))
                                 .buildAddress())
                         .buildArrivalDate(Long.parseLong(parameters.get(ARRIVAL_DATE)))
-                        .buildArrivalAddress(new AddressBuilder()
+                        .buildArrivalAddress(Address.newBuilder()
                                 .buildStreetHome(parameters.get(ARRIVAL_ADDRESS))
                                 .buildCity(parameters.get(ARRIVAL_CITY))
                                 .buildAddress())
@@ -262,19 +231,19 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     private PassengerApplication buildPassengerApplication(Map<String, String> parameters) {
-        PassengerApplication application = new PassengerApplicationBuilder()
+        PassengerApplication application = PassengerApplication.newBuilder()
                 .buildPassengersNumber(Integer.parseInt(parameters.get(PASSENGERS_NUMBER)))
                 .buildTitle(parameters.get(TITLE))
                 .buildApplicationType(ApplicationType.PASSENGER)
                 .buildDate(System.currentTimeMillis())
-                .buildAddressTimeData(new AddressTimeDataBuilder()
+                .buildAddressTimeData(AddressTimeData.newBuilder()
                         .buildDepartureDate(Long.parseLong(parameters.get(DEPARTURE_DATE)))
-                        .buildDepartureAddress(new AddressBuilder()
+                        .buildDepartureAddress(Address.newBuilder()
                                 .buildStreetHome(parameters.get(DEPARTURE_ADDRESS))
                                 .buildCity(parameters.get(DEPARTURE_CITY))
                                 .buildAddress())
                         .buildArrivalDate(Long.parseLong(parameters.get(ARRIVAL_DATE)))
-                        .buildArrivalAddress(new AddressBuilder()
+                        .buildArrivalAddress(Address.newBuilder()
                                 .buildStreetHome(parameters.get(ARRIVAL_ADDRESS))
                                 .buildCity(parameters.get(ARRIVAL_CITY))
                                 .buildAddress())

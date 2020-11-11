@@ -1,6 +1,5 @@
 package com.shitikov.project.model.service.impl;
 
-import com.shitikov.project.model.builder.OrderBuilder;
 import com.shitikov.project.model.dao.impl.OrderDaoImpl;
 import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.Order;
@@ -39,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     public boolean add(Map<String, Object> parameters) throws ServiceException {
         try {
             OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
-            Order order = new OrderBuilder()
+            Order order = Order.newBuilder()
                     .buildApplication((Application) parameters.get(ParameterName.APPLICATION))
                     .buildCarId((Long) parameters.get(ParameterName.CAR_ID))
                     .buildUserId((Long) parameters.get(ParameterName.USER_ID))

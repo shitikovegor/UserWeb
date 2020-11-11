@@ -1,6 +1,5 @@
 package com.shitikov.project.model.dao.impl;
 
-import com.shitikov.project.model.builder.CarBuilder;
 import com.shitikov.project.model.dao.CarDao;
 import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.User;
@@ -93,7 +92,7 @@ public class CarDaoImpl implements CarDao {
                     double carryingVolume = resultSet.getDouble(ParameterName.CARRYING_VOLUME);
                     int passengersNumber = resultSet.getInt(ParameterName.PASSENGERS_NUMBER);
 
-                    car = new CarBuilder()
+                    car =  Car.newBuilder()
                             .buildCarId(id)
                             .buildCarNumber(carNumber)
                             .buildCarryingWeight(carryingWeight)
@@ -124,7 +123,7 @@ public class CarDaoImpl implements CarDao {
                     int passengersNumber = resultSet.getInt(ParameterName.PASSENGERS_NUMBER);
                     boolean removed = resultSet.getBoolean(ParameterName.REMOVED);
 
-                    Car car = new CarBuilder()
+                    Car car = Car.newBuilder()
                             .buildCarId(carId)
                             .buildCarNumber(carNumber)
                             .buildCarryingWeight(carryingWeight)
@@ -203,7 +202,7 @@ public class CarDaoImpl implements CarDao {
                     double carryingVolume = resultSet.getDouble(ParameterName.CARRYING_VOLUME);
                     int passengersNumber = resultSet.getInt(ParameterName.PASSENGERS_NUMBER);
 
-                    Car car = new CarBuilder()
+                    Car car = Car.newBuilder()
                             .buildCarId(carId)
                             .buildCarNumber(carNumber)
                             .buildCarryingWeight(carryingWeight)

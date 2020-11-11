@@ -43,14 +43,41 @@ public class OrderServiceImplTest {
         orderService = OrderServiceImpl.getInstance();
         Whitebox.setInternalState(OrderDaoImpl.class, "instance", orderDao);
 
-        Address addressDep = new Address("Minsk", "Gaya, 2-3");
-        Address addressArr = new Address("Minsk", "Sedyx, 12-23");
-        AddressTimeData data = new AddressTimeData(1606338000000L, addressDep,
-                1606338000000L, addressArr);
-        application = new CargoApplication(1L, "Title", ApplicationType.CARGO,
-                1604384503673L, data, "Description is", 45.5, 56.0);
+        Address addressDep = Address.newBuilder()
+                .buildCity("Minsk")
+                .buildStreetHome("Gaya, 2-3")
+                .buildAddress();
+        Address addressArr = Address.newBuilder()
+                .buildCity("Minsk")
+                .buildStreetHome("Sedyx, 12-23")
+                .buildAddress();
+        AddressTimeData data = AddressTimeData.newBuilder()
+                .buildDepartureDate(1606338000000L)
+                .buildDepartureAddress(addressDep)
+                .buildArrivalDate(1606338000000L)
+                .buildArrivalAddress(addressArr)
+                .buildAddressTimeData();
 
-        orderOptional = Optional.of(new Order(3L, application, 1L, 2L, OrderStatus.COMPLETED));
+        application = CargoApplication.newBuilder()
+                .buildCargoWeight(45.5)
+                .buildCargoVolume(56.0)
+        .buildApplicationId(1L)
+        .buildTitle("Title")
+        .buildApplicationType(ApplicationType.CARGO)
+        .buildDate(1604384503673L)
+        .buildAddressTimeData(data)
+        .buildDescription("Description is")
+        .buildApplication();
+
+        Order order = Order.newBuilder()
+                .buildOrderId(3L)
+                .buildApplication(application)
+                .buildCarId(1L)
+                .buildUserId(2L)
+                .buildStatus(OrderStatus.COMPLETED)
+                .buildOrder();
+
+        orderOptional = Optional.of(order);
     }
 
     @AfterMethod
@@ -109,8 +136,16 @@ public class OrderServiceImplTest {
 
     @Test
     public void testFindByUser() {
-        User user = new User(1L, "Login1", "Name", "Surname", "email@email.com",
-                375292511741L, RoleType.CLIENT, SubjectType.INDIVIDUAL);
+        User user = User.newBuilder()
+                .buildUserId(1L)
+                .buildLogin("Login1")
+                .buildName("Name")
+                .buildSurname("Surname")
+                .buildEmail("email@email.com")
+                .buildPhone(375292511741L)
+                .buildRoleType(RoleType.CLIENT)
+                .buildSubjectType(SubjectType.INDIVIDUAL)
+                .buildUser();
         Order order = orderOptional.get();
         Map<Order, Long> expected = new HashMap<>();
         expected.put(order, 375292511741L);
@@ -125,8 +160,16 @@ public class OrderServiceImplTest {
 
     @Test(expectedExceptions = ServiceException.class)
     public void testFindByUserException() throws DaoException, ServiceException {
-        User user = new User(1L, "Login1", "Name", "Surname", "email@email.com",
-                375292511741L, RoleType.CLIENT, SubjectType.INDIVIDUAL);
+        User user = User.newBuilder()
+                .buildUserId(1L)
+                .buildLogin("Login1")
+                .buildName("Name")
+                .buildSurname("Surname")
+                .buildEmail("email@email.com")
+                .buildPhone(375292511741L)
+                .buildRoleType(RoleType.CLIENT)
+                .buildSubjectType(SubjectType.INDIVIDUAL)
+                .buildUser();
         Order order = orderOptional.get();
         Map<Order, Long> expected = new HashMap<>();
         expected.put(order, 375292511741L);

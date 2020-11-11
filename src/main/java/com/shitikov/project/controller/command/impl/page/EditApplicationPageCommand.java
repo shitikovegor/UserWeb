@@ -33,7 +33,6 @@ public class EditApplicationPageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
-
         String applicationId = request.getParameter(APPLICATION_ID);
 
         try {

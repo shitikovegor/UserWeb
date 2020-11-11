@@ -47,7 +47,7 @@ public enum  ConnectionPool {
             properties.load(inputStream);
             Class.forName(properties.getProperty(DRIVER));
         } catch (ClassNotFoundException | IOException e) {
-            logger.log(Level.ERROR, "Driver loading error.", e);
+            logger.log(Level.FATAL, "Driver loading error.", e);
             throw new RuntimeException("Driver loading error", e);
         }
         try {
@@ -56,7 +56,7 @@ public enum  ConnectionPool {
                         properties.getProperty(URL), properties)));
             }
         } catch (SQLException e) {
-            logger.log(Level.ERROR, "Connection creating error.", e);
+            logger.log(Level.FATAL, "Connection creating error.", e);
             throw new RuntimeException("Connection creating error", e);
         }
     }

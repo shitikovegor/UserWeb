@@ -1,5 +1,7 @@
 package com.shitikov.project.validator;
 
+import com.shitikov.project.controller.command.AttributeName;
+
 import java.util.Map;
 
 import static com.shitikov.project.util.ParameterName.*;
@@ -102,27 +104,27 @@ public class UserValidator extends Validator {
 
         if (!checkLogin(parameters.get(LOGIN))) {
             areParametersCorrect = false;
-            parameters.replace(LOGIN, "");
+            parameters.replace(LOGIN, AttributeName.EMPTY_LINE);
         }
         if (!checkPassword(parameters.get(PASSWORD))) {
             areParametersCorrect = false;
-            parameters.replace(PASSWORD, "");
+            parameters.replace(PASSWORD, AttributeName.EMPTY_LINE);
         }
         if (!checkName(parameters.get(NAME))) {
             areParametersCorrect = false;
-            parameters.replace(NAME, "");
+            parameters.replace(NAME, AttributeName.EMPTY_LINE);
         }
         if (!checkName(parameters.get(SURNAME))) {
             areParametersCorrect = false;
-            parameters.replace(SURNAME, "");
+            parameters.replace(SURNAME, AttributeName.EMPTY_LINE);
         }
         if (!checkEmail(parameters.get(EMAIL))) {
             areParametersCorrect = false;
-            parameters.replace(EMAIL, "");
+            parameters.replace(EMAIL, AttributeName.EMPTY_LINE);
         }
         if (!checkPhone(parameters.get(PHONE))) {
             areParametersCorrect = false;
-            parameters.replace(PHONE, "");
+            parameters.replace(PHONE, AttributeName.EMPTY_LINE);
         }
 
         if (parameters.get(SUBJECT_TYPE) == null) {

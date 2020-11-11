@@ -65,7 +65,6 @@ public class AccountPageCommand implements Command {
                 Map<Application, OrderStatus> applications = applicationService.findByUser(user);
                 Map<Application, OrderStatus> sorted = applications.entrySet()
                         .stream()
-                        .sorted(Map.Entry.comparingByKey(new Application.IdComparator()))
                         .sorted(Map.Entry.comparingByValue())
                         .collect(
                                 Collectors.toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,

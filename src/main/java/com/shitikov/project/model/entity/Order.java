@@ -1,6 +1,5 @@
 package com.shitikov.project.model.entity;
 
-import com.shitikov.project.model.builder.OrderBuilder;
 import com.shitikov.project.model.entity.application.Application;
 import com.shitikov.project.model.entity.type.OrderStatus;
 
@@ -19,34 +18,7 @@ public class Order extends Entity {
     private long userId;
     private OrderStatus status;
 
-    /**
-     * Instantiates a new Order.
-     *
-     * @param orderId     the order id
-     * @param application the application
-     * @param carId       the car id
-     * @param userId      the user id
-     * @param status      the status
-     */
-    public Order(long orderId, Application application, long carId, long userId, OrderStatus status) {
-        this.orderId = orderId;
-        this.application = application;
-        this.carId = carId;
-        this.userId = userId;
-        this.status = status;
-    }
-
-    /**
-     * Instantiates a new Order.
-     *
-     * @param builder the builder
-     */
-    public Order(OrderBuilder builder) {
-        this.orderId = builder.getOrderId();
-        this.application = builder.getApplication();
-        this.carId = builder.getCarId();
-        this.userId = builder.getUserId();
-        this.status = builder.getStatus();
+    private Order() {
     }
 
     /**
@@ -197,6 +169,91 @@ public class Order extends Entity {
         public int compare(Order o1, Order o2) {
             int result = o1.status.compareTo(o2.status);
             return result;
+        }
+    }
+
+    /**
+     * New builder order . builder.
+     *
+     * @return the order . builder
+     */
+    public static Order.Builder newBuilder() {
+        return new Order().new Builder();
+    }
+
+    /**
+     * The type Builder.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
+    public class Builder {
+
+        private Builder() {
+        }
+
+        /**
+         * Build order id builder.
+         *
+         * @param orderId the order id
+         * @return the builder
+         */
+        public Builder buildOrderId(long orderId) {
+            Order.this.orderId = orderId;
+            return this;
+        }
+
+        /**
+         * Build application builder.
+         *
+         * @param application the application
+         * @return the builder
+         */
+        public Builder buildApplication(Application application) {
+            Order.this.application = application;
+            return this;
+        }
+
+        /**
+         * Build car id builder.
+         *
+         * @param carId the car id
+         * @return the builder
+         */
+        public Builder buildCarId(long carId) {
+            Order.this.carId = carId;
+            return this;
+        }
+
+        /**
+         * Build user id builder.
+         *
+         * @param userId the user id
+         * @return the builder
+         */
+        public Builder buildUserId(long userId) {
+            Order.this.userId = userId;
+            return this;
+        }
+
+        /**
+         * Build status builder.
+         *
+         * @param status the status
+         * @return the builder
+         */
+        public Builder buildStatus(OrderStatus status) {
+            Order.this.status = status;
+            return this;
+        }
+
+        /**
+         * Build order order.
+         *
+         * @return the order
+         */
+        public Order buildOrder() {
+            return Order.this;
         }
     }
 }

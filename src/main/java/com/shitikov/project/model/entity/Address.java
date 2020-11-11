@@ -1,7 +1,5 @@
 package com.shitikov.project.model.entity;
 
-import com.shitikov.project.model.builder.AddressBuilder;
-
 /**
  * The type Address.
  *
@@ -12,25 +10,7 @@ public class Address extends Entity {
     private String city;
     private String streetHome;
 
-    /**
-     * Instantiates a new Address.
-     *
-     * @param city       the city
-     * @param streetHome the street home
-     */
-    public Address(String city, String streetHome) {
-        this.city = city;
-        this.streetHome = streetHome;
-    }
-
-    /**
-     * Instantiates a new Address.
-     *
-     * @param builder the builder
-     */
-    public Address(AddressBuilder builder) {
-        this.city = builder.getCity();
-        this.streetHome = builder.getStreetHome();
+    private Address() {
     }
 
     /**
@@ -98,5 +78,57 @@ public class Address extends Entity {
         sb.append(", streetHome='").append(streetHome).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    /**
+     * New builder address . builder.
+     *
+     * @return the address . builder
+     */
+    public static Address.Builder newBuilder() {
+        return new Address().new Builder();
+    }
+
+    /**
+     * The type Builder.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
+    public class Builder {
+
+        private Builder() {
+        }
+
+        /**
+         * Build city builder.
+         *
+         * @param city the city
+         * @return the builder
+         */
+        public Builder buildCity(String city) {
+            Address.this.city = city;
+            return this;
+        }
+
+        /**
+         * Build street home builder.
+         *
+         * @param streetHome the street home
+         * @return the builder
+         */
+        public Builder buildStreetHome(String streetHome) {
+            Address.this.streetHome = streetHome;
+            return this;
+        }
+
+        /**
+         * Build address address.
+         *
+         * @return the address
+         */
+        public Address buildAddress() {
+            return Address.this;
+        }
     }
 }

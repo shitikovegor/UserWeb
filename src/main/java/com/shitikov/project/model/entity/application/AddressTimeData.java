@@ -1,6 +1,5 @@
 package com.shitikov.project.model.entity.application;
 
-import com.shitikov.project.model.builder.AddressTimeDataBuilder;
 import com.shitikov.project.model.entity.Address;
 import com.shitikov.project.model.entity.Entity;
 
@@ -16,32 +15,7 @@ public class AddressTimeData extends Entity {
     private long arrivalDate;
     private Address arrivalAddress;
 
-    /**
-     * Instantiates a new Address time data.
-     *
-     * @param departureDate    the departure date
-     * @param departureAddress the departure address
-     * @param arrivalDate      the arrival date
-     * @param arrivalAddress   the arrival address
-     */
-    public AddressTimeData(long departureDate, Address departureAddress, long arrivalDate,
-                           Address arrivalAddress) {
-        this.departureDate = departureDate;
-        this.departureAddress = departureAddress;
-        this.arrivalDate = arrivalDate;
-        this.arrivalAddress = arrivalAddress;
-    }
-
-    /**
-     * Instantiates a new Address time data.
-     *
-     * @param builder the builder
-     */
-    public AddressTimeData(AddressTimeDataBuilder builder) {
-        this.departureDate = builder.getDepartureDate();
-        this.departureAddress = builder.getDepartureAddress();
-        this.arrivalDate = builder.getArrivalDate();
-        this.arrivalAddress = builder.getArrivalAddress();
+    private AddressTimeData() {
     }
 
     /**
@@ -155,5 +129,79 @@ public class AddressTimeData extends Entity {
         sb.append(", arrivalAddress='").append(arrivalAddress).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    /**
+     * New builder address time data . builder.
+     *
+     * @return the address time data . builder
+     */
+    public static AddressTimeData.Builder newBuilder() {
+        return new AddressTimeData().new Builder();
+    }
+
+    /**
+     * The type Builder.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
+    public class Builder {
+
+        private Builder() {
+        }
+
+        /**
+         * Build departure date builder.
+         *
+         * @param departureDate the departure date
+         * @return the builder
+         */
+        public Builder buildDepartureDate(long departureDate) {
+            AddressTimeData.this.departureDate = departureDate;
+            return this;
+        }
+
+        /**
+         * Build departure address builder.
+         *
+         * @param departureAddress the departure address
+         * @return the builder
+         */
+        public Builder buildDepartureAddress(Address departureAddress) {
+            AddressTimeData.this.departureAddress = departureAddress;
+            return this;
+        }
+
+        /**
+         * Build arrival date builder.
+         *
+         * @param arrivalDate the arrival date
+         * @return the builder
+         */
+        public Builder buildArrivalDate(long arrivalDate) {
+            AddressTimeData.this.arrivalDate = arrivalDate;
+            return this;
+        }
+
+        /**
+         * Build arrival address builder.
+         *
+         * @param arrivalAddress the arrival address
+         * @return the builder
+         */
+        public Builder buildArrivalAddress(Address arrivalAddress) {
+            AddressTimeData.this.arrivalAddress = arrivalAddress;
+            return this;
+        }
+
+        /**
+         * Build address time data address time data.
+         *
+         * @return the address time data
+         */
+        public AddressTimeData buildAddressTimeData() {
+            return AddressTimeData.this;
+        }
     }
 }

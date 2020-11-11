@@ -1,6 +1,6 @@
 package com.shitikov.project.controller.filter;
 
-import com.shitikov.project.controller.RoleAvailableCommand;
+import com.shitikov.project.controller.RolePermission;
 import com.shitikov.project.controller.command.Command;
 import com.shitikov.project.controller.command.CommandProvider;
 import com.shitikov.project.controller.command.CommandType;
@@ -47,10 +47,10 @@ public class RoleSecurityFilter implements Filter {
 
         if (command.getClass() != EmptyCommand.class) {
             Set<CommandType> commandTypeSet = switch (role) {
-                case ADMINISTRATOR -> RoleAvailableCommand.ADMINISTRATOR.getAvailableCommands();
-                case DRIVER -> RoleAvailableCommand.DRIVER.getAvailableCommands();
-                case CLIENT -> RoleAvailableCommand.CLIENT.getAvailableCommands();
-                case GUEST -> RoleAvailableCommand.GUEST.getAvailableCommands();
+                case ADMINISTRATOR -> RolePermission.ADMINISTRATOR.getAvailableCommands();
+                case DRIVER -> RolePermission.DRIVER.getAvailableCommands();
+                case CLIENT -> RolePermission.CLIENT.getAvailableCommands();
+                case GUEST -> RolePermission.GUEST.getAvailableCommands();
             };
             if (!commandTypeSet.contains(CommandType.valueOf(commandName.replace("-","_").toUpperCase()))) {
                 httpResponse.sendError(403);

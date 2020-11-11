@@ -1,7 +1,5 @@
 package com.shitikov.project.model.entity;
 
-import com.shitikov.project.model.builder.CarBuilder;
-
 /**
  * The type Car.
  *
@@ -16,37 +14,7 @@ public class Car extends Entity {
     private int passengers;
     private boolean removed;
 
-    /**
-     * Instantiates a new Car.
-     *
-     * @param carId          the car id
-     * @param carNumber      the car number
-     * @param carryingWeight the carrying weight
-     * @param carryingVolume the carrying volume
-     * @param passengers     the passengers
-     * @param removed        the removed
-     */
-    public Car(long carId, String carNumber, double carryingWeight, double carryingVolume, int passengers) {
-        this.carId = carId;
-        this.carNumber = carNumber;
-        this.carryingWeight = carryingWeight;
-        this.carryingVolume = carryingVolume;
-        this.passengers = passengers;
-        this.removed = false;
-    }
-
-    /**
-     * Instantiates a new Car.
-     *
-     * @param builder the builder
-     */
-    public Car(CarBuilder builder) {
-        this.carId = builder.getCarId();
-        this.carNumber = builder.getCarNumber();
-        this.carryingWeight = builder.getCarryingWeight();
-        this.carryingVolume = builder.getCarryingVolume();
-        this.passengers = builder.getPassengers();
-        this.removed = builder.getRemoved();
+    private Car(){
     }
 
     /**
@@ -211,4 +179,101 @@ public class Car extends Entity {
         sb.append('}');
         return sb.toString();
     }
+
+    /**
+     * New builder builder.
+     *
+     * @return the builder
+     */
+    public static Builder newBuilder() {
+        return new Car().new Builder();
+    }
+
+    /**
+     * The type Builder.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
+    public class Builder {
+
+        private Builder() {
+        }
+
+        /**
+         * Build car id builder.
+         *
+         * @param carId the car id
+         * @return the builder
+         */
+        public Builder buildCarId(long carId) {
+            Car.this.carId = carId;
+            return this;
+        }
+
+        /**
+         * Build car number builder.
+         *
+         * @param carNumber the car number
+         * @return the builder
+         */
+        public Builder buildCarNumber(String carNumber) {
+            Car.this.carNumber = carNumber;
+            return this;
+        }
+
+        /**
+         * Build carrying weight builder.
+         *
+         * @param carryingWeight the carrying weight
+         * @return the builder
+         */
+        public Builder buildCarryingWeight(double carryingWeight) {
+            Car.this.carryingWeight = carryingWeight;
+            return this;
+        }
+
+        /**
+         * Build carrying volume builder.
+         *
+         * @param carryingVolume the carrying volume
+         * @return the builder
+         */
+        public Builder buildCarryingVolume(double carryingVolume) {
+            Car.this.carryingVolume = carryingVolume;
+            return this;
+        }
+
+        /**
+         * Build passengers builder.
+         *
+         * @param passengers the passengers
+         * @return the builder
+         */
+        public Builder buildPassengers(int passengers) {
+            Car.this.passengers = passengers;
+            return this;
+        }
+
+        /**
+         * Build removed builder.
+         *
+         * @param removed the removed
+         * @return the builder
+         */
+        public Builder buildRemoved(boolean removed) {
+            Car.this.removed = removed;
+            return this;
+        }
+
+        /**
+         * Build car car.
+         *
+         * @return the car
+         */
+        public Car buildCar() {
+            return Car.this;
+        }
+    }
+
 }

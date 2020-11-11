@@ -32,6 +32,8 @@ public enum CommandType {
     SEARCH(new SearchCommand()),
     BLOCK_USER(new BlockUserCommand()),
     UNBLOCK_USER(new UnblockUserCommand()),
+    BACK(new BackCommand()),
+    PAGINATION(new PaginationCommand()),
     //pages
     HOME_PAGE(new HomePageCommand()),
     REGISTRATION_PAGE(new RegistrationPageCommand()),
@@ -44,10 +46,7 @@ public enum CommandType {
     APPLICATIONS_PAGE(new ApplicationsPageCommand()),
     APPLICATION_PAGE(new ApplicationPageCommand()),
     USERS_PAGE(new UsersPageCommand()),
-    ACCOUNT_FOR_ADMIN_PAGE(new AccountForAdminPageCommand()),
-    BACK(new BackCommand()),
-    PAGINATION(new PaginationCommand());
-
+    ACCOUNT_FOR_ADMIN_PAGE(new AccountForAdminPageCommand());
 
     private final Command command;
 

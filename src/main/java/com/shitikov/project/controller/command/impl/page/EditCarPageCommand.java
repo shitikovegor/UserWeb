@@ -31,7 +31,6 @@ public class EditCarPageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
-
         String carId = request.getParameter(CAR_ID);
 
         try {

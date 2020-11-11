@@ -1,6 +1,5 @@
 package com.shitikov.project.model.entity;
 
-import com.shitikov.project.model.builder.UserBuilder;
 import com.shitikov.project.model.entity.type.RoleType;
 import com.shitikov.project.model.entity.type.SubjectType;
 
@@ -22,48 +21,9 @@ public class User extends Entity {
     private boolean blocked;
     private boolean activated;
 
-    /**
-     * Instantiates a new User.
-     *
-     * @param userId      the user id
-     * @param login       the login
-     * @param name        the name
-     * @param surname     the surname
-     * @param email       the email
-     * @param phone       the phone
-     * @param roleType    the role type
-     * @param subjectType the subject type
-     */
-    public User(long userId, String login, String name, String surname, String email,
-                long phone, RoleType roleType, SubjectType subjectType) {
-        this.userId = userId;
-        this.login = login;
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.phone = phone;
-        this.roleType = roleType;
-        this.subjectType = subjectType;
+    private User() {
         this.blocked = false;
         this.activated = false;
-    }
-
-    /**
-     * Instantiates a new User.
-     *
-     * @param builder the builder
-     */
-    public User(UserBuilder builder) {
-        this.userId = builder.getUserId();
-        this.login = builder.getLogin();
-        this.name = builder.getName();
-        this.surname = builder.getSurname();
-        this.email = builder.getEmail();
-        this.phone = builder.getPhone();
-        this.roleType = builder.getRoleType();
-        this.subjectType = builder.getSubjectType();
-        this.blocked = builder.isBlocked();
-        this.activated = builder.isActivated();
     }
 
     /**
@@ -316,5 +276,145 @@ public class User extends Entity {
         sb.append(", active=").append(activated);
         sb.append('}');
         return sb.toString();
+    }
+
+    /**
+     * New builder user . builder.
+     *
+     * @return the user . builder
+     */
+    public static User.Builder newBuilder() {
+        return new User().new Builder();
+    }
+
+    /**
+     * The type Builder.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
+    public class Builder {
+
+        private Builder() {
+        }
+
+        /**
+         * Build user id builder.
+         *
+         * @param userId the user id
+         * @return the builder
+         */
+        public Builder buildUserId(long userId) {
+            User.this.userId = userId;
+            return this;
+        }
+
+        /**
+         * Build login builder.
+         *
+         * @param login the login
+         * @return the builder
+         */
+        public Builder buildLogin(String login) {
+            User.this.login = login;
+            return this;
+        }
+
+        /**
+         * Build name builder.
+         *
+         * @param name the name
+         * @return the builder
+         */
+        public Builder buildName(String name) {
+            User.this.name = name;
+            return this;
+        }
+
+        /**
+         * Build surname builder.
+         *
+         * @param surname the surname
+         * @return the builder
+         */
+        public Builder buildSurname(String surname) {
+            User.this.surname = surname;
+            return this;
+        }
+
+        /**
+         * Build email builder.
+         *
+         * @param email the email
+         * @return the builder
+         */
+        public Builder buildEmail(String email) {
+            User.this.email = email;
+            return this;
+        }
+
+        /**
+         * Build phone builder.
+         *
+         * @param phone the phone
+         * @return the builder
+         */
+        public Builder buildPhone(long phone) {
+            User.this.phone = phone;
+            return this;
+        }
+
+        /**
+         * Build subject type builder.
+         *
+         * @param subjectType the subject type
+         * @return the builder
+         */
+        public Builder buildSubjectType(SubjectType subjectType) {
+            User.this.subjectType = subjectType;
+            return this;
+        }
+
+        /**
+         * Build blocked builder.
+         *
+         * @param blocked the blocked
+         * @return the builder
+         */
+        public Builder buildBlocked(boolean blocked) {
+            User.this.blocked = blocked;
+            return this;
+        }
+
+        /**
+         * Build activated builder.
+         *
+         * @param activated the activated
+         * @return the builder
+         */
+        public Builder buildActivated(boolean activated) {
+            User.this.activated = activated;
+            return this;
+        }
+
+        /**
+         * Build role type builder.
+         *
+         * @param roleType the role type
+         * @return the builder
+         */
+        public Builder buildRoleType(RoleType roleType) {
+            User.this.roleType = roleType;
+            return this;
+        }
+
+        /**
+         * Build user user.
+         *
+         * @return the user
+         */
+        public User buildUser() {
+            return User.this;
+        }
     }
 }

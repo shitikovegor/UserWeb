@@ -63,19 +63,26 @@ public class ApplicationServiceImplTest {
 
     @BeforeClass
     public void setUpParams() {
-        application = new PassengerApplication(1L,
-                "Title",
-                ApplicationType.PASSENGER,
-                1607201000000L,
-                new AddressTimeData(1607202000000L,
-                        new Address("Minsk",
-                                "Goreckogo, 19/2"),
-                        1607288400000L,
-                        new Address("Minsk",
-                                "Kolasa, 51-2")),
-
-                "Description",
-                4);
+        application = PassengerApplication.newBuilder()
+                .buildPassengersNumber(4)
+                .buildApplicationId(1L)
+                .buildTitle("Title")
+                .buildApplicationType(ApplicationType.CARGO)
+                .buildDate(1604384503673L)
+                .buildAddressTimeData(AddressTimeData.newBuilder()
+                        .buildDepartureDate(1607202000000L)
+                        .buildDepartureAddress(Address.newBuilder()
+                                .buildCity("Minsk")
+                                .buildStreetHome("Goreckogo, 19/2")
+                                .buildAddress())
+                        .buildArrivalDate(1607288400000L)
+                        .buildArrivalAddress(Address.newBuilder()
+                                .buildCity("Minsk")
+                                .buildStreetHome("Kolasa, 51-2")
+                                .buildAddress())
+                        .buildAddressTimeData())
+                .buildDescription("Description is")
+                .buildApplication();;
 
         applications = new HashMap<>();
         applications.put(application, OrderStatus.ACTIVE);
@@ -168,8 +175,16 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void testFindByUser() {
-        User user = new User(1L, "Login1", "Name", "Surname",
-                "email@email.com", 375292511741L, RoleType.CLIENT, SubjectType.INDIVIDUAL);
+        User user = User.newBuilder()
+                .buildUserId(1L)
+                .buildLogin("Login1")
+                .buildName("Name")
+                .buildSurname("Surname")
+                .buildEmail("email@email.com")
+                .buildPhone(375292511741L)
+                .buildRoleType(RoleType.CLIENT)
+                .buildSubjectType(SubjectType.INDIVIDUAL)
+                .buildUser();
         try {
             when(applicationDao.findByUser(any(User.class))).thenReturn(applications);
             Map<Application, OrderStatus> actual = applicationService.findByUser(user);
@@ -181,8 +196,16 @@ public class ApplicationServiceImplTest {
 
     @Test(expectedExceptions = ServiceException.class)
     public void testFindByUserException() throws DaoException, ServiceException {
-        User user = new User(1L, "Login1", "Name", "Surname",
-                "email@email.com", 375292511741L, RoleType.CLIENT, SubjectType.INDIVIDUAL);
+        User user = User.newBuilder()
+                .buildUserId(1L)
+                .buildLogin("Login1")
+                .buildName("Name")
+                .buildSurname("Surname")
+                .buildEmail("email@email.com")
+                .buildPhone(375292511741L)
+                .buildRoleType(RoleType.CLIENT)
+                .buildSubjectType(SubjectType.INDIVIDUAL)
+                .buildUser();
         DaoException exception = new DaoException();
         when(applicationDao.findByUser(any(User.class))).thenThrow(exception);
         applicationService.findByUser(user);
@@ -201,7 +224,7 @@ public class ApplicationServiceImplTest {
 
     @Test(expectedExceptions = ServiceException.class)
     public void testFindAllException() throws DaoException, ServiceException {
-       DaoException exception = new DaoException();
+        DaoException exception = new DaoException();
         when(applicationDao.findAll()).thenThrow(exception);
         applicationService.findAll();
     }

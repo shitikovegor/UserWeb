@@ -1,7 +1,5 @@
 package com.shitikov.project.model.dao.impl;
 
-import com.shitikov.project.model.builder.AddressBuilder;
-import com.shitikov.project.model.builder.UserBuilder;
 import com.shitikov.project.model.dao.UserDao;
 import com.shitikov.project.model.entity.Address;
 import com.shitikov.project.model.entity.User;
@@ -110,7 +108,7 @@ public class UserDaoImpl implements UserDao {
                     boolean blocked = resultSet.getBoolean(ParameterName.BLOCKED);
                     boolean activated = resultSet.getBoolean(ParameterName.ACTIVATED);
 
-                    user = new UserBuilder()
+                    user = User.newBuilder()
                             .buildUserId(userId)
                             .buildLogin(login)
                             .buildName(name)
@@ -151,7 +149,7 @@ public class UserDaoImpl implements UserDao {
                     boolean blocked = resultSet.getBoolean(ParameterName.BLOCKED);
                     boolean activated = resultSet.getBoolean(ParameterName.ACTIVATED);
 
-                    user = new UserBuilder()
+                    user = User.newBuilder()
                             .buildUserId(userId)
                             .buildLogin(login)
                             .buildName(name)
@@ -211,7 +209,7 @@ public class UserDaoImpl implements UserDao {
                 boolean blocked = resultSet.getBoolean(ParameterName.BLOCKED);
                 boolean activated = resultSet.getBoolean(ParameterName.ACTIVATED);
 
-                User user = new UserBuilder()
+                User user = User.newBuilder()
                         .buildUserId(userId)
                         .buildLogin(login)
                         .buildName(name)
@@ -243,7 +241,7 @@ public class UserDaoImpl implements UserDao {
                     String streetHome = resultSet.getString(ParameterName.ADDRESS);
                     String city = resultSet.getString(ParameterName.CITY);
 
-                    address = new AddressBuilder()
+                    address = Address.newBuilder()
                             .buildStreetHome(streetHome)
                             .buildCity(city)
                             .buildAddress();

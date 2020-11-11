@@ -27,12 +27,10 @@ public class ActivateAccountCommand implements Command {
     private static final Logger logger = LogManager.getLogger();
     private final ResourceBundle resourceBundle = ResourceBundle.getBundle(ParameterName.PAGES_PATH);
 
-
     @Override
     public Router execute(HttpServletRequest request) {
         UserService service = UserServiceImpl.getInstance();
         Router router;
-
         String login = request.getParameter(ParameterName.LOGIN);
 
         try {

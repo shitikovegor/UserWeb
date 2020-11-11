@@ -13,7 +13,7 @@ import static com.shitikov.project.controller.command.CommandType.*;
  * @author Shitikov Egor
  * @version 1.0
  */
-public enum RoleAvailableCommand {
+public enum RolePermission {
     GUEST(EnumSet.of(LOGIN,
             REGISTRATION,
             ACTIVATE_ACCOUNT,
@@ -91,7 +91,7 @@ public enum RoleAvailableCommand {
 
     private final Set<CommandType> availableCommands;
 
-    RoleAvailableCommand(Set<CommandType> availableCommands) {
+    RolePermission(Set<CommandType> availableCommands) {
         this.availableCommands = availableCommands;
     }
 

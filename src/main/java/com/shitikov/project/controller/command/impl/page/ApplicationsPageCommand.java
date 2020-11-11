@@ -70,7 +70,6 @@ public class ApplicationsPageCommand implements Command {
             Map<Application, OrderStatus> applications = applicationService.findAll();
             Map<Application, OrderStatus> sorted = applications.entrySet()
                     .stream()
-                    .sorted(Map.Entry.comparingByKey(new Application.DepartureDateComparator()))
                     .sorted(Map.Entry.comparingByValue())
                     .collect(
                             Collectors.toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,

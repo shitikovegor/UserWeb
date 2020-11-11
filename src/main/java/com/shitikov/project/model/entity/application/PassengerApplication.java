@@ -1,8 +1,5 @@
 package com.shitikov.project.model.entity.application;
 
-import com.shitikov.project.model.builder.PassengerApplicationBuilder;
-import com.shitikov.project.model.entity.type.ApplicationType;
-
 /**
  * The type Passenger application.
  *
@@ -12,32 +9,7 @@ import com.shitikov.project.model.entity.type.ApplicationType;
 public class PassengerApplication extends Application {
     private int passengersNumber;
 
-    /**
-     * Instantiates a new Passenger application.
-     *
-     * @param applicationId    the application id
-     * @param title            the title
-     * @param applicationType  the application type
-     * @param date             the date
-     * @param addressTimeData  the address time data
-     * @param description      the description
-     * @param passengersNumber the passengers number
-     */
-    public PassengerApplication(long applicationId, String title, ApplicationType applicationType
-            , long date, AddressTimeData addressTimeData
-            , String description, int passengersNumber) {
-        super(applicationId, title, applicationType, date, addressTimeData, description);
-        this.passengersNumber = passengersNumber;
-    }
-
-    /**
-     * Instantiates a new Passenger application.
-     *
-     * @param builder the builder
-     */
-    public PassengerApplication(PassengerApplicationBuilder builder) {
-        super(builder);
-        this.passengersNumber = builder.getPassengersNumber();
+    private PassengerApplication() {
     }
 
     /**
@@ -87,5 +59,42 @@ public class PassengerApplication extends Application {
         sb.append("passengersNumber=").append(passengersNumber);
         sb.append('}');
         return sb.toString();
+    }
+
+    /**
+     * New builder passenger application . builder.
+     *
+     * @return the passenger application . builder
+     */
+    public static PassengerApplication.Builder newBuilder() {
+        return new PassengerApplication().new Builder();
+    }
+
+    /**
+     * The type Builder.
+     *
+     * @author Shitikov Egor
+     * @version 1.0
+     */
+    public class Builder extends Application.Builder<PassengerApplication> {
+
+        private Builder() {
+        }
+
+        /**
+         * Build passengers number builder.
+         *
+         * @param passengersNumber the passengers number
+         * @return the builder
+         */
+        public Builder buildPassengersNumber(int passengersNumber) {
+            PassengerApplication.this.passengersNumber = passengersNumber;
+            return this;
+        }
+
+        @Override
+        public PassengerApplication buildApplication() {
+            return PassengerApplication.this;
+        }
     }
 }

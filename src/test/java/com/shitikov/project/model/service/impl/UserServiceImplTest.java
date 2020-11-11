@@ -50,8 +50,16 @@ public class UserServiceImplTest {
         addressParameters.put(ADDRESS, "Goreckogo, 19-15");
         addressParameters.put(CITY, "Minsk");
 
-        user = new User(1L, "Login1", "Name", "Surname",
-                "email@email.com", 375292511741L, RoleType.CLIENT, SubjectType.INDIVIDUAL);
+        user = User.newBuilder()
+                .buildUserId(1L)
+                .buildLogin("Login1")
+                .buildName("Name")
+                .buildSurname("Surname")
+                .buildEmail("email@email.com")
+                .buildPhone(375292511741L)
+                .buildRoleType(RoleType.CLIENT)
+                .buildSubjectType(SubjectType.INDIVIDUAL)
+                .buildUser();
     }
 
     @AfterMethod
@@ -290,9 +298,10 @@ public class UserServiceImplTest {
 
     @Test
     public void testFindAddressPositive() {
-        Optional<Address> expected = Optional.of(new Address(
-                addressParameters.get(ADDRESS),
-                addressParameters.get(CITY)));
+        Optional<Address> expected = Optional.of(Address.newBuilder()
+                .buildCity(addressParameters.get(CITY))
+                .buildStreetHome(addressParameters.get(ADDRESS))
+                .buildAddress());
         try {
             when(userDao.findUserAddress(any())).thenReturn(expected);
             Optional<Address> actual = userService.findAddress("Login");
@@ -304,9 +313,10 @@ public class UserServiceImplTest {
 
     @Test
     public void testFindAddressNegative() {
-        Optional<Address> expected = Optional.of(new Address(
-                addressParameters.get(ADDRESS),
-                addressParameters.get(CITY)));
+        Optional<Address> expected = Optional.of(Address.newBuilder()
+                .buildCity(addressParameters.get(CITY))
+                .buildStreetHome(addressParameters.get(ADDRESS))
+                .buildAddress());
         try {
             when(userDao.findUserAddress(any())).thenReturn(Optional.empty());
             Optional<Address> actual = userService.findAddress("Login");

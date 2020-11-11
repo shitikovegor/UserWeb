@@ -1,6 +1,5 @@
 package com.shitikov.project.model.service.impl;
 
-import com.shitikov.project.model.builder.CarBuilder;
 import com.shitikov.project.model.dao.impl.CarDaoImpl;
 import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.User;
@@ -55,7 +54,7 @@ public class CarServiceImpl implements CarService {
 
         try {
             if (areParametersValid && !carDao.checkCarNumber(carNumber)) {
-                Car carToAdd = new CarBuilder()
+                Car carToAdd = Car.newBuilder()
                         .buildCarNumber(carNumber)
                         .buildCarryingWeight(Double.parseDouble(carryingWeight))
                         .buildCarryingVolume(Double.parseDouble(carryingVolume))

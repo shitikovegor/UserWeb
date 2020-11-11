@@ -33,7 +33,6 @@ public class BlockUserCommand implements Command {
     public Router execute(HttpServletRequest request) {
         UserService userService = UserServiceImpl.getInstance();
         Router router;
-
         String login = request.getParameter(ParameterName.LOGIN);
 
         try {
