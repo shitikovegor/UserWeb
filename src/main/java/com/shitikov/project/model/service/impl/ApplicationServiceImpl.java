@@ -49,10 +49,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     public boolean add(Map<String, String> parameters) throws ServiceException {
         ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
         boolean isAdded = false;
-        boolean areTextDateFieldsValid = true;
         String login = parameters.get(LOGIN);
 
-        areTextDateFieldsValid = ApplicationValidator.checkParameters(parameters);
+        boolean areTextDateFieldsValid = ApplicationValidator.checkParameters(parameters);
         if (parameters.containsKey(DEPARTURE_DATE)) {
             String departureDate = parameters.get(DEPARTURE_DATE);
             parameters.replace(DEPARTURE_DATE, dateToLong(departureDate).toString());
