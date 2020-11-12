@@ -85,7 +85,7 @@ public class ApplicationsPaginationTag extends TagSupport {
                         .append(resourceBundle.getString(BUNDLE_STATUS_PREFIX + status.getName()))
                         .append("</h6>\n<h6 class=\"text-info float-right mb-2\" for=\"status\">\n")
                         .append(resourceBundle.getString(BUNDLE_STATUS))
-                        .append(":  </h6>\n</div>\n</div>\n</div>\n<hr style=\"margin-top: 6px;margin-bottom: 8px;\">\n")
+                        .append(":&nbsp;</h6>\n</div>\n</div>\n</div>\n<hr style=\"margin-top: 6px;margin-bottom: 8px;\">\n")
                         .append("<div class=\"row\" style=\"border: none;margin-bottom: 5px;\">\n")
                         .append("<div class=\"col\">\n<p style=\"margin-bottom: 5px;\">\n")
                         .append("<strong class=\"d-inline-block\">")
