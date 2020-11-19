@@ -1,13 +1,16 @@
 package com.shitikov.project.validator;
 
 /**
- * The type Validator.
+ * The interface Validator.
  *
  * @author Shitikov Egor
  * @version 1.0
  */
-public abstract class Validator {
-    private static final String APP_ID_PATTERN = "^[1-9]\\d{0,17}";
+public interface Validator {
+    /**
+     * The constant APP_ID_PATTERN.
+     */
+    String APP_ID_PATTERN = "^[1-9]\\d{0,17}";
 
     /**
      * Check id boolean.
@@ -15,7 +18,7 @@ public abstract class Validator {
      * @param id the id
      * @return the boolean
      */
-    public static boolean checkId(String id) {
+    static boolean checkId(String id) {
         return id.matches(APP_ID_PATTERN);
     }
 }

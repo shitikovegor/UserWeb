@@ -14,7 +14,7 @@ import static com.shitikov.project.util.ParameterName.*;
  * @author Shitikov Egor
  * @version 1.0
  */
-public class ApplicationValidator extends Validator {
+public class ApplicationValidator implements Validator {
     private static final String CARGO_PATTERN = "\\d+\\.*\\d*";
     private static final String PASSENGER_PATTERN = "\\d+";
     private static final String TITLE_PATTERN = "[\\p{L}0-9\\s-,._!?%#&*+]{1,100}";

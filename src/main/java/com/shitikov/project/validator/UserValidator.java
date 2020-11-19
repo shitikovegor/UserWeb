@@ -12,7 +12,7 @@ import static com.shitikov.project.util.ParameterName.*;
  * @author Shitikov Egor
  * @version 1.0
  */
-public class UserValidator extends Validator {
+public class UserValidator implements Validator {
     private static final String LOGIN_PATTERN = "^(?=.*[A-Za-z0-9]$)[a-zA-Z][a-zA-Z0-9._-]{3,19}";
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{6,20}$";
     private static final String NAME_SURNAME_PATTERN = "^(?=.*[\\p{L}]$)[\\p{L}\\s-]{0,49}";

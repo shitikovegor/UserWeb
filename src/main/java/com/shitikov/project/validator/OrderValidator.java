@@ -8,7 +8,7 @@ import com.shitikov.project.model.entity.type.OrderStatus;
  * @author Shitikov Egor
  * @version 1.0
  */
-public class OrderValidator extends Validator{
+public class OrderValidator implements Validator{
     private OrderValidator() {}
 
     /**

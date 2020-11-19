@@ -11,7 +11,7 @@ import java.util.Map;
  * @author Shitikov Egor
  * @version 1.0
  */
-public class CarValidator extends Validator {
+public class CarValidator implements Validator {
     private static final String CAR_NUMBER_PATTERN ="\\d{4}\\p{Alpha}{2}[1-7]";
 
     private CarValidator() {}
