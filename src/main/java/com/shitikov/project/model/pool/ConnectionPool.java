@@ -86,7 +86,7 @@ public enum  ConnectionPool {
         if (connection instanceof ProxyConnection && givenAwayConnections.remove(connection)) {
             freeConnections.offer((ProxyConnection) connection);
         } else {
-            logger.log(Level.WARN, "Incorrect connection to release.");
+            logger.log(Level.ERROR, "Incorrect connection to release.");
         }
     }
 
