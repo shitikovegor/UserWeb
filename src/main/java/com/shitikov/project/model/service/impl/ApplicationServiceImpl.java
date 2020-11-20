@@ -1,5 +1,6 @@
 package com.shitikov.project.model.service.impl;
 
+import com.shitikov.project.model.dao.ApplicationDao;
 import com.shitikov.project.model.dao.impl.ApplicationDaoImpl;
 import com.shitikov.project.model.entity.Address;
 import com.shitikov.project.model.entity.User;
@@ -47,7 +48,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public boolean add(Map<String, String> parameters) throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         boolean isAdded = false;
         String login = parameters.get(LOGIN);
 
@@ -98,7 +99,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public boolean remove(String id) throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         boolean isRemoved = false;
         try {
             if (Validator.checkId(id)) {
@@ -112,7 +113,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Optional<Application> findById(String id) throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         if (Validator.checkId(id)) {
             try {
                 Optional<Application> application = applicationDao.findById(Long.parseLong(id));
@@ -126,7 +127,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Map<Application, OrderStatus> findByUser(User user) throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         try {
             Map<Application, OrderStatus> applications = applicationDao.findByUser(user);
             return applications;
@@ -137,7 +138,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Map<Application, OrderStatus> findAll() throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         try {
             Map<Application, OrderStatus> applications = applicationDao.findAll();
             return applications;
@@ -148,7 +149,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Map<Application, OrderStatus> findByParameters(Map<String, String> parameters) throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         try {
             Map<String, Object> validParameters = fillValidParameters(parameters);
             Map<Application, OrderStatus> applications = applicationDao.findByParameters(validParameters);
@@ -160,7 +161,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public boolean update(String id, Map<String, String> parameters) throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         if (!Validator.checkId(id)) {
             return false;
         }
@@ -195,7 +196,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Map<Application, OrderStatus> findRecentActiveApps(int numberOfApps) throws ServiceException {
-        ApplicationDaoImpl applicationDao = ApplicationDaoImpl.getInstance();
+        ApplicationDao applicationDao = ApplicationDaoImpl.getInstance();
         try {
             Map<Application, OrderStatus> applications = applicationDao.findRecentActiveApps(numberOfApps);
             return applications;

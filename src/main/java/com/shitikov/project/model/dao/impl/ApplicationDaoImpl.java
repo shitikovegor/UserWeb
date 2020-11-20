@@ -367,35 +367,35 @@ public class ApplicationDaoImpl implements ApplicationDao {
             searchValues.add(parameters.get(PASSENGER));
         }
         if (parameters.containsKey(DEPARTURE_DATE_FROM)) {
-            checkWhere(sqlRequest);
+            checkParamWhere(sqlRequest);
             sqlRequest.append(DEP_DATE_FIELD)
                     .append(BETWEEN);
             searchValues.add(parameters.get(DEPARTURE_DATE_FROM));
             searchValues.add(parameters.get(DEPARTURE_DATE_TO));
         }
         if (parameters.containsKey(PASSENGER_NUMBER_FROM)) {
-            checkWhere(sqlRequest);
+            checkParamWhere(sqlRequest);
             sqlRequest.append(PASS_NUMBER_FIELD)
                     .append(BETWEEN);
             searchValues.add(parameters.get(PASSENGER_NUMBER_FROM));
             searchValues.add(parameters.get(PASSENGER_NUMBER_TO));
         }
         if (parameters.containsKey(CARGO_WEIGHT_FROM)) {
-            checkWhere(sqlRequest);
+            checkParamWhere(sqlRequest);
             sqlRequest.append(WEIGHT_FIELD)
                     .append(BETWEEN);
             searchValues.add(parameters.get(CARGO_WEIGHT_FROM));
             searchValues.add(parameters.get(CARGO_WEIGHT_TO));
         }
         if (parameters.containsKey(CARGO_VOLUME_FROM)) {
-            checkWhere(sqlRequest);
+            checkParamWhere(sqlRequest);
             sqlRequest.append(VOLUME_FIELD)
                     .append(BETWEEN);
             searchValues.add(parameters.get(CARGO_VOLUME_FROM));
             searchValues.add(parameters.get(CARGO_VOLUME_TO));
         }
         if (parameters.containsKey(CITY)) {
-            checkWhere(sqlRequest);
+            checkParamWhere(sqlRequest);
             sqlRequest.append(CITY_FIELD);
             searchValues.add(parameters.get(CITY));
         }
@@ -413,7 +413,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
             statuses.add((String) parameters.get(CANCELED));
         }
         if (!statuses.isEmpty()) {
-            checkWhere(sqlRequest);
+            checkParamWhere(sqlRequest);
             sqlRequest.append(OPEN_PARENTHESIS);
             for (String status : statuses) {
                 if (status == null) {
@@ -430,7 +430,7 @@ public class ApplicationDaoImpl implements ApplicationDao {
         return searchValues;
     }
 
-    private void checkWhere(StringBuilder sqlRequest) {
+    private void checkParamWhere(StringBuilder sqlRequest) {
         if (!sqlRequest.substring(sqlRequest.length() - 7).equals(WHERE)) {
             sqlRequest.append(LOGICAL_AND);
         }

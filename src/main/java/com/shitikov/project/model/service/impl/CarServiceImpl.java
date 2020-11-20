@@ -1,5 +1,6 @@
 package com.shitikov.project.model.service.impl;
 
+import com.shitikov.project.model.dao.CarDao;
 import com.shitikov.project.model.dao.impl.CarDaoImpl;
 import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.User;
@@ -38,7 +39,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean add(Map<String, String> parameters) throws ServiceException {
-        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        CarDao carDao = CarDaoImpl.getInstance();
         boolean isAdded = false;
         String carNumber = parameters.get(ParameterName.CAR_NUMBER);
         String carryingWeight = parameters.get(ParameterName.CARRYING_WEIGHT);
@@ -71,7 +72,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean remove(String id) throws ServiceException {
-        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        CarDao carDao = CarDaoImpl.getInstance();
         try {
             boolean isRemoved = false;
             if (Validator.checkId(id)) {
@@ -85,7 +86,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Optional<Car> findById(String id) throws ServiceException {
-        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        CarDao carDao = CarDaoImpl.getInstance();
         Optional<Car> carOptional = Optional.empty();
         try {
             if (Validator.checkId(id)) {
@@ -99,7 +100,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<Car> findByUser(User user) throws ServiceException {
-        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        CarDao carDao = CarDaoImpl.getInstance();
         try {
             List<Car> cars = carDao.findByUser(user);
             return cars;
@@ -110,7 +111,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean update(String id, Map<String, String> parameters) throws ServiceException {
-        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        CarDao carDao = CarDaoImpl.getInstance();
         if (!Validator.checkId(id)) {
             return false;
         }
@@ -132,7 +133,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean removeUsed(String id) throws ServiceException {
-        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        CarDao carDao = CarDaoImpl.getInstance();
         try {
             boolean isRemoved = false;
             if (Validator.checkId(id)) {
@@ -146,7 +147,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<Car> findAvailableByUser(User user) throws ServiceException {
-        CarDaoImpl carDao = CarDaoImpl.getInstance();
+        CarDao carDao = CarDaoImpl.getInstance();
         try {
             List<Car> cars = carDao.findAvailableByUser(user);
             return cars;
