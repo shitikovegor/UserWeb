@@ -11,10 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The type Car dao.
@@ -36,6 +33,9 @@ public class CarDaoImpl implements CarDao {
     private static final String SQL_UPDATE_PARAMETERS = "UPDATE cars SET %s WHERE car_id = ?";
     private static final String SQL_DELETE_BY_ID = "DELETE FROM cars WHERE car_id = ?";
     private static final String SQL_REMOVE_USED = "UPDATE cars SET removed = 1 WHERE car_id = ?";
+    private static final String SQL_FIND_MAX_BY_USER_ID = "SELECT user_id_fk, MAX(carrying_weight) carrying_weight, " +
+            "MAX(carrying_volume) carrying_volume, MAX(passengers_number) passengers_number FROM cars " +
+            "WHERE user_id_fk = ?";
 
 
     private CarDaoImpl(){
@@ -212,6 +212,29 @@ public class CarDaoImpl implements CarDao {
                     cars.add(car);
                 }
                 return cars;
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Connection error. ", e);
+        }
+    }
+
+    @Override
+    public Map<String, ? super Number> findMaxCharacteristicsByUser(User user) throws DaoException {
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_MAX_BY_USER_ID)) {
+
+            statement.setLong(1, user.getUserId());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                Map<String, ? super Number> characteristics = new HashMap<>();
+                if (resultSet.next()) {
+                    Double maxWeight = resultSet.getDouble(ParameterName.CARRYING_WEIGHT);
+                    Double maxVolume = resultSet.getDouble(ParameterName.CARRYING_VOLUME);
+                    Integer maxPassengersNumber = resultSet.getInt(ParameterName.PASSENGERS_NUMBER);
+                    characteristics.put(ParameterName.CARRYING_WEIGHT, maxWeight);
+                    characteristics.put(ParameterName.CARRYING_VOLUME, maxVolume);
+                    characteristics.put(ParameterName.PASSENGERS_NUMBER, maxPassengersNumber);
+                }
+                return characteristics;
             }
         } catch (SQLException e) {
             throw new DaoException("Connection error. ", e);

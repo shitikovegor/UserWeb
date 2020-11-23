@@ -78,4 +78,13 @@ public interface CarService {
      * @throws ServiceException the service exception
      */
     List<Car> findAvailableByUser(User user) throws ServiceException;
+
+    /**
+     * Find max characteristics of cars by user map.
+     *
+     * @param user the user
+     * @return the map
+     * @throws ServiceException the service exception
+     */
+    Map<String, ? super Number> findMaxCharacteristicsByUser(User user) throws ServiceException;
 }

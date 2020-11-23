@@ -3,7 +3,6 @@ package com.shitikov.project.controller.command.impl.page;
 import com.shitikov.project.controller.Router;
 import com.shitikov.project.controller.command.AttributeName;
 import com.shitikov.project.controller.command.Command;
-import com.shitikov.project.model.entity.Car;
 import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.entity.application.Application;
 import com.shitikov.project.model.entity.type.OrderStatus;
@@ -20,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -47,18 +45,14 @@ public class ApplicationsPageCommand implements Command {
             HttpSession session = request.getSession();
             if (session.getAttribute(ParameterName.ROLE_TYPE) == RoleType.DRIVER) {
                 User user = (User) session.getAttribute(ParameterName.USER);
-                List<Car> cars = CarServiceImpl.getInstance().findByUser(user);
-                double weightMax = 0;
-                double volumeMax = 0;
-                int passengerMax = 0;
-                for (Car car : cars) {
-                    double carWeight = car.getCarryingWeight();
-                    double carVolume = car.getCarryingVolume();
-                    int carPassenger = car.getPassengers();
-                    weightMax = Math.max(carWeight, weightMax);
-                    volumeMax = Math.max(carVolume, volumeMax);
-                    passengerMax = Math.max(carPassenger, passengerMax);
-                }
+
+                Map<String, ? super Number> characteristics =
+                        CarServiceImpl.getInstance().findMaxCharacteristicsByUser(user);
+
+                double weightMax = (Double) characteristics.get(ParameterName.CARRYING_WEIGHT);
+                double volumeMax = (Double) characteristics.get(ParameterName.CARRYING_VOLUME);
+                int passengerMax = (Integer) characteristics.get(ParameterName.PASSENGERS_NUMBER);
+
                 request.setAttribute(ParameterName.CARGO_WEIGHT_FROM, START_INDEX);
                 request.setAttribute(ParameterName.CARGO_WEIGHT_TO, weightMax);
                 request.setAttribute(ParameterName.CARGO_VOLUME_FROM, START_INDEX);

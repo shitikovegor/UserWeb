@@ -5,6 +5,7 @@ import com.shitikov.project.model.entity.User;
 import com.shitikov.project.model.exception.DaoException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The interface Car dao.
@@ -49,4 +50,13 @@ public interface CarDao extends BaseDao<Long, Car> {
      * @throws DaoException the dao exception
      */
     List<Car> findAvailableByUser(User user) throws DaoException;
+
+    /**
+     * Find max characteristics of cars by user map.
+     *
+     * @param user the user
+     * @return the map
+     * @throws DaoException the dao exception
+     */
+    Map<String, ? super Number> findMaxCharacteristicsByUser(User user) throws DaoException;
 }
