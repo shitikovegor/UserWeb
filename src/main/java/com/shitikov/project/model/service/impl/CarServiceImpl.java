@@ -157,10 +157,10 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Map<String, ? super Number> findMaxCharacteristicsByUser(User user) throws ServiceException {
+    public Map<String, Number> findMaxCharacteristicsByUser(User user) throws ServiceException {
         CarDao carDao = CarDaoImpl.getInstance();
         try {
-            Map<String, ? super Number> characteristics = carDao.findMaxCharacteristicsByUser(user);
+            Map<String, Number> characteristics = carDao.findMaxCharacteristicsByUser(user);
             return characteristics;
         } catch (DaoException e) {
             throw new ServiceException(e);

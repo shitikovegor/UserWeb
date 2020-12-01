@@ -219,13 +219,13 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
-    public Map<String, ? super Number> findMaxCharacteristicsByUser(User user) throws DaoException {
+    public Map<String, Number> findMaxCharacteristicsByUser(User user) throws DaoException {
         try (Connection connection = ConnectionPool.INSTANCE.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_MAX_BY_USER_ID)) {
 
             statement.setLong(1, user.getUserId());
             try (ResultSet resultSet = statement.executeQuery()) {
-                Map<String, ? super Number> characteristics = new HashMap<>();
+                Map<String, Number> characteristics = new HashMap<>();
                 if (resultSet.next()) {
                     Double maxWeight = resultSet.getDouble(ParameterName.CARRYING_WEIGHT);
                     Double maxVolume = resultSet.getDouble(ParameterName.CARRYING_VOLUME);

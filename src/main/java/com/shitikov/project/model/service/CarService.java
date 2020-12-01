@@ -86,5 +86,5 @@ public interface CarService {
      * @return the map
      * @throws ServiceException the service exception
      */
-    Map<String, ? super Number> findMaxCharacteristicsByUser(User user) throws ServiceException;
+    Map<String, Number> findMaxCharacteristicsByUser(User user) throws ServiceException;
 }

@@ -58,5 +58,5 @@ public interface CarDao extends BaseDao<Long, Car> {
      * @return the map
      * @throws DaoException the dao exception
      */
-    Map<String, ? super Number> findMaxCharacteristicsByUser(User user) throws DaoException;
+    Map<String, Number> findMaxCharacteristicsByUser(User user) throws DaoException;
 }
